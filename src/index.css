@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F9F9F7;
+    color: #1A1C1B;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+.gemini-gradient-text {
+  background: linear-gradient(74deg, #2d4b37 0%, #7c5800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shadow-input-glow {
+  box-shadow: 0 8px 24px rgba(45, 75, 55, 0.08);
+}
+
+.shadow-earthy-glow {
+  box-shadow: 0 4px 12px rgba(45, 75, 55, 0.04);
+}
+
+.shadow-sidebar {
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+}
+
+/* Material Symbols configuration */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c2c8c0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #727972;
+}
+
+/* Range input custom styling */
+input[type="range"] {
+  accent-color: #f4be55;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite ease-in-out;
+}
