@@ -82,11 +82,11 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-gradient-to-t from-[#F9F9F7] via-[#F9F9F7]/95 to-transparent pt-6 pb-6 px-4 md:px-8">
-      <div className="max-w-3xl mx-auto space-y-3">
+    <div className="w-full bg-gradient-to-t from-[#F9F9F7] via-[#F9F9F7]/95 to-transparent pt-1.5 pb-2 sm:pt-2 sm:pb-2.5 px-3 sm:px-6">
+      <div className="max-w-2xl mx-auto space-y-1.5">
         {/* Quick prompt recommendations */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
-          <span className="flex items-center gap-1 text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2.5 py-1 rounded-full flex-shrink-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
+          <span className="flex items-center gap-1 text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
             <Sparkles className="w-3 h-3 text-[#7c5800]" />
             Inspirasi:
           </span>
@@ -95,17 +95,17 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
               key={idx}
               type="button"
               onClick={() => onSendMessage(prompt)}
-              className="px-3 py-1 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-xs font-medium shadow-xs active:scale-95"
+              className="px-2.5 py-0.5 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs font-medium shadow-xs active:scale-95"
             >
               {prompt}
             </button>
           ))}
         </div>
 
-        {/* Conversational Input Area container matching HTML specification */}
+        {/* Conversational Input Area container */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-3xl shadow-input-glow border border-[#c2c8c0]/60 p-2 flex items-center gap-2 focus-within:border-[#163422]/50 focus-within:ring-2 focus-within:ring-[#163422]/10 transition-all"
+          className="bg-white rounded-full shadow-xs border border-[#c2c8c0]/60 p-1 sm:p-1.5 pl-2 sm:pl-3 flex items-center gap-1.5 sm:gap-2 focus-within:border-[#163422]/50 focus-within:ring-2 focus-within:ring-[#163422]/10 transition-all"
         >
           <input
             ref={fileInputRef}
@@ -125,10 +125,10 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
                 fileInputRef.current.click();
               }
             }}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-[#424843] hover:bg-[#f4f4f2] hover:text-[#163422] transition-colors flex-shrink-0 cursor-pointer"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[#424843] hover:bg-[#f4f4f2] hover:text-[#163422] transition-colors flex-shrink-0 cursor-pointer"
             title="Tambah Foto Bahan"
           >
-            <span className="material-symbols-outlined text-2xl">
+            <span className="material-symbols-outlined text-[20px] sm:text-[22px]">
               add_photo_alternate
             </span>
           </button>
@@ -138,16 +138,16 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ketik bahan-bahan Anda di sini..."
+            placeholder="Tanya resep atau ketik bahan..."
             disabled={isLoading}
-            className="flex-grow bg-transparent border-none focus:ring-0 text-base sm:text-lg text-[#1a1c1b] placeholder-[#727972] py-2 sm:py-3 px-2 outline-none min-w-0"
+            className="flex-grow bg-transparent border-none focus:ring-0 text-sm sm:text-base text-[#1a1c1b] placeholder-[#727972] py-1.5 sm:py-2 px-1 sm:px-2 outline-none min-w-0"
           />
 
           {/* Voice Input Mic */}
           <button
             type="button"
             onClick={handleVoiceToggle}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors flex-shrink-0 cursor-pointer ${
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-colors flex-shrink-0 cursor-pointer ${
               isListening
                 ? 'bg-rose-500 text-white animate-pulse'
                 : 'text-[#424843] hover:bg-[#f4f4f2] hover:text-[#163422]'
@@ -155,9 +155,9 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
             title={isListening ? 'Mendengarkan suara...' : 'Input Suara'}
           >
             {isListening ? (
-              <MicOff className="w-5 h-5" />
+              <MicOff className="w-4 h-4" />
             ) : (
-              <span className="material-symbols-outlined text-2xl">mic</span>
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px]">mic</span>
             )}
           </button>
 
@@ -165,17 +165,17 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
           <button
             type="submit"
             disabled={!inputText.trim() || isLoading}
-            className={`w-12 h-12 rounded-full bg-[#163422] flex items-center justify-center text-white hover:bg-[#304b2e] transition-colors shadow-md flex-shrink-0 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#163422] flex items-center justify-center text-white hover:bg-[#304b2e] transition-colors shadow-xs flex-shrink-0 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Kirim"
           >
-            <span className="material-symbols-outlined text-2xl">send</span>
+            <span className="material-symbols-outlined text-[18px] sm:text-[20px]">send</span>
           </button>
         </form>
 
         {/* Disclaimer Text */}
-        <div className="text-center mt-2">
-          <span className="text-xs text-[#424843]/70 font-medium">
-            SorghumCare AI dapat membuat kesalahan. Harap periksa kembali informasi penting.
+        <div className="text-center pt-0.5">
+          <span className="text-[10px] sm:text-[11px] text-[#424843]/60 font-medium leading-none inline-block">
+            SorghumCare AI dapat membuat kesalahan. Harap periksa info penting.
           </span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   TargetConsumerId, 
   DishCategoryId, 
@@ -14,6 +14,19 @@ import {
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
 import { generateRecipeFromWizard, generateCustomRecipeQuery } from './services/recipeGenerator';
+import { 
+  getCurrentPath, 
+  parseRoute, 
+  navigateToSlug, 
+  RouteSlugs 
+} from './utils/slugRouter';
+import { 
+  findRecipeBySlug, 
+  findTutorialBySlug, 
+  getRecipeSlug, 
+  CATEGORY_SLUG_MAP, 
+  SLUG_TO_CATEGORY_MAP 
+} from './utils/slugify';
 
 import { HomePage } from './components/Home/HomePage';
 import { ExploreRecipesPage } from './components/Explore/ExploreRecipesPage';
@@ -45,6 +58,12 @@ export default function App() {
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
   const [wizardStep, setWizardStep] = useState<number>(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [exploreCategoryKey, setExploreCategoryKey] = useState<string>('all');
+
+  // Dynamic & saved recipes
+  const [dynamicRecipes, setDynamicRecipes] = useState<Recipe[]>([]);
+  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(INITIAL_SAVED_RECIPES);
+  const [activeChatId, setActiveChatId] = useState<string>('chat-4');
 
   // Wizard Form State
   const [wizardData, setWizardData] = useState<WizardFormData>({
@@ -55,10 +74,6 @@ export default function App() {
     budgetPerPortion: 10000,
     prepTimeLimit: 'Maks 30 Menit',
   });
-
-  // Chat and Recipes State
-  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(INITIAL_SAVED_RECIPES);
-  const [activeChatId, setActiveChatId] = useState<string>('chat-4');
   
   // Initial messages
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -88,13 +103,158 @@ export default function App() {
   const [isImagePickerOpen, setIsImagePickerOpen] = useState<boolean>(false);
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState<boolean>(false);
 
-  // Bottom Nav Tab Switcher
+  // Sync state from URL slug on mount and popstate/hashchange
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const rawPath = getCurrentPath();
+      const parsed = parseRoute(rawPath);
+
+      if (parsed.routeType === 'recipe' && parsed.slug) {
+        const found = findRecipeBySlug(parsed.slug, dynamicRecipes);
+        if (found) {
+          setSelectedRecipeDetail(found);
+          setCookModeRecipe(null);
+          setSelectedVideoTutorial(null);
+          setIsSearchOpen(false);
+          return;
+        }
+      }
+
+      if (parsed.routeType === 'cook' && parsed.slug) {
+        const found = findRecipeBySlug(parsed.slug, dynamicRecipes);
+        if (found) {
+          setCookModeRecipe(found);
+          setSelectedVideoTutorial(null);
+          setIsSearchOpen(false);
+          return;
+        }
+      }
+
+      if (parsed.routeType === 'tutorial' && parsed.slug) {
+        const found = findTutorialBySlug(parsed.slug);
+        if (found) {
+          setSelectedVideoTutorial(found);
+          setIsSearchOpen(false);
+          return;
+        }
+      }
+
+      if (parsed.routeType === 'search') {
+        setIsSearchOpen(true);
+        return;
+      }
+
+      // Close modal overlays if route is a standard page
+      setSelectedRecipeDetail(null);
+      setCookModeRecipe(null);
+      setSelectedVideoTutorial(null);
+      setIsSearchOpen(false);
+
+      if (parsed.routeType === 'wizard') {
+        setCurrentTab('generate');
+        setGeneratorMode('wizard');
+        setWizardStep(parsed.wizardStep || 1);
+      } else if (parsed.routeType === 'generate') {
+        setCurrentTab('generate');
+        setGeneratorMode('chat');
+      } else if (parsed.routeType === 'explore') {
+        setCurrentTab('explore');
+        if (parsed.categoryFilter) {
+          setExploreCategoryKey(parsed.categoryFilter);
+        }
+      } else if (parsed.routeType === 'profile') {
+        setCurrentTab('profile');
+      } else {
+        setCurrentTab('home');
+      }
+    };
+
+    handleUrlChange();
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
+  }, [dynamicRecipes]);
+
+  // Tab Selection with Slug Update
   const handleSelectTab = (tab: AppTab) => {
     setSelectedRecipeDetail(null);
+    setCookModeRecipe(null);
+    setSelectedVideoTutorial(null);
+    setIsSearchOpen(false);
     setCurrentTab(tab);
+
     if (tab === 'generate') {
       setGeneratorMode('chat');
+      navigateToSlug(RouteSlugs.generate());
+    } else if (tab === 'explore') {
+      navigateToSlug(RouteSlugs.explore());
+    } else if (tab === 'profile') {
+      navigateToSlug(RouteSlugs.profile());
+    } else {
+      navigateToSlug(RouteSlugs.home());
     }
+  };
+
+  // Recipe View Navigation
+  const handleViewRecipe = (recipe: Recipe) => {
+    setSelectedRecipeDetail(recipe);
+    setCookModeRecipe(null);
+    setSelectedVideoTutorial(null);
+    setIsSearchOpen(false);
+    navigateToSlug(RouteSlugs.recipe(recipe));
+  };
+
+  // Cook Mode Navigation
+  const handleOpenCookMode = (recipe: Recipe) => {
+    setCookModeRecipe(recipe);
+    navigateToSlug(RouteSlugs.cook(recipe));
+  };
+
+  const handleCloseCookMode = () => {
+    setCookModeRecipe(null);
+    if (selectedRecipeDetail) {
+      navigateToSlug(RouteSlugs.recipe(selectedRecipeDetail));
+    } else {
+      navigateToSlug(RouteSlugs[currentTab] ? RouteSlugs[currentTab]() : '/home');
+    }
+  };
+
+  // Tutorial Video Navigation
+  const handleOpenTutorial = (tut: VideoTutorialItem) => {
+    setSelectedVideoTutorial(tut);
+    navigateToSlug(RouteSlugs.tutorial(tut));
+  };
+
+  const handleCloseTutorial = () => {
+    setSelectedVideoTutorial(null);
+    navigateToSlug(RouteSlugs[currentTab] ? RouteSlugs[currentTab]() : '/home');
+  };
+
+  // Search Navigation
+  const handleOpenSearch = () => {
+    setIsSearchOpen(true);
+    navigateToSlug(RouteSlugs.search());
+  };
+
+  const handleCloseSearch = () => {
+    setIsSearchOpen(false);
+    if (selectedRecipeDetail) {
+      navigateToSlug(RouteSlugs.recipe(selectedRecipeDetail));
+    } else {
+      navigateToSlug(RouteSlugs[currentTab] ? RouteSlugs[currentTab]() : '/home');
+    }
+  };
+
+  // Wizard Step Navigation
+  const handleSetWizardStep = (step: number) => {
+    setWizardStep(step);
+    setGeneratorMode('wizard');
+    setCurrentTab('generate');
+    navigateToSlug(RouteSlugs.wizard(step));
   };
 
   // Wizard Handlers
@@ -141,6 +301,7 @@ export default function App() {
     } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}`;
 
     const newRecipe = generateRecipeFromWizard(wizardData);
+    setDynamicRecipes((prev) => [newRecipe, ...prev]);
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
@@ -161,6 +322,7 @@ export default function App() {
     setChatMessages([userMsg, aiMsg]);
     setGeneratorMode('chat');
     setCurrentTab('generate');
+    navigateToSlug(RouteSlugs.generate());
 
     setTimeout(() => {
       setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
@@ -190,6 +352,7 @@ export default function App() {
     };
 
     const newRecipe = generateCustomRecipeQuery(text);
+    setDynamicRecipes((prev) => [newRecipe, ...prev]);
 
     const aiMsg: ChatMessage = {
       id: `msg-ai-${Date.now()}`,
@@ -203,6 +366,7 @@ export default function App() {
     setChatMessages((prev) => [...prev, userMsg, aiMsg]);
     setGeneratorMode('chat');
     setCurrentTab('generate');
+    navigateToSlug(RouteSlugs.generate());
     setIsGenerating(true);
 
     setTimeout(() => {
@@ -295,9 +459,7 @@ export default function App() {
       ...prev,
       dishCategory: categoryKey as DishCategoryId,
     }));
-    setWizardStep(1);
-    setGeneratorMode('wizard');
-    setCurrentTab('generate');
+    handleSetWizardStep(1);
   };
 
   return (
@@ -307,14 +469,17 @@ export default function App() {
         <RecipeDetailPage
           recipe={selectedRecipeDetail}
           isSaved={isRecipeSaved(selectedRecipeDetail.id, selectedRecipeDetail.title)}
-          onBack={() => setSelectedRecipeDetail(null)}
+          onBack={() => {
+            setSelectedRecipeDetail(null);
+            navigateToSlug(RouteSlugs[currentTab] ? RouteSlugs[currentTab]() : '/home');
+          }}
           onToggleSave={handleToggleSaveRecipe}
-          onOpenCookMode={(rec) => setCookModeRecipe(rec)}
+          onOpenCookMode={handleOpenCookMode}
           onOpenProfile={() => {
             setSelectedRecipeDetail(null);
-            setCurrentTab('profile');
+            handleSelectTab('profile');
           }}
-          onOpenSearch={() => setIsSearchOpen(true)}
+          onOpenSearch={handleOpenSearch}
           onNavigateTab={handleSelectTab}
         />
       ) : (
@@ -323,37 +488,38 @@ export default function App() {
             <HomePage
               onOpenProfile={() => {
                 setSelectedRecipeDetail(null);
-                setCurrentTab('profile');
+                handleSelectTab('profile');
               }}
-              onOpenSearch={() => setIsSearchOpen(true)}
+              onOpenSearch={handleOpenSearch}
               onSelectCategory={startGeneratorWithCategory}
-              onViewRecipe={(recipe) => setSelectedRecipeDetail(recipe)}
-              onOpenVideoTutorial={(tut) => setSelectedVideoTutorial(tut)}
+              onViewRecipe={handleViewRecipe}
+              onOpenVideoTutorial={handleOpenTutorial}
               onStartGenerator={() => {
-                setWizardStep(1);
-                setGeneratorMode('wizard');
-                setCurrentTab('generate');
+                handleSetWizardStep(1);
               }}
             />
           )}
 
           {currentTab === 'explore' && (
             <ExploreRecipesPage
-              onViewRecipe={(recipe) => setSelectedRecipeDetail(recipe)}
+              initialCategory={exploreCategoryKey}
+              onSelectCategorySlug={(catKey) => {
+                setExploreCategoryKey(catKey);
+                navigateToSlug(RouteSlugs.explore(catKey));
+              }}
+              onViewRecipe={handleViewRecipe}
               onToggleSaveRecipe={handleToggleSaveRecipe}
               isRecipeSaved={isRecipeSaved}
               onStartGenerator={() => {
-                setWizardStep(1);
-                setGeneratorMode('wizard');
-                setCurrentTab('generate');
+                handleSetWizardStep(1);
               }}
             />
           )}
 
           {currentTab === 'profile' && (
             <ProfilePage
-              onOpenSearch={() => setIsSearchOpen(true)}
-              onViewRecipe={(recipe) => setSelectedRecipeDetail(recipe)}
+              onOpenSearch={handleOpenSearch}
+              onViewRecipe={handleViewRecipe}
             />
           )}
 
@@ -366,22 +532,20 @@ export default function App() {
                   onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
                     setChatMessages([]);
-                    setWizardStep(1);
-                    setGeneratorMode('wizard');
+                    handleSetWizardStep(1);
                   }}
                   recentChats={RECENT_CHAT_TOPICS}
                   activeChatId={activeChatId}
                   onSelectChat={handleSelectRecentChat}
                   savedRecipes={savedRecipes}
-                  onSelectSavedRecipe={(saved) => setSelectedRecipeDetail(saved.recipe)}
+                  onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
                   onOpenProfile={() => {
                     setSelectedRecipeDetail(null);
-                    setCurrentTab('profile');
+                    handleSelectTab('profile');
                     setIsSidebarOpen(false);
                   }}
                   onStartWizard={() => {
-                    setWizardStep(1);
-                    setGeneratorMode('wizard');
+                    handleSetWizardStep(1);
                   }}
                   onNavigateTab={handleSelectTab}
                 />
@@ -399,9 +563,9 @@ export default function App() {
                         showStepText={wizardStep >= 3}
                         onBack={() => {
                           if (wizardStep > 1) {
-                            setWizardStep((prev) => prev - 1);
+                            handleSetWizardStep(wizardStep - 1);
                           } else {
-                            setCurrentTab('home');
+                            handleSelectTab('home');
                           }
                         }}
                       />
@@ -411,7 +575,7 @@ export default function App() {
                       <WizardStep1
                         selectedConsumers={wizardData.targetConsumers}
                         onToggleConsumer={handleToggleConsumer}
-                        onNext={() => setWizardStep(2)}
+                        onNext={() => handleSetWizardStep(2)}
                       />
                     )}
 
@@ -419,8 +583,8 @@ export default function App() {
                       <WizardStep2
                         selectedCategory={wizardData.dishCategory}
                         onSelectCategory={(cat) => setWizardData((prev) => ({ ...prev, dishCategory: cat }))}
-                        onPrevious={() => setWizardStep(1)}
-                        onNext={() => setWizardStep(3)}
+                        onPrevious={() => handleSetWizardStep(1)}
+                        onNext={() => handleSetWizardStep(3)}
                       />
                     )}
 
@@ -431,8 +595,8 @@ export default function App() {
                         onToggleIngredient={handleToggleIngredient}
                         onAddCustomIngredient={handleAddCustomIngredient}
                         onRemoveCustomIngredient={handleRemoveCustomIngredient}
-                        onPrevious={() => setWizardStep(2)}
-                        onNext={() => setWizardStep(4)}
+                        onPrevious={() => handleSetWizardStep(2)}
+                        onNext={() => handleSetWizardStep(4)}
                       />
                     )}
 
@@ -441,7 +605,7 @@ export default function App() {
                         formData={wizardData}
                         onUpdateBudget={(budget) => setWizardData((prev) => ({ ...prev, budgetPerPortion: budget }))}
                         onUpdatePrepTime={(time) => setWizardData((prev) => ({ ...prev, prepTimeLimit: time }))}
-                        onPrevious={() => setWizardStep(3)}
+                        onPrevious={() => handleSetWizardStep(3)}
                         onGenerateRecipe={handleGenerateFromWizard}
                         isLoading={isGenerating}
                       />
@@ -544,8 +708,7 @@ export default function App() {
                               <button
                                 id="btn-hero-smart-generate"
                                 onClick={() => {
-                                  setWizardStep(1);
-                                  setGeneratorMode('wizard');
+                                  handleSetWizardStep(1);
                                 }}
                                 className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#163422] hover:bg-[#2d4b37] text-white text-left transition-all shadow-md group cursor-pointer active:scale-[0.98]"
                               >
@@ -593,7 +756,7 @@ export default function App() {
                                       typingText={msg.typingText || typingStatusText}
                                       isSaved={isRecipeSaved(msg.recipe.id, msg.recipe.title)}
                                       onToggleSave={handleToggleSaveRecipe}
-                                      onOpenCookMode={(rec) => setCookModeRecipe(rec)}
+                                      onOpenCookMode={handleOpenCookMode}
                                     />
                                     <span className="text-[10px] text-[#727972] mt-2 px-1">
                                       {msg.timestamp}
@@ -638,15 +801,15 @@ export default function App() {
       {selectedVideoTutorial && (
         <VideoTutorialModal
           tutorial={selectedVideoTutorial}
-          onClose={() => setSelectedVideoTutorial(null)}
+          onClose={handleCloseTutorial}
         />
       )}
 
       {/* Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectRecipe={(rec) => setSelectedRecipeDetail(rec)}
+        onClose={handleCloseSearch}
+        onSelectRecipe={handleViewRecipe}
         onSearchQuery={(query) => {
           handleSendMessage(query);
         }}
@@ -656,7 +819,7 @@ export default function App() {
       {cookModeRecipe && (
         <CookModeModal
           recipe={cookModeRecipe}
-          onClose={() => setCookModeRecipe(null)}
+          onClose={handleCloseCookMode}
         />
       )}
 
@@ -710,8 +873,7 @@ export default function App() {
             <button
               onClick={() => {
                 setChatMessages([]);
-                setWizardStep(1);
-                setGeneratorMode('wizard');
+                handleSetWizardStep(1);
                 setIsHistoryDrawerOpen(false);
               }}
               className="w-full py-3 bg-[#163422] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm"

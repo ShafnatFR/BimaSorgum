@@ -59,6 +59,7 @@ export interface NutritionHighlight {
 
 export interface Recipe {
   id: string;
+  slug?: string;
   title: string;
   subtitle: string;
   targetAge: string;

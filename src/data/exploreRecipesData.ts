@@ -18,6 +18,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   INITIAL_SAVED_RECIPES[2].recipe, // healthy-bowl-sorghum
   {
     id: 'sorghum-mushroom-risotto',
+    slug: 'risotto-jamur-liar-sorgum-creamy',
     title: 'Sorghum Mushroom Creamy Risotto',
     subtitle: 'Alternatif risotto bebas gluten dengan biji sorgum pulen kenyal, jamur champignon, dan kaldu gurih nabati.',
     targetAge: 'Remaja, Dewasa & Lansia',
@@ -75,6 +76,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   },
   {
     id: 'bubur-manado-tinutuan-sorgum',
+    slug: 'bubur-tinutuan-sorgum-manado',
     title: 'Tinutuan Bubur Sayur Sorgum Manado',
     subtitle: 'Kreasi bubur Manado tradisional kaya serat dari biji sorgum pulen berpadu labu kuning, kangkung, dan jagung manis.',
     targetAge: 'Semua Usia (Balita - Lansia)',
@@ -132,6 +134,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   },
   {
     id: 'sorghum-cookies-chocochip',
+    slug: 'cookies-keping-cokelat-sorgum',
     title: 'Crunchy Sorghum Chocochip Cookies',
     subtitle: 'Kue kering renyah bebas terigu dari tepung sorgum dengan dark chocolate chips dan aroma gula kelapa harum.',
     targetAge: 'Anak Sekolah & Remaja',
@@ -188,6 +191,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   },
   {
     id: 'es-cendol-dawet-sorgum',
+    slug: 'es-cendol-sorgum-nangka-gula-aren',
     title: 'Es Dawet Cendol Tepung Sorgum Sehat',
     subtitle: 'Minuman segar tradisional dengan cendol kenyal dari tepung sorgum, santan kelapa murni, dan sirup nira aren organik.',
     targetAge: 'Semua Usia',
@@ -238,6 +242,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   },
   {
     id: 'bolu-kukus-sorgum-gula-aren',
+    slug: 'bolu-kukus-pandan-sorgum-mekar',
     title: 'Bolu Kukus Mekar Sorgum & Pandan Aren',
     subtitle: 'Bolu kukus super empuk dan mekar sempurna dibuat dari 100% tepung sorgum bebas gluten beraroma pandan alami.',
     targetAge: 'Semua Usia',
@@ -288,6 +293,7 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
   },
   {
     id: 'sup-krim-sorgum-jagung',
+    slug: 'sup-krim-jagung-sorgum-hangat',
     title: 'Creamy Sorghum & Sweet Corn Chowder',
     subtitle: 'Sup hangat kental menenangkan dengan butiran biji sorgum kenyal, jagung manis pipil, dan wortel dadu kaya serat.',
     targetAge: 'Balita, Anak Sekolah & Lansia',

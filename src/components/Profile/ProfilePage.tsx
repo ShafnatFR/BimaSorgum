@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Search, 
   ChevronRight, 
   PersonStanding, 
   Bell, 
@@ -13,6 +12,8 @@ import {
 } from 'lucide-react';
 import { Recipe } from '../../types';
 import { INITIAL_SAVED_RECIPES } from '../../data/mockData';
+import { CardImageWithSkeleton } from '../Common/CardSkeleton';
+import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 
 interface ProfilePageProps {
   onOpenSearch: () => void;
@@ -80,14 +81,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
           <span className="text-xl font-bold text-[#163422] tracking-tight">SorghumCare</span>
         </div>
-        <button
-          id="btn-profile-search"
-          onClick={onOpenSearch}
-          className="text-[#163422] hover:opacity-80 transition-opacity active:scale-95 duration-150 p-2 rounded-full hover:bg-[#e2e3e1]"
-          aria-label="Cari Resep"
-        >
-          <Search className="w-5 h-5" />
-        </button>
       </header>
 
       <main className="px-5 md:px-10 max-w-4xl mx-auto space-y-6">
@@ -166,12 +159,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               onClick={() => handleRecipeClick('power-bowl')}
               className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
             >
-              <div className="h-32 w-full relative overflow-hidden">
-                <img
+              <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
+                <CardImageWithSkeleton
                   alt="Sorghum Power Bowl"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  containerClassName="w-full h-full relative"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8piEm3Qn03xIQgTXJnMp_kIfYKewO-sipfpvZuwwlLdIa6XHV0dV2xDTwe5gjleFeQT9nU2Y6P7zx2GLeIdfguqkAQnl0wBq00QY6OwAXoLB8jCcippOZtVt0h4W_5rqJVzov5Zu7S0iTCJ8MrF5CGNb3_Yn1sDIs1bbbSXXcMYQrPK57WGAoicZ3qpiQEJ5XVec1dZb8USZw8y7k639vDpbl1PZWlkn3ayWoY2IFzHIId5PZr2U3uA"
-                  referrerPolicy="no-referrer"
+                  fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
                 />
               </div>
               <div className="p-3">
@@ -191,12 +185,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               onClick={() => handleRecipeClick('porridge')}
               className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
             >
-              <div className="h-32 w-full relative overflow-hidden">
-                <img
+              <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
+                <CardImageWithSkeleton
                   alt="Sorghum Breakfast Porridge"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  containerClassName="w-full h-full relative"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJKODVLPeEZ6qnULcSefFnf1qioHZfsxqAqGJy0Imy57li1hJshPrkPO-1ycH9u-jNpDeTUaEaWYwP7E3861Ra6Zmz7rLMtwCxo8EtHscaX_RzRwznTB81Uape_Gz12ypf9vS_KiXAAv5F5yJkWA2CPD7UvOXKnLkIO0VAXmwag25z1kyIOiR_mOTwboOC1ghXIw5mQVecASACXa1Ceiq_LV6U-JJBzUhESJ0S3xH1OuKkDK72JS-eZQ"
-                  referrerPolicy="no-referrer"
+                  fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
                 />
               </div>
               <div className="p-3">

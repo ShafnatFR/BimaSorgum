@@ -1,19 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   HOME_STUDENT_FAVORITES, 
   HOME_CATEGORIES, 
   HOME_VIDEO_TUTORIALS, 
   HOME_COMMUNITY_RECIPES, 
+  HOME_HOT_RECIPES,
+  HOME_NEW_RECIPES,
   DAILY_TIPS, 
   FALLBACK_FOOD_IMAGE,
   HomeFavoriteItem,
   CategoryItem,
   VideoTutorialItem,
-  CommunityRecipeItem
+  CommunityRecipeItem,
+  ShowcaseRecipeItem
 } from '../../data/homeData';
 import { Recipe } from '../../types';
 import { INITIAL_FEATURED_RECIPE, INITIAL_SAVED_RECIPES } from '../../data/mockData';
-import { Sparkles, ArrowRight, Star, Heart, Play, RefreshCw, ChevronRight } from 'lucide-react';
+import { 
+  Sparkles, 
+  ArrowRight, 
+  Play, 
+  RefreshCw, 
+  ChevronLeft, 
+  ChevronRight
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import { 
+  CardImageWithSkeleton, 
+  HomeBannerSkeleton, 
+  HomeCarouselSectionSkeleton, 
+  CategoryCardSkeleton,
+  VideoTutorialCardSkeleton 
+} from '../Common/CardSkeleton';
 
 interface HomePageProps {
   onOpenProfile: () => void;
@@ -32,11 +50,62 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenVideoTutorial,
   onStartGenerator,
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<HomeFavoriteItem[]>(HOME_STUDENT_FAVORITES);
   const [communityRecipes, setCommunityRecipes] = useState<CommunityRecipeItem[]>(HOME_COMMUNITY_RECIPES);
   const [tipIndex, setTipIndex] = useState(0);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const [activeNutriTab, setActiveNutriTab] = useState<'rice' | 'wheat' | 'corn'>('rice');
+  const videoCarouselRef = useRef<HTMLDivElement>(null);
+  const favoriteCarouselRef = useRef<HTMLDivElement>(null);
+  const communityCarouselRef = useRef<HTMLDivElement>(null);
+  const hotCarouselRef = useRef<HTMLDivElement>(null);
+  const newCarouselRef = useRef<HTMLDivElement>(null);
+
+  // Initial loading simulation to showcase skeleton placeholders smoothly
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const triggerReloadSimulation = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 700);
+  };
+
+  const scrollCarousel = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const container = ref.current;
+      const scrollAmount = 260;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      
+      if (direction === 'left') {
+        if (container.scrollLeft <= 5) {
+          // Boundary bounce feedback so clicking left never feels dead!
+          container.scrollTo({ left: 35, behavior: 'smooth' });
+          setTimeout(() => container.scrollTo({ left: 0, behavior: 'smooth' }), 180);
+        } else {
+          container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        }
+      } else {
+        if (container.scrollLeft >= maxScroll - 5) {
+          // Boundary bounce feedback at the end
+          container.scrollTo({ left: maxScroll - 35, behavior: 'smooth' });
+          setTimeout(() => container.scrollTo({ left: maxScroll, behavior: 'smooth' }), 180);
+        } else {
+          container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+      }
+    }
+  };
+
+  const scrollVideoCarousel = (direction: 'left' | 'right') => {
+    scrollCarousel(videoCarouselRef, direction);
+  };
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,15 +134,32 @@ export const HomePage: React.FC<HomePageProps> = ({
     } else if (comm.id === 'comm-4') {
       onViewRecipe(INITIAL_SAVED_RECIPES[1].recipe);
     } else {
-      // Default to featured recipe with customized title
       onViewRecipe({
         ...INITIAL_FEATURED_RECIPE,
+        id: comm.id,
         title: comm.title,
         subtitle: comm.description,
         prepTimeMinutes: 15,
         cookTimeMinutes: 20,
+        imageUrl: comm.imageUrl,
+        rating: comm.rating,
+        tags: [comm.tag, 'Komunitas', 'Sorgum Sehat'],
       });
     }
+  };
+
+  const handleShowcaseClick = (item: ShowcaseRecipeItem) => {
+    onViewRecipe({
+      ...INITIAL_FEATURED_RECIPE,
+      id: item.id,
+      title: item.title,
+      subtitle: item.description,
+      prepTimeMinutes: 15,
+      cookTimeMinutes: 25,
+      imageUrl: item.imageUrl,
+      rating: item.rating,
+      tags: [item.tag, item.difficulty || 'Mudah', 'Sorgum Pilihan'],
+    });
   };
 
   const handleLoadMore = () => {
@@ -172,15 +258,18 @@ export const HomePage: React.FC<HomePageProps> = ({
             </p>
           </div>
 
-          <button
+          <motion.button
             id="btn-home-start-smart-generate"
+            whileTap={{ scale: 0.94 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 450, damping: 22 }}
             onClick={onStartGenerator}
-            className="z-10 py-3 px-5 bg-[#fdc65c] text-[#163422] hover:bg-[#f4be55] rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-all active:scale-95 flex-shrink-0 cursor-pointer"
+            className="z-10 py-3 px-5 bg-[#fdc65c] text-[#163422] hover:bg-[#f4be55] rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-colors flex-shrink-0 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-[#163422]" />
             <span>Mulai Smart Generate</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </motion.button>
 
           {/* Decorative background grain shape */}
           <div className="absolute right-0 -bottom-10 opacity-10 text-9xl select-none pointer-events-none">
@@ -188,77 +277,93 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* 2. Featured Recipes (Student Favorites) matching HTML */}
+        {/* 2. Featured Recipes (Student Favorites Carousel) */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-              Student Favorites
-            </h3>
-            <span className="text-xs text-[#727972] font-semibold">
-              Geser untuk melihat menu
-            </span>
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+                Student Favorites
+              </h3>
+              <p className="text-xs text-[#727972] font-semibold mt-0.5">
+                8 Pilihan Favorit Mahasiswa & Pelajar
+              </p>
+            </div>
+
+            {/* Carousel Arrow Controls */}
+            <div className="flex items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(favoriteCarouselRef, 'left')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser ke Kiri"
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(favoriteCarouselRef, 'right')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser ke Kanan"
+                title="Berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </div>
           </div>
 
-          <div className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
+          <div 
+            ref={favoriteCarouselRef}
+            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+          >
             {favorites.map((item) => (
-              <div
+              <motion.div
                 key={item.id}
+                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
                 onClick={() => handleFavoriteClick(item)}
-                className="min-w-[270px] sm:min-w-[290px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden flex flex-col shrink-0 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
               >
-                <div className="h-36 bg-[#e2e3e1] relative overflow-hidden">
-                  <img
+                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+                  <CardImageWithSkeleton
                     src={item.imageUrl}
                     alt={item.title}
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = FALLBACK_FOOD_IMAGE;
-                    }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fallbackSrc={FALLBACK_FOOD_IMAGE}
+                    containerClassName="w-full h-full relative"
+                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
                   />
-                  <button
-                    type="button"
-                    onClick={(e) => toggleFavorite(item.id, e)}
-                    className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow-sm text-[#163422] hover:bg-white transition-colors"
-                  >
-                    <span
-                      className="material-symbols-outlined text-[20px]"
-                      style={{
-                        fontVariationSettings: item.isFavorite ? "'FILL' 1" : "'FILL' 0",
-                        color: item.isFavorite ? '#ba1a1a' : '#727972',
-                      }}
-                    >
-                      favorite
-                    </span>
-                  </button>
+                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
+                    {item.timeTag}
+                  </div>
                 </div>
 
-                <div className="p-3.5 flex-grow flex flex-col justify-between space-y-3">
+                <div className="p-2.5 flex-grow flex flex-col justify-between">
                   <div>
-                    <div className="flex gap-1.5 mb-1.5 flex-wrap">
-                      <span className="bg-[#cbebc3] text-[#163422] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                        {item.categoryTag}
-                      </span>
-                      <span className="bg-[#f4f4f2] text-[#424843] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                        {item.timeTag}
-                      </span>
-                    </div>
-                    <h4 className="font-bold text-sm sm:text-base text-[#1A1C1B] group-hover:text-[#163422] transition-colors leading-snug">
+                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
                       {item.title}
                     </h4>
+                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
+                      Olahan sorgum praktis &amp; bergizi.
+                    </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1 border-t border-[#f4f4f2]">
-                    <span className="text-[#163422] text-xs font-bold flex items-center gap-1">
-                      View Recipe
-                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
                     </span>
-                    <span className="text-[11px] font-bold text-[#7c5800]">
-                      Bebas Gluten
+                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+                      {item.categoryTag}
                     </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>
@@ -270,22 +375,23 @@ export const HomePage: React.FC<HomePageProps> = ({
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {HOME_CATEGORIES.map((cat) => (
-              <div
+              <motion.div
                 key={cat.id}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
                 onClick={() => onSelectCategory(cat.categoryKey)}
-                className="aspect-square rounded-2xl overflow-hidden relative shrink-0 group cursor-pointer shadow-xs hover:shadow-lg transition-all"
+                className="aspect-square rounded-2xl overflow-hidden relative shrink-0 group cursor-pointer shadow-xs hover:shadow-lg transition-all bg-[#e8eae6] select-none"
               >
-                <img
+                <CardImageWithSkeleton
                   src={cat.imageUrl}
                   alt={cat.name}
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = FALLBACK_FOOD_IMAGE;
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  fallbackSrc={FALLBACK_FOOD_IMAGE}
+                  containerClassName="w-full h-full relative"
+                  imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 pointer-events-none"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 group-hover:from-black/90 transition-colors" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 group-hover:from-black/90 transition-colors pointer-events-none" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center pointer-events-none">
                   <span className="text-base sm:text-lg text-white font-extrabold tracking-wide drop-shadow-sm">
                     {cat.name}
                   </span>
@@ -293,118 +399,376 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {cat.nameId}
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>
 
-        {/* 4. Cooking Basics with Sorghum (Interactive Video Tutorials) matching HTML */}
+        {/* 4. Cooking Basics with Sorghum (Interactive Video Tutorials Carousel) matching HTML */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-              Cooking Basics with Sorghum
-            </h3>
-            <span className="text-xs text-[#727972] font-semibold">
-              Klik video untuk panduan
-            </span>
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+                Cooking Basics with Sorghum
+              </h3>
+              <p className="text-xs text-[#727972] font-semibold mt-0.5">
+                8 Panduan Video Tutorial Interaktif
+              </p>
+            </div>
+            
+            {/* Carousel Arrow Controls */}
+            <div className="flex items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollVideoCarousel('left')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser ke Kiri"
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollVideoCarousel('right')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser ke Kanan"
+                title="Berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <div 
+            ref={videoCarouselRef}
+            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+          >
             {HOME_VIDEO_TUTORIALS.map((tut) => (
-              <div
+              <motion.div
                 key={tut.id}
+                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
                 onClick={() => onOpenVideoTutorial(tut)}
-                className="bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all"
+                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
               >
-                <div className="relative h-40 bg-[#e2e3e1] overflow-hidden">
-                  <img
+                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+                  <CardImageWithSkeleton
                     src={tut.imageUrl}
                     alt={tut.title}
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = FALLBACK_FOOD_IMAGE;
-                    }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fallbackSrc={FALLBACK_FOOD_IMAGE}
+                    containerClassName="w-full h-full relative"
+                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
                   />
-                  <div className="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-colors" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-white/90 text-[#163422] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 fill-current text-[#163422] ml-0.5" />
+                  <div className="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-colors pointer-events-none" />
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-9 h-9 rounded-full bg-white/90 text-[#163422] flex items-center justify-center shadow-lg group-hover:scale-110 group-active:scale-90 transition-transform">
+                      <Play className="w-4 h-4 fill-current text-[#163422] ml-0.5" />
                     </div>
                   </div>
-                  <div className="absolute bottom-2 right-2 bg-black/75 text-white text-[11px] px-2 py-0.5 rounded-md font-mono font-bold">
+                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
                     {tut.duration}
                   </div>
                 </div>
 
-                <div className="p-3.5">
-                  <h4 className="font-bold text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors">
-                    {tut.title}
-                  </h4>
-                  <p className="text-xs text-[#424843] mt-0.5">
-                    {tut.subtitle}
-                  </p>
+                <div className="p-2.5 flex-grow flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
+                      {tut.title}
+                    </h4>
+                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
+                      {tut.subtitle}
+                    </p>
+                  </div>
+                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Tonton Panduan
+                    </span>
+                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+                      Tips Olah
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </section>
 
-        {/* 5. Featured Community Recipes matching HTML */}
+        {/* 5. Featured Community Recipes (Interactive Carousel) */}
         <section className="space-y-3">
-          <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-            Featured Community Recipes
-          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+                Featured Community Recipes
+              </h3>
+              <p className="text-xs text-[#727972] font-semibold mt-0.5">
+                8 Resep Kreasi Komunitas & Chef Lokal
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {communityRecipes.map((comm) => (
-              <div
-                key={comm.id}
-                onClick={() => handleCommunityClick(comm)}
-                className="bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden flex flex-col sm:flex-row shadow-xs hover:shadow-md cursor-pointer transition-all group"
+            {/* Carousel Arrow Controls */}
+            <div className="flex items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(communityCarouselRef, 'left')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser Komunitas ke Kiri"
+                title="Sebelumnya"
               >
-                <div className="h-44 sm:h-auto sm:w-44 bg-[#e2e3e1] relative overflow-hidden shrink-0">
-                  <img
+                <ChevronLeft className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(communityCarouselRef, 'right')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser Komunitas ke Kanan"
+                title="Berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+
+          <div 
+            ref={communityCarouselRef}
+            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+          >
+            {communityRecipes.map((comm) => (
+              <motion.div
+                key={comm.id}
+                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                onClick={() => handleCommunityClick(comm)}
+                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
+              >
+                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+                  <CardImageWithSkeleton
                     src={comm.imageUrl}
                     alt={comm.title}
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = FALLBACK_FOOD_IMAGE;
-                    }}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fallbackSrc={FALLBACK_FOOD_IMAGE}
+                    containerClassName="w-full h-full relative"
+                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
                   />
+                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
+                    {comm.time}
+                  </div>
                 </div>
 
-                <div className="p-4 flex-grow flex flex-col justify-between space-y-2">
+                <div className="p-2.5 flex-grow flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                      <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-full text-[10px] font-extrabold">
-                        {comm.tag}
-                      </span>
-                      <span className="bg-[#f4f4f2] text-[#424843] px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                        {comm.rating}
-                      </span>
-                    </div>
-                    <h4 className="font-bold text-sm sm:text-base text-[#1A1C1B] group-hover:text-[#163422] transition-colors leading-snug">
+                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
                       {comm.title}
                     </h4>
-                    <p className="text-xs text-[#424843] mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
                       {comm.description}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-[#727972] pt-2 border-t border-[#f4f4f2]">
-                    <div className="flex items-center gap-1 font-medium">
-                      <span className="material-symbols-outlined text-[16px]">schedule</span>
-                      <span>{comm.time}</span>
-                    </div>
-                    <span className="font-bold text-[#163422] flex items-center gap-0.5">
-                      Lihat Resep →
+                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
+                    </span>
+                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+                      {comm.tag}
                     </span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* 5B. Trending & Hot Recipes Carousel */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+                Trending & Hot Recipes
+              </h3>
+              <p className="text-xs text-[#727972] font-semibold mt-0.5">
+                8 Resep Paling Banyak Dimasak & Disukai Minggu Ini
+              </p>
+            </div>
+
+            {/* Carousel Arrow Controls */}
+            <div className="flex items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(hotCarouselRef, 'left')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser Hot ke Kiri"
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(hotCarouselRef, 'right')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser Hot ke Kanan"
+                title="Berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+
+          <div 
+            ref={hotCarouselRef}
+            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+          >
+            {HOME_HOT_RECIPES.map((item) => (
+              <motion.div
+                key={item.id}
+                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                onClick={() => handleShowcaseClick(item)}
+                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
+              >
+                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+                  <CardImageWithSkeleton
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fallbackSrc={FALLBACK_FOOD_IMAGE}
+                    containerClassName="w-full h-full relative"
+                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+                  />
+                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
+                    {item.time}
+                  </div>
+                </div>
+
+                <div className="p-2.5 flex-grow flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
+                      {item.title}
+                    </h4>
+                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
+                    </span>
+                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+                      {item.tag}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* 5C. New Creations & Fresh Arrivals Carousel */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+                New Creations & Fresh Arrivals
+              </h3>
+              <p className="text-xs text-[#727972] font-semibold mt-0.5">
+                8 Resep Terbaru Dikurasi Ahli Gizi & Nutrisi
+              </p>
+            </div>
+
+            {/* Carousel Arrow Controls */}
+            <div className="flex items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(newCarouselRef, 'left')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser New ke Kiri"
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.8 }}
+                whileHover={{ scale: 1.12 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                onClick={() => scrollCarousel(newCarouselRef, 'right')}
+                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                aria-label="Geser New ke Kanan"
+                title="Berikutnya"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+
+          <div 
+            ref={newCarouselRef}
+            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+          >
+            {HOME_NEW_RECIPES.map((item) => (
+              <motion.div
+                key={item.id}
+                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+                whileHover={{ y: -3 }}
+                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+                onClick={() => handleShowcaseClick(item)}
+                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
+              >
+                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+                  <CardImageWithSkeleton
+                    src={item.imageUrl}
+                    alt={item.title}
+                    fallbackSrc={FALLBACK_FOOD_IMAGE}
+                    containerClassName="w-full h-full relative"
+                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+                  />
+                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
+                    {item.time}
+                  </div>
+                </div>
+
+                <div className="p-2.5 flex-grow flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
+                      {item.title}
+                    </h4>
+                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
+                    </span>
+                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+                      {item.tag}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
         </section>

@@ -1,6 +1,7 @@
 import { WizardFormData, Recipe, RecipeIngredient, RecipeStep } from '../types';
 import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
+import { slugify } from '../utils/slugify';
 
 export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
   const { targetConsumers, dishCategory, selectedIngredientIds, customIngredients, budgetPerPortion } = formData;
@@ -47,9 +48,11 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
         { name: 'Minyak kelapa murni (EVCO)', amount: '1 sdt', estimatedPrice: 1000 }
       );
       currentCost = 9000;
+      const title = 'Bubur Tim Sorgum Sayur Pelangi (MPASI)';
       return {
         id: `recipe-${Date.now()}`,
-        title: 'Bubur Tim Sorgum Sayur Pelangi (MPASI)',
+        slug: slugify(title),
+        title,
         subtitle: 'Tekstur super lembut, kaya zat besi dan prebiotik alami untuk tumbuh kembang optimal balita:',
         targetAge: 'Balita (1-5 thn)',
         dishCategory: 'Makanan Berat',
@@ -101,9 +104,11 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
         { name: 'Ikan suwir / telur rebus', amount: '40g', estimatedPrice: 2500 }
       );
       currentCost = 9500;
+      const title = 'Nasi Sorgum Gurih dengan Sayur Bening & Protein';
       return {
         id: `recipe-${Date.now()}`,
-        title: 'Nasi Sorgum Gurih dengan Sayur Bening & Protein',
+        slug: slugify(title),
+        title,
         subtitle: 'Menu ramah gula darah, mudah dikunyah dan kaya antioksidan polifenol:',
         targetAge: 'Lansia',
         dishCategory: 'Makanan Berat',
@@ -149,9 +154,11 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
   }
 
   if (dishCategory === 'camilan_sehat') {
+    const title = 'Cookies Renyah Sorgum Cokelat Kenari';
     return {
       id: `recipe-${Date.now()}`,
-      title: 'Cookies Renyah Sorgum Cokelat Kenari',
+      slug: slugify(title),
+      title,
       subtitle: 'Kudapan sehat tanpa terigu gandum, renyah manis alami pas untuk teman santai:',
       targetAge: targetLabel,
       dishCategory: 'Camilan Sehat',
@@ -201,9 +208,11 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
   }
 
   if (dishCategory === 'minuman_nutrisi') {
+    const title = 'Sorghum Milkshake Susu Nabati Kurma';
     return {
       id: `recipe-${Date.now()}`,
-      title: 'Sorghum Milkshake Susu Nabati Kurma',
+      slug: slugify(title),
+      title,
       subtitle: 'Minuman booster energi menyegarkan kaya kalsium dan serat larut prebiotik:',
       targetAge: targetLabel,
       dishCategory: 'Minuman Nutrisi',
@@ -253,9 +262,11 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
   }
 
   // Dessert Rendah GI
+  const dessertTitle = 'Puding Sutra Sorgum Pandan Suji (Low GI)';
   return {
     id: `recipe-${Date.now()}`,
-    title: 'Puding Sutra Sorgum Pandan Suji (Low GI)',
+    slug: slugify(dessertTitle),
+    title: dessertTitle,
     subtitle: 'Pencuci mulut manis alami yang lembut di lidah dan ramah kestabilan gula darah:',
     targetAge: targetLabel,
     dishCategory: 'Dessert Rendah GI',
@@ -310,9 +321,11 @@ export function generateCustomRecipeQuery(userPrompt: string): Recipe {
   
   // Custom smart matcher
   if (lower.includes('pancake') || lower.includes('panekuk')) {
+    const title = 'Pancake Tepung Sorgum Madu Kelapa';
     return {
       id: `recipe-pancake-${Date.now()}`,
-      title: 'Pancake Tepung Sorgum Madu Kelapa',
+      slug: slugify(title),
+      title,
       subtitle: 'Pancake tebal lembut bebas gluten yang kaya serat untuk menu sarapan praktis:',
       targetAge: 'Semua Umur',
       dishCategory: 'Camilan Sehat',
@@ -363,9 +376,11 @@ export function generateCustomRecipeQuery(userPrompt: string): Recipe {
   }
 
   // Default rich smart response matching the prompt or Nasi Goreng
+  const defaultTitle = 'Nasi Goreng Sorgum Ceria (SD Edition)';
   return {
     id: `recipe-custom-${Date.now()}`,
-    title: 'Nasi Goreng Sorgum Ceria (SD Edition)',
+    slug: 'nasi-goreng-sorgum-ceria-sd-edition',
+    title: defaultTitle,
     subtitle: 'Tentu! Ini resep bergizi, lezat, dan sangat terjangkau untuk bekal sekolah:',
     targetAge: 'Anak Sekolah (6-12 thn)',
     dishCategory: 'Makanan Berat',

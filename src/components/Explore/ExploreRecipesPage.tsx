@@ -8,7 +8,6 @@ import {
   Clock, 
   DollarSign, 
   Bookmark, 
-  ChefHat, 
   ChevronRight, 
   ChevronLeft,
   X, 
@@ -31,12 +30,19 @@ import {
   MOST_LIKED_RECIPES,
   MostLikedRecipeItem 
 } from '../../data/exploreRecipesData';
+import { 
+  CardImageWithSkeleton, 
+  CarouselCardSkeleton, 
+  GridRecipeCardSkeleton 
+} from '../Common/CardSkeleton';
 
 interface ExploreRecipesPageProps {
   onViewRecipe: (recipe: Recipe) => void;
   onToggleSaveRecipe: (recipe: Recipe) => void;
   isRecipeSaved: (recipeId: string, title?: string) => boolean;
   onStartGenerator: () => void;
+  initialCategory?: string;
+  onSelectCategorySlug?: (categoryKey: string) => void;
 }
 
 type SortOption = 'popular' | 'price-asc' | 'time-asc' | 'fiber-desc';
@@ -46,9 +52,11 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   onToggleSaveRecipe,
   isRecipeSaved,
   onStartGenerator,
+  initialCategory,
+  onSelectCategorySlug,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedConsumer, setSelectedConsumer] = useState<string>('all');
   const [maxBudget, setMaxBudget] = useState<number | 'all'>('all');
@@ -56,6 +64,20 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   const [sortBy, setSortBy] = useState<SortOption>('popular');
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   // Carousel container ref, width measurement & sliding index state
   const carouselContainerRef = useRef<HTMLDivElement>(null);
@@ -260,31 +282,267 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     <div className="bg-[#f9f9f7] text-[#1a1c1b] font-['Manrope',sans-serif] min-h-screen pb-32 pt-5">
       <div className="px-4 md:px-8 max-w-6xl mx-auto space-y-6">
         
-        {/* Hero Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#e2e3e1] pb-5">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] uppercase font-extrabold tracking-wider text-[#7c5800] bg-[#fdc65c]/30 px-3 py-0.5 rounded-full inline-flex items-center gap-1.5">
-                <ChefHat className="w-3.5 h-3.5" />
-                Katalog Kuliner Sehat Nusantara
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#163422] tracking-tight">
+        {/* Clean Hero Section at the top */}
+        <div 
+          id="explore-hero-section"
+          className="relative overflow-hidden rounded-2xl bg-[#163422] text-white p-6 sm:p-7 shadow-sm"
+        >
+          <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-[#2d4b37]/60 blur-2xl pointer-events-none" />
+          <div className="absolute right-8 -bottom-8 w-36 h-36 rounded-full bg-[#fdc65c]/15 blur-xl pointer-events-none" />
+          
+          <div className="relative z-10 max-w-2xl">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               Eksplorasi Resep Sorgum
             </h1>
-            <p className="text-xs sm:text-sm text-[#424843] max-w-xl leading-relaxed">
-              Temukan aneka hidangan olahan biji & tepung sorgum yang lezat, 100% bebas gluten, ramah gula darah, dan pas di kantong.
+            <p className="mt-2 text-xs sm:text-sm text-[#d4e2d7] leading-relaxed font-normal">
+              Temukan ragam olahan pangan sorgum bergizi tinggi, bebas gluten, dan ramah untuk santapan harian seluruh keluarga.
             </p>
           </div>
-
-          <button
-            onClick={onStartGenerator}
-            className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#163422] text-white hover:bg-[#2d4b37] text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
-          >
-            <Sparkles className="w-4 h-4 text-[#fdc65c]" />
-            <span>Buat Resep Kustom (AI)</span>
-          </button>
         </div>
+
+        {/* Most Liked Recipes Carousel */}
+        {!searchQuery && selectedCategory === 'all' && selectedTag === 'all' && (
+          <section className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-red-600 text-red-600" />
+                    Top Komunitas
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-extrabold text-[#163422] flex items-center gap-2 tracking-tight">
+                  Paling Banyak Disukai
+                </h2>
+                <p className="text-xs text-[#5e635f]">
+                  Resep sorgum terfavorit dengan rating tertinggi dan ribuan apresiasi keluarga
+                </p>
+              </div>
+
+              {/* Carousel Navigation Buttons & Pagination Indicator */}
+              <div className="flex items-center gap-2 self-end">
+                {/* Visual Slide Dots Indicator */}
+                <div className="hidden sm:flex items-center gap-1 bg-[#f0f2ef] px-2 py-1 rounded-full border border-[#e2e3e1]">
+                  {MOST_LIKED_RECIPES.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => scrollCarouselToIndex(idx)}
+                      className={`transition-all duration-300 rounded-full ${
+                        carouselIndex === idx
+                          ? 'w-4 h-1.5 bg-[#163422]'
+                          : 'w-1.5 h-1.5 bg-[#c2c8c0] hover:bg-[#8e948e]'
+                      }`}
+                      aria-label={`Lihat Slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <motion.button
+                    whileTap={{ scale: 0.88, x: -3 }}
+                    whileHover={{ scale: 1.08 }}
+                    onClick={() => scrollCarousel('left')}
+                    disabled={!canScrollLeft}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-colors shadow-xs ${
+                      canScrollLeft
+                        ? 'bg-white border-[#c2c8c0]/70 text-[#163422] hover:bg-[#163422] hover:text-white cursor-pointer'
+                        : 'bg-[#f4f4f2] border-transparent text-[#b0b5af] cursor-not-allowed opacity-50'
+                    }`}
+                    aria-label="Geser ke Kiri"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.88, x: 3 }}
+                    whileHover={{ scale: 1.08 }}
+                    onClick={() => scrollCarousel('right')}
+                    disabled={!canScrollRight}
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-colors shadow-xs ${
+                      canScrollRight
+                        ? 'bg-white border-[#c2c8c0]/70 text-[#163422] hover:bg-[#163422] hover:text-white cursor-pointer'
+                        : 'bg-[#f4f4f2] border-transparent text-[#b0b5af] cursor-not-allowed opacity-50'
+                    }`}
+                    aria-label="Geser ke Kanan"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+
+            {/* Scrollable Carousel Track with Motion Slide Animation / Skeletons */}
+            <div
+              ref={carouselContainerRef}
+              className="overflow-hidden relative -mx-4 px-4 md:mx-0 md:px-0 py-2 select-none"
+            >
+              {isLoading ? (
+                <div className="flex items-stretch gap-4 overflow-hidden">
+                  {[1, 2, 3].map((n) => (
+                    <CarouselCardSkeleton key={n} width={cardWidth} />
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  animate={{ x: -carouselIndex * itemFullWidth }}
+                  transition={{ type: 'spring', stiffness: 240, damping: 28, mass: 0.8 }}
+                  drag="x"
+                  dragConstraints={{
+                    left: -maxCarouselIndex * itemFullWidth,
+                    right: 0,
+                  }}
+                  dragElastic={0.12}
+                  onDragEnd={(_, info) => {
+                    const swipeThreshold = 35;
+                    if (info.offset.x < -swipeThreshold) {
+                      setCarouselIndex((prev) => Math.min(maxCarouselIndex, prev + 1));
+                    } else if (info.offset.x > swipeThreshold) {
+                      setCarouselIndex((prev) => Math.max(0, prev - 1));
+                    }
+                  }}
+                  className="flex items-stretch gap-4 cursor-grab active:cursor-grabbing"
+                >
+                  {MOST_LIKED_RECIPES.map((item, idx) => {
+                    const isLiked = !!likedRecipeMap[item.recipe.id];
+                    const currentLikes = likeCountMap[item.recipe.id] ?? item.likesCount;
+                    const totalTime = item.recipe.prepTimeMinutes + item.recipe.cookTimeMinutes;
+                    const cost = item.recipe.estimatedCost || item.recipe.targetBudget;
+                    const isFocused = idx === carouselIndex;
+
+                    return (
+                      <motion.div
+                        key={item.recipe.id}
+                        onClick={() => onViewRecipe(item.recipe)}
+                        animate={{
+                          scale: isFocused ? 1 : 0.985,
+                          opacity: 1,
+                        }}
+                        whileHover={{ y: -4, scale: 1.01 }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                        style={{ width: `${cardWidth}px` }}
+                        className="shrink-0 bg-white rounded-3xl overflow-hidden border border-[#c2c8c0]/60 hover:border-[#163422]/50 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-pointer"
+                      >
+                        {/* Media Card Top */}
+                        <div>
+                          <div className="relative h-40 w-full overflow-hidden bg-[#e8eae6]">
+                            <CardImageWithSkeleton
+                              src={item.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+                              alt={item.recipe.title}
+                              fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
+                              containerClassName="w-full h-full relative"
+                              imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+
+                          {/* Top Badges: Rank & Like */}
+                          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                            {/* Rank Badge */}
+                            <span
+                              className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs flex items-center gap-1 backdrop-blur-xs ${
+                                item.rank === 1
+                                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
+                                  : item.rank === 2
+                                  ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white'
+                                  : item.rank === 3
+                                  ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-white'
+                                  : 'bg-[#163422]/90 text-[#fdc65c]'
+                              }`}
+                            >
+                              {item.rank === 1 ? '🏆 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `#${item.rank}`}
+                              <span className="font-bold">Favorit</span>
+                            </span>
+
+                            {/* Interactive Like Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleLike(item.recipe.id);
+                              }}
+                              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all backdrop-blur-md active:scale-90 cursor-pointer ${
+                                isLiked
+                                  ? 'bg-red-500 text-white shadow-xs'
+                                  : 'bg-black/40 text-white hover:bg-black/60'
+                              }`}
+                              title="Sukai Resep Ini"
+                            >
+                              <Heart
+                                className={`w-3.5 h-3.5 ${
+                                  isLiked ? 'fill-white text-white' : 'text-white'
+                                }`}
+                              />
+                              <span className="text-[11px] font-bold">
+                                {currentLikes >= 1000
+                                  ? `${(currentLikes / 1000).toFixed(1)}k`
+                                  : currentLikes}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* Bottom Overlay Info */}
+                          <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-white text-[11px] font-semibold pointer-events-none">
+                            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-lg">
+                              <Clock className="w-3 h-3 text-[#fdc65c]" />
+                              {totalTime} Menit
+                            </span>
+                            <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-lg font-extrabold text-[11px]">
+                              Rp {cost.toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Content Info */}
+                        <div className="p-3.5 space-y-2.5">
+                          {/* Rating & Category */}
+                          <div className="flex items-center justify-between text-[11px]">
+                            <div className="flex items-center gap-1 text-amber-600 font-bold">
+                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                              <span>{item.rating}</span>
+                              <span className="text-[#727972] font-normal">
+                                ({item.reviewsCount})
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-bold bg-[#f4f4f2] text-[#424843] px-2 py-0.5 rounded-md">
+                              {item.recipe.dishCategory}
+                            </span>
+                          </div>
+
+                          <div>
+                            <h3 className="font-bold text-sm text-[#163422] line-clamp-1 group-hover:text-[#2d4b37] transition-colors">
+                              {item.recipe.title}
+                            </h3>
+                            <p className="text-xs text-[#424843] line-clamp-2 mt-0.5 leading-relaxed">
+                              {item.recipe.subtitle}
+                            </p>
+                          </div>
+
+                          {/* Nutrition Highlight Chip */}
+                          {item.recipe.nutritionHighlight && (
+                            <div className="flex items-center gap-1.5 text-[10px] text-[#2d4b37] font-semibold bg-[#cbebc3]/30 px-2 py-1 rounded-lg">
+                              <span>🌾 Serat {item.recipe.nutritionHighlight.fiberGrams}g</span>
+                              <span>•</span>
+                              <span>{item.recipe.nutritionHighlight.glycemicIndex}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Action Card Bottom */}
+                      <div className="p-3.5 pt-0">
+                        <button
+                          onClick={() => onViewRecipe(item.recipe)}
+                          className="w-full py-2 rounded-xl bg-[#163422] hover:bg-[#2d4b37] text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer"
+                        >
+                          <span>Lihat Resep</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+            </div>
+          </section>
+        )}
 
         {/* Explore Search & Advance Filter Control Bar */}
         <div className="space-y-2.5">
@@ -416,261 +674,14 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
           )}
         </div>
 
-        {/* Most Liked Recipes Carousel */}
-        {!searchQuery && selectedCategory === 'all' && selectedTag === 'all' && (
-          <section className="space-y-3 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
-                    <Heart className="w-3 h-3 fill-red-600 text-red-600" />
-                    Top Komunitas
-                  </span>
-                </div>
-                <h2 className="text-lg sm:text-xl font-extrabold text-[#163422] flex items-center gap-2 tracking-tight">
-                  Paling Banyak Disukai
-                </h2>
-                <p className="text-xs text-[#5e635f]">
-                  Resep sorgum terfavorit dengan rating tertinggi dan ribuan apresiasi keluarga
-                </p>
-              </div>
-
-              {/* Carousel Navigation Buttons & Pagination Indicator */}
-              <div className="flex items-center gap-2 self-end">
-                {/* Visual Slide Dots Indicator */}
-                <div className="hidden sm:flex items-center gap-1 bg-[#f0f2ef] px-2 py-1 rounded-full border border-[#e2e3e1]">
-                  {MOST_LIKED_RECIPES.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => scrollCarouselToIndex(idx)}
-                      className={`transition-all duration-300 rounded-full ${
-                        carouselIndex === idx
-                          ? 'w-4 h-1.5 bg-[#163422]'
-                          : 'w-1.5 h-1.5 bg-[#c2c8c0] hover:bg-[#8e948e]'
-                      }`}
-                      aria-label={`Lihat Slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <motion.button
-                    whileTap={{ scale: 0.88, x: -3 }}
-                    whileHover={{ scale: 1.08 }}
-                    onClick={() => scrollCarousel('left')}
-                    disabled={!canScrollLeft}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-colors shadow-xs ${
-                      canScrollLeft
-                        ? 'bg-white border-[#c2c8c0]/70 text-[#163422] hover:bg-[#163422] hover:text-white cursor-pointer'
-                        : 'bg-[#f4f4f2] border-transparent text-[#b0b5af] cursor-not-allowed opacity-50'
-                    }`}
-                    aria-label="Geser ke Kiri"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.88, x: 3 }}
-                    whileHover={{ scale: 1.08 }}
-                    onClick={() => scrollCarousel('right')}
-                    disabled={!canScrollRight}
-                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-colors shadow-xs ${
-                      canScrollRight
-                        ? 'bg-white border-[#c2c8c0]/70 text-[#163422] hover:bg-[#163422] hover:text-white cursor-pointer'
-                        : 'bg-[#f4f4f2] border-transparent text-[#b0b5af] cursor-not-allowed opacity-50'
-                    }`}
-                    aria-label="Geser ke Kanan"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </motion.button>
-                </div>
-              </div>
-            </div>
-
-            {/* Scrollable Carousel Track with Motion Slide Animation */}
-            <div
-              ref={carouselContainerRef}
-              className="overflow-hidden relative -mx-4 px-4 md:mx-0 md:px-0 py-2 select-none"
-            >
-              <motion.div
-                animate={{ x: -carouselIndex * itemFullWidth }}
-                transition={{ type: 'spring', stiffness: 240, damping: 28, mass: 0.8 }}
-                drag="x"
-                dragConstraints={{
-                  left: -maxCarouselIndex * itemFullWidth,
-                  right: 0,
-                }}
-                dragElastic={0.12}
-                onDragEnd={(_, info) => {
-                  const swipeThreshold = 35;
-                  if (info.offset.x < -swipeThreshold) {
-                    setCarouselIndex((prev) => Math.min(maxCarouselIndex, prev + 1));
-                  } else if (info.offset.x > swipeThreshold) {
-                    setCarouselIndex((prev) => Math.max(0, prev - 1));
-                  }
-                }}
-                className="flex items-stretch gap-4 cursor-grab active:cursor-grabbing"
-              >
-                {MOST_LIKED_RECIPES.map((item, idx) => {
-                  const isLiked = !!likedRecipeMap[item.recipe.id];
-                  const currentLikes = likeCountMap[item.recipe.id] ?? item.likesCount;
-                  const totalTime = item.recipe.prepTimeMinutes + item.recipe.cookTimeMinutes;
-                  const cost = item.recipe.estimatedCost || item.recipe.targetBudget;
-                  const isFocused = idx === carouselIndex;
-
-                  return (
-                    <motion.div
-                      key={item.recipe.id}
-                      onClick={() => onViewRecipe(item.recipe)}
-                      animate={{
-                        scale: isFocused ? 1 : 0.985,
-                        opacity: 1,
-                      }}
-                      whileHover={{ y: -4, scale: 1.01 }}
-                      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                      style={{ width: `${cardWidth}px` }}
-                      className="shrink-0 bg-white rounded-3xl overflow-hidden border border-[#c2c8c0]/60 hover:border-[#163422]/50 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-                    >
-                      {/* Media Card Top */}
-                      <div>
-                        <div className="relative h-40 w-full overflow-hidden bg-[#e2e3e1]">
-                          <img
-                            src={item.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-                            alt={item.recipe.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
-
-                          {/* Top Badges: Rank & Like */}
-                          <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
-                            {/* Rank Badge */}
-                            <span
-                              className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs flex items-center gap-1 backdrop-blur-xs ${
-                                item.rank === 1
-                                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                                  : item.rank === 2
-                                  ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white'
-                                  : item.rank === 3
-                                  ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-white'
-                                  : 'bg-[#163422]/90 text-[#fdc65c]'
-                              }`}
-                            >
-                              {item.rank === 1 ? '🏆 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `#${item.rank}`}
-                              <span className="font-bold">Favorit</span>
-                            </span>
-
-                            {/* Interactive Like Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleToggleLike(item.recipe.id);
-                              }}
-                              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all backdrop-blur-md active:scale-90 cursor-pointer ${
-                                isLiked
-                                  ? 'bg-red-500 text-white shadow-xs'
-                                  : 'bg-black/40 text-white hover:bg-black/60'
-                              }`}
-                              title="Sukai Resep Ini"
-                            >
-                              <Heart
-                                className={`w-3.5 h-3.5 ${
-                                  isLiked ? 'fill-white text-white' : 'text-white'
-                                }`}
-                              />
-                              <span className="text-[11px] font-bold">
-                                {currentLikes >= 1000
-                                  ? `${(currentLikes / 1000).toFixed(1)}k`
-                                  : currentLikes}
-                              </span>
-                            </button>
-                          </div>
-
-                          {/* Bottom Overlay Info */}
-                          <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-white text-[11px] font-semibold pointer-events-none">
-                            <span className="flex items-center gap-1 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-lg">
-                              <Clock className="w-3 h-3 text-[#fdc65c]" />
-                              {totalTime} Menit
-                            </span>
-                            <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-lg font-extrabold text-[11px]">
-                              Rp {cost.toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Content Info */}
-                        <div className="p-3.5 space-y-2.5">
-                          {/* Rating & Category */}
-                          <div className="flex items-center justify-between text-[11px]">
-                            <div className="flex items-center gap-1 text-amber-600 font-bold">
-                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                              <span>{item.rating}</span>
-                              <span className="text-[#727972] font-normal">
-                                ({item.reviewsCount})
-                              </span>
-                            </div>
-                            <span className="text-[10px] font-bold bg-[#f4f4f2] text-[#424843] px-2 py-0.5 rounded-md">
-                              {item.recipe.dishCategory}
-                            </span>
-                          </div>
-
-                          <div>
-                            <h3 className="font-bold text-sm text-[#163422] line-clamp-1 group-hover:text-[#2d4b37] transition-colors">
-                              {item.recipe.title}
-                            </h3>
-                            <p className="text-xs text-[#424843] line-clamp-2 mt-0.5 leading-relaxed">
-                              {item.recipe.subtitle}
-                            </p>
-                          </div>
-
-                          {/* Nutrition Highlight Chip */}
-                          {item.recipe.nutritionHighlight && (
-                            <div className="flex items-center gap-1.5 text-[10px] text-[#2d4b37] font-semibold bg-[#cbebc3]/30 px-2 py-1 rounded-lg">
-                              <span>🌾 Serat {item.recipe.nutritionHighlight.fiberGrams}g</span>
-                              <span>•</span>
-                              <span>{item.recipe.nutritionHighlight.glycemicIndex}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Action Card Bottom */}
-                      <div className="p-3.5 pt-0">
-                        <button
-                          onClick={() => onViewRecipe(item.recipe)}
-                          className="w-full py-2 rounded-xl bg-[#163422] hover:bg-[#2d4b37] text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer"
-                        >
-                          <span>Lihat Resep</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            </div>
-          </section>
-        )}
-
-        {/* Results Info */}
-        <div className="flex items-center justify-between pt-2">
-          <p className="text-xs font-bold text-[#424843]">
-            Menampilkan <span className="text-[#163422]">{filteredRecipes.length}</span> resep sorgum
-          </p>
-          {activeFiltersCount > 0 && (
-            <button
-              onClick={clearAllFilters}
-              className="text-xs font-bold text-[#ba1a1a] hover:underline"
-            >
-              Reset Semua Filter
-            </button>
-          )}
-        </div>
-
-        {/* Recipe Cards Grid */}
-        {filteredRecipes.length === 0 ? (
+        {/* Recipe Cards Grid with Skeletons */}
+        {isLoading ? (
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:gap-6">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <GridRecipeCardSkeleton key={n} />
+            ))}
+          </div>
+        ) : filteredRecipes.length === 0 ? (
           /* Empty State */
           <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-[#c2c8c0]/60 space-y-4 shadow-xs">
             <div className="w-16 h-16 rounded-full bg-[#f4f4f2] text-[#163422] flex items-center justify-center mx-auto text-3xl">
@@ -715,17 +726,15 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                 >
                   {/* Card Media Header */}
                   <div>
-                    <div className="relative h-32 xs:h-36 sm:h-48 md:h-52 w-full overflow-hidden bg-[#e2e3e1]">
-                      <img
+                    <div className="relative h-32 xs:h-36 sm:h-48 md:h-52 w-full overflow-hidden bg-[#e8eae6]">
+                      <CardImageWithSkeleton
                         src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
                         alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-                        }}
+                        fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
+                        containerClassName="w-full h-full relative"
+                        imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
 
                       {/* Top Badges */}
                       <div className="absolute top-2 sm:top-3 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
@@ -824,33 +833,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
             })}
           </div>
         )}
-
-        {/* AI Recipe Generator Banner */}
-        <section className="bg-gradient-to-r from-[#163422] to-[#2d4b37] rounded-3xl p-5 sm:p-7 text-white shadow-lg space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-[#fdc65c] text-[#745200] px-2.5 py-0.5 rounded-full">
-                  AI Chef SorghumCare
-                </span>
-              </div>
-              <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                Punya Bahan Khusus di Rumah?
-              </h2>
-              <p className="text-xs sm:text-sm text-[#c8ebd0] max-w-lg leading-relaxed">
-                Tulis bahan yang Anda miliki atau tentukan target kalori & budget, AI Chef akan meracik resep sorgum lezat khusus untuk Anda dalam hitungan detik.
-              </p>
-            </div>
-
-            <button
-              onClick={onStartGenerator}
-              className="px-5 py-3 rounded-2xl bg-[#fdc65c] text-[#745200] hover:bg-[#ffdea7] text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Mulai Generator 4 Langkah</span>
-            </button>
-          </div>
-        </section>
 
       </div>
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Recipe } from '../../types';
 import { FALLBACK_FOOD_IMAGE } from '../../data/homeData';
 import { getIngredientThumbnail, GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
+import { getRecipeSlug } from '../../utils/slugify';
+import { getShareableUrl, RouteSlugs } from '../../utils/slugRouter';
 import { 
   ArrowLeft, 
   Clock, 
@@ -13,7 +15,10 @@ import {
   Volume2, 
   Share2, 
   CheckCircle2, 
-  ChefHat 
+  ChefHat,
+  Copy,
+  Check,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface RecipeDetailPageProps {
@@ -40,6 +45,31 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [servingsMultiplier, setServingsMultiplier] = useState<number>(1);
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  const recipeSlug = getRecipeSlug(recipe);
+  const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
+  const shareableUrl = getShareableUrl(fullSlugPath);
+
+  const handleCopyLink = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareableUrl);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = shareableUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2200);
+    } catch {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2200);
+    }
+  };
 
   const baseServings = recipe.servings || 2;
   const currentServings = baseServings * servingsMultiplier;
@@ -192,7 +222,46 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                   favorite
                 </span>
               </button>
+
+              <button
+                id="btn-share-slug-link"
+                onClick={handleCopyLink}
+                className="w-10 h-10 rounded-full bg-[#e8e8e6] text-[#424843] hover:bg-[#163422] hover:text-white flex items-center justify-center transition-all shadow-[0px_4px_12px_rgba(45,75,55,0.08)] cursor-pointer active:scale-95"
+                title="Salin Tautan Slug Resep"
+                aria-label="Salin Tautan Resep"
+              >
+                {copiedLink ? <Check className="w-5 h-5 text-emerald-600" /> : <Share2 className="w-5 h-5" />}
+              </button>
             </div>
+          </div>
+
+          {/* Slug URL Bar with Copy Action */}
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 px-3.5 bg-[#f4f4f2] border border-[#e2e3e1] rounded-xl text-xs text-[#424843]">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#727972] bg-[#e2e3e1] px-1.5 py-0.5 rounded">
+                SLUG URL
+              </span>
+              <code className="text-[#163422] font-mono text-[11px] sm:text-xs truncate max-w-xs sm:max-w-md">
+                /recipe/{recipeSlug}
+              </code>
+            </div>
+
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-1.5 font-bold text-[11px] sm:text-xs text-[#163422] hover:text-[#2d4b37] bg-white border border-[#c2c8c0]/70 hover:border-[#163422] px-2.5 py-1 rounded-lg transition-colors cursor-pointer active:scale-95"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700">Tersalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Salin Link</span>
+                </>
+              )}
+            </button>
           </div>
         </section>
 

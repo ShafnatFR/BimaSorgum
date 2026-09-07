@@ -17,6 +17,7 @@ import {
   Volume2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { CardImageWithSkeleton } from '../Common/CardSkeleton';
 
 interface RecipeCardViewProps {
   recipe: Recipe;
@@ -94,17 +95,15 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   return (
     <div className="text-[#1A1C1B] max-w-[95%] md:max-w-[90%] space-y-4 font-['Manrope',sans-serif]">
       {/* Recipe Preview Banner */}
-      <div className="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden shadow-xs border border-[#e2e3e1]">
-        <img
-          alt={recipe.title}
+      <div className="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden shadow-xs border border-[#e2e3e1] bg-[#e8eae6]">
+        <CardImageWithSkeleton
           src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-          referrerPolicy="no-referrer"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-          }}
-          className="w-full h-full object-cover"
+          alt={recipe.title}
+          fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
+          containerClassName="w-full h-full relative"
+          imageClassName="w-full h-full object-cover"
         />
-        <div className="absolute top-3 left-3 bg-[#163422]/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1">
+        <div className="absolute top-3 left-3 bg-[#163422]/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-xs flex items-center gap-1 z-20">
           <Sparkles className="w-3 h-3 text-[#fdc65c]" />
           <span>{recipe.dishCategory || 'Menu Sehat'}</span>
         </div>

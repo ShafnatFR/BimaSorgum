@@ -163,6 +163,7 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
 // Initial featured recipe matching the mockup exactly
 export const INITIAL_FEATURED_RECIPE: Recipe = {
   id: 'nasi-goreng-sorgum-sd',
+  slug: 'nasi-goreng-sorgum-ceria-sd-edition',
   title: 'Nasi Goreng Sorgum Ceria (SD Edition)',
   subtitle: 'Tentu! Ini resep bergizi, lezat, dan sangat terjangkau untuk bekal sekolah:',
   targetAge: 'Anak Sekolah (6-12 thn)',
@@ -229,6 +230,7 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
     isFavorite: true,
     recipe: {
       id: 'pancakes-sorghum',
+      slug: 'pancakes-sorghum-gluten-free',
       title: 'Sorghum Pancakes Bebas Gluten',
       subtitle: 'Pancake lembut mengenyangkan dari tepung sorgum dengan madu kelapa murni.',
       targetAge: 'Balita & Anak Sekolah',
@@ -284,6 +286,7 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
     isFavorite: false,
     recipe: {
       id: 'rustic-loaf-sorghum',
+      slug: 'roti-tawar-biji-sorgum-artisanal',
       title: 'Rustic Sorghum Loaf Bread',
       subtitle: 'Roti tawar artisanal kaya serat bertekstur padat lembut tanpa terigu gandum.',
       targetAge: 'Remaja & Dewasa',
@@ -339,6 +342,7 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
     isFavorite: true,
     recipe: {
       id: 'healthy-bowl-sorghum',
+      slug: 'sorghum-power-bowl',
       title: 'Healthy Buddha Bowl Sayur & Sorgum',
       subtitle: 'Mangkok nutrisi lengkap dengan paduan biji sorgum pulen, selada, dan saus wijen.',
       targetAge: 'Remaja, Dewasa & Lansia',
