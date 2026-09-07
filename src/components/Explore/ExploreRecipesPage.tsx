@@ -43,6 +43,7 @@ interface ExploreRecipesPageProps {
   onStartGenerator: () => void;
   initialCategory?: string;
   onSelectCategorySlug?: (categoryKey: string) => void;
+  recipesOverride?: Recipe[]; // when provided, the main grid uses DB catalog
 }
 
 type SortOption = 'popular' | 'price-asc' | 'time-asc' | 'fiber-desc';
@@ -52,9 +53,10 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   onToggleSaveRecipe,
   isRecipeSaved,
   onStartGenerator,
-  initialCategory,
-  onSelectCategorySlug,
-}) => {
+    initialCategory,
+    onSelectCategorySlug,
+    recipesOverride,
+  }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
@@ -198,7 +200,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
   // Filter & Sorting Logic
   const filteredRecipes = useMemo(() => {
-    let list = [...EXPLORE_RECIPES_DATABASE];
+    let list = recipesOverride && recipesOverride.length > 0 ? [...recipesOverride] : [...EXPLORE_RECIPES_DATABASE];
 
     // Filter by collection if active
     if (activeCollectionId) {
@@ -276,6 +278,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     maxTime,
     sortBy,
     activeCollectionId,
+    recipesOverride,
   ]);
 
   return (

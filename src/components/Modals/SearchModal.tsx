@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { X, Search, Sparkles, ChefHat } from 'lucide-react';
 import { Recipe } from '../../types';
-import { INITIAL_SAVED_RECIPES, INITIAL_FEATURED_RECIPE } from '../../data/mockData';
-import { HOME_COMMUNITY_RECIPES, HOME_CATEGORIES } from '../../data/homeData';
+import { HOME_CATEGORIES } from '../../data/homeData';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectRecipe: (recipe: Recipe) => void;
   onSearchQuery: (query: string) => void;
+  recipes: Recipe[]; // full catalog from Supabase
 }
 
 export const SearchModal: React.FC<SearchModalProps> = ({
@@ -16,15 +16,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   onClose,
   onSelectRecipe,
   onSearchQuery,
+  recipes,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   if (!isOpen) return null;
 
-  const allAvailableRecipes: Recipe[] = [
-    INITIAL_FEATURED_RECIPE,
-    ...INITIAL_SAVED_RECIPES.map((s) => s.recipe),
-  ];
+  const allAvailableRecipes: Recipe[] = recipes;
 
   const filteredRecipes = allAvailableRecipes.filter(
     (r) =>

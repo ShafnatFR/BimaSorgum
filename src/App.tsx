@@ -48,11 +48,28 @@ import { RecipeDetailPage } from './components/RecipeDetail/RecipeDetailPage';
 import { ImageUploadModal } from './components/Modals/ImageUploadModal';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
+import { useData } from './lib/dataContext';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions } from './lib/supabase';
 
 import { Menu, History, Sparkles, Plus, ArrowLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
+  // Supabase data layer (catalog from DB + saved recipes per anonymous user)
+  const { 
+    ready, 
+    recipes: dbRecipes, 
+    savedRecipes: dbSavedRecipes, 
+    savedIds, 
+    toggleSave, 
+    isSavedForRecipe, 
+    generateAndSave, 
+    refetchSaved, 
+    getRecipeBySlug: dbGetRecipeBySlug,
+    getRecipeById: dbGetRecipeById,
+    recipesByCategory: dbRecipesByCategory,
+  } = useData();
+
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
@@ -62,8 +79,23 @@ export default function App() {
 
   // Dynamic & saved recipes
   const [dynamicRecipes, setDynamicRecipes] = useState<Recipe[]>([]);
-  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>(INITIAL_SAVED_RECIPES);
+  // Saved recipes now come from Supabase (per anonymous user)
+  const savedRecipes: SavedRecipe[] = dbSavedRecipes;
   const [activeChatId, setActiveChatId] = useState<string>('chat-4');
+  // Chat sessions loaded from Supabase (anonymous user's history)
+  const [chatSessions, setChatSessions] = useState<{ id: string; title: string; created_at?: string }[]>([]);
+
+  // Load chat sessions from DB once user is ready
+  useEffect(() => {
+    if (!ready) return;
+    let alive = true;
+    fetchChatSessions().then((sessions) => {
+      if (alive && sessions.length) {
+        setChatSessions(sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at })));
+      }
+    });
+    return () => { alive = false; };
+  }, [ready]);
 
   // Wizard Form State
   const [wizardData, setWizardData] = useState<WizardFormData>({
@@ -110,22 +142,44 @@ export default function App() {
       const parsed = parseRoute(rawPath);
 
       if (parsed.routeType === 'recipe' && parsed.slug) {
-        const found = findRecipeBySlug(parsed.slug, dynamicRecipes);
+        const found =
+          findRecipeBySlug(parsed.slug, dynamicRecipes) || dbGetRecipeBySlug(parsed.slug);
         if (found) {
           setSelectedRecipeDetail(found);
           setCookModeRecipe(null);
           setSelectedVideoTutorial(null);
           setIsSearchOpen(false);
           return;
+        } else {
+          // Fallback: fetch by slug from Supabase (deep-link before catalog loaded)
+          fetchRecipeBySlug(parsed.slug).then((r) => {
+            if (r) {
+              setSelectedRecipeDetail(r);
+              setCookModeRecipe(null);
+              setSelectedVideoTutorial(null);
+              setIsSearchOpen(false);
+            }
+          });
+          return;
         }
       }
 
       if (parsed.routeType === 'cook' && parsed.slug) {
-        const found = findRecipeBySlug(parsed.slug, dynamicRecipes);
+        const found =
+          findRecipeBySlug(parsed.slug, dynamicRecipes) || dbGetRecipeBySlug(parsed.slug);
         if (found) {
           setCookModeRecipe(found);
           setSelectedVideoTutorial(null);
           setIsSearchOpen(false);
+          return;
+        } else {
+          fetchRecipeBySlug(parsed.slug).then((r) => {
+            if (r) {
+              setCookModeRecipe(r);
+              setSelectedVideoTutorial(null);
+              setIsSearchOpen(false);
+            }
+          });
           return;
         }
       }
@@ -177,7 +231,7 @@ export default function App() {
       window.removeEventListener('popstate', handleUrlChange);
       window.removeEventListener('hashchange', handleUrlChange);
     };
-  }, [dynamicRecipes]);
+  }, [dynamicRecipes, dbRecipes, dbGetRecipeBySlug, ready]);
 
   // Tab Selection with Slug Update
   const handleSelectTab = (tab: AppTab) => {
@@ -302,6 +356,14 @@ export default function App() {
 
     const newRecipe = generateRecipeFromWizard(wizardData);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
+    // Persist generated recipe to Supabase (user recipe, RLS owner-scoped)
+    generateAndSave(newRecipe).then((stored) => {
+      if (stored && stored.slug) {
+        setDynamicRecipes((prev) =>
+          prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
+        );
+      }
+    });
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
@@ -353,6 +415,14 @@ export default function App() {
 
     const newRecipe = generateCustomRecipeQuery(text);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
+    // Persist chat-generated recipe to Supabase
+    generateAndSave(newRecipe).then((stored) => {
+      if (stored && stored.slug) {
+        setDynamicRecipes((prev) =>
+          prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
+        );
+      }
+    });
 
     const aiMsg: ChatMessage = {
       id: `msg-ai-${Date.now()}`,
@@ -369,6 +439,32 @@ export default function App() {
     navigateToSlug(RouteSlugs.generate());
     setIsGenerating(true);
 
+    // Persist chat exchange to Supabase: ensure a session exists, save both messages.
+    const persistChat = async () => {
+      try {
+        let sessionId: string | null = null;
+        if (chatSessions.length > 0) {
+          sessionId = chatSessions[0].id;
+        } else {
+          const session = await createChatSession(text.slice(0, 60) || 'Percakapan baru');
+          if (session) {
+            sessionId = session.id;
+            setChatSessions((prev) => [{ id: session.id, title: session.title }, ...prev]);
+          }
+        }
+        if (sessionId) {
+          const stored = await generateAndSave(newRecipe);
+          await saveChatMessages(sessionId, [
+            { sender: 'user', content: text },
+            { sender: 'ai', content: newRecipe.title, recipe_id: stored?.id ?? null },
+          ]);
+        }
+      } catch (e) {
+        console.error('persistChat error:', e);
+      }
+    };
+    persistChat();
+
     setTimeout(() => {
       setIsGenerating(false);
       setChatMessages((prev) =>
@@ -378,23 +474,15 @@ export default function App() {
   };
 
   const handleToggleSaveRecipe = (recipe: Recipe) => {
-    setSavedRecipes((prev) => {
-      const exists = prev.some((s) => s.recipe.id === recipe.id || s.recipe.title === recipe.title);
-      if (exists) {
-        return prev.filter((s) => s.recipe.id !== recipe.id && s.recipe.title !== recipe.title);
-      } else {
-        const newSaved: SavedRecipe = {
-          id: `saved-${Date.now()}`,
-          recipe,
-          savedAt: 'Baru saja',
-          isFavorite: true,
-        };
-        return [newSaved, ...prev];
-      }
+    // Persist toggle to Supabase (insert/delete saved_recipes), then refetch
+    toggleSave(recipe).then(() => {
+      refetchSaved();
     });
+    // Optimistic update is handled by context state change after refetch.
   };
 
   const isRecipeSaved = (recipeId?: string, title?: string) => {
+    if (recipeId && savedIds.has(recipeId)) return true;
     return savedRecipes.some(
       (s) => (recipeId && s.recipe.id === recipeId) || (title && s.recipe.title === title)
     );
@@ -513,6 +601,7 @@ export default function App() {
               onStartGenerator={() => {
                 handleSetWizardStep(1);
               }}
+              recipesOverride={dbRecipes}
             />
           )}
 
@@ -520,6 +609,14 @@ export default function App() {
             <ProfilePage
               onOpenSearch={handleOpenSearch}
               onViewRecipe={handleViewRecipe}
+              savedRecipes={savedRecipes}
+              onRemoveSaved={(recipe) => {
+                toggleSave(recipe).then(() => refetchSaved());
+              }}
+              onSaveProfile={(name, role) => {
+                // Persist display name to profile (role kept locally)
+                import('./lib/supabase').then((m) => m.updateProfileName(name));
+              }}
             />
           )}
 
@@ -534,7 +631,15 @@ export default function App() {
                     setChatMessages([]);
                     handleSetWizardStep(1);
                   }}
-                  recentChats={RECENT_CHAT_TOPICS}
+                  recentChats={
+                    chatSessions.length
+                      ? chatSessions.map((s) => ({
+                          id: s.id,
+                          title: s.title,
+                          time: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : undefined,
+                        }))
+                      : RECENT_CHAT_TOPICS
+                  }
                   activeChatId={activeChatId}
                   onSelectChat={handleSelectRecentChat}
                   savedRecipes={savedRecipes}
@@ -810,6 +915,7 @@ export default function App() {
         isOpen={isSearchOpen}
         onClose={handleCloseSearch}
         onSelectRecipe={handleViewRecipe}
+        recipes={dbRecipes}
         onSearchQuery={(query) => {
           handleSendMessage(query);
         }}

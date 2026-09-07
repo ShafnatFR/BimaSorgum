@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ChevronRight, 
   PersonStanding, 
@@ -10,8 +10,7 @@ import {
   Sparkles,
   Edit3
 } from 'lucide-react';
-import { Recipe } from '../../types';
-import { INITIAL_SAVED_RECIPES } from '../../data/mockData';
+import { Recipe, SavedRecipe } from '../../types';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
 import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 
@@ -19,15 +18,27 @@ interface ProfilePageProps {
   onOpenSearch: () => void;
   onViewRecipe: (recipe: Recipe) => void;
   onNavigateToEducation?: () => void;
+  savedRecipes?: SavedRecipe[]; // from Supabase (App data layer)
+  userName?: string;
+  userRole?: string;
+  onSaveProfile?: (name: string, role: string) => void;
+  onLogout?: () => void;
+  onRemoveSaved?: (recipe: Recipe) => void;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
   onOpenSearch,
   onViewRecipe,
+  savedRecipes = [],
+  userName: userNameProp = 'Adinda Sari',
+  userRole: userRoleProp = 'MBG Participant | Healthy Living Enthusiast',
+  onSaveProfile,
+  onLogout,
+  onRemoveSaved,
 }) => {
   // State for interactive features
-  const [userName, setUserName] = useState('Adinda Sari');
-  const [userRole, setUserRole] = useState('MBG Participant | Healthy Living Enthusiast');
+  const [userName, setUserName] = useState(userNameProp);
+  const [userRole, setUserRole] = useState(userRoleProp);
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [editNameInput, setEditNameInput] = useState(userName);
   const [editRoleInput, setEditRoleInput] = useState(userRole);
@@ -38,6 +49,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showToast, setShowToast] = useState<string | null>(null);
 
+  useEffect(() => {
+    setUserName(userNameProp);
+    setUserRole(userRoleProp);
+    setEditNameInput(userNameProp);
+    setEditRoleInput(userRoleProp);
+  }, [userNameProp, userRoleProp]);
+
   const triggerToast = (msg: string) => {
     setShowToast(msg);
     setTimeout(() => setShowToast(null), 3000);
@@ -47,15 +65,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     setUserName(editNameInput);
     setUserRole(editRoleInput);
     setIsEditingInfo(false);
+    if (onSaveProfile) onSaveProfile(editNameInput, editRoleInput);
     triggerToast('Profil berhasil diperbarui!');
   };
 
-  const handleRecipeClick = (recipeKey: 'power-bowl' | 'porridge') => {
-    if (recipeKey === 'power-bowl') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[2].recipe);
-    } else {
-      onViewRecipe(INITIAL_SAVED_RECIPES[0].recipe);
-    }
+  const handleRecipeClick = (recipe: Recipe) => {
+    onViewRecipe(recipe);
   };
 
   return (
@@ -124,7 +139,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Stats Section */}
         <section className="grid grid-cols-3 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
           <div className="flex flex-col items-center p-2 text-center">
-            <span className="text-2xl font-bold text-[#163422]">42</span>
+            <span className="text-2xl font-bold text-[#163422]">{savedRecipes.length}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Saved Recipes</span>
           </div>
           <div className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30">
@@ -146,66 +161,63 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <section className="space-y-3">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">Recent Saved Recipes</h2>
-            <button 
-              onClick={() => handleRecipeClick('power-bowl')}
-              className="text-xs font-bold text-[#163422] hover:underline"
-            >
-              View All
-            </button>
+            {savedRecipes.length > 0 && (
+              <span className="text-xs font-bold text-[#163422]">{savedRecipes.length} tersimpan</span>
+            )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {/* Recipe 1 */}
-            <div 
-              onClick={() => handleRecipeClick('power-bowl')}
-              className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
-            >
-              <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
-                <CardImageWithSkeleton
-                  alt="Sorghum Power Bowl"
-                  imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  containerClassName="w-full h-full relative"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8piEm3Qn03xIQgTXJnMp_kIfYKewO-sipfpvZuwwlLdIa6XHV0dV2xDTwe5gjleFeQT9nU2Y6P7zx2GLeIdfguqkAQnl0wBq00QY6OwAXoLB8jCcippOZtVt0h4W_5rqJVzov5Zu7S0iTCJ8MrF5CGNb3_Yn1sDIs1bbbSXXcMYQrPK57WGAoicZ3qpiQEJ5XVec1dZb8USZw8y7k639vDpbl1PZWlkn3ayWoY2IFzHIId5PZr2U3uA"
-                  fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                  Sorghum Power Bowl
-                </h3>
-                <div className="flex gap-2 mt-1.5">
-                  <span className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                    High Fiber
-                  </span>
-                </div>
-              </div>
+          {savedRecipes.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
+              <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
+              <p className="text-xs text-[#727972]">
+                Belum ada resep tersimpan. Ketuk ikon hati di halaman resep untuk menyimpan favorit Anda.
+              </p>
             </div>
-
-            {/* Recipe 2 */}
-            <div 
-              onClick={() => handleRecipeClick('porridge')}
-              className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
-            >
-              <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
-                <CardImageWithSkeleton
-                  alt="Sorghum Breakfast Porridge"
-                  imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  containerClassName="w-full h-full relative"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJKODVLPeEZ6qnULcSefFnf1qioHZfsxqAqGJy0Imy57li1hJshPrkPO-1ycH9u-jNpDeTUaEaWYwP7E3861Ra6Zmz7rLMtwCxo8EtHscaX_RzRwznTB81Uape_Gz12ypf9vS_KiXAAv5F5yJkWA2CPD7UvOXKnLkIO0VAXmwag25z1kyIOiR_mOTwboOC1ghXIw5mQVecASACXa1Ceiq_LV6U-JJBzUhESJ0S3xH1OuKkDK72JS-eZQ"
-                  fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                  Morning Porridge
-                </h3>
-                <div className="flex gap-2 mt-1.5">
-                  <span className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                    Low GI
-                  </span>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {savedRecipes.map((saved) => (
+                <div
+                  key={saved.id}
+                  onClick={() => handleRecipeClick(saved.recipe)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
+                >
+                  <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
+                    <CardImageWithSkeleton
+                      alt={saved.recipe.title}
+                      imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      containerClassName="w-full h-full relative"
+                      src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+                      fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
+                    />
+                    {onRemoveSaved && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveSaved(saved.recipe);
+                        }}
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-[#ba1a1a] hover:bg-white"
+                        title="Hapus dari tersimpan"
+                        aria-label="Hapus dari tersimpan"
+                      >
+                        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
+                      {saved.recipe.title}
+                    </h3>
+                    <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                      {(saved.recipe.tags || []).slice(0, 2).map((tag, i) => (
+                        <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
+          )}
         </section>
 
         {/* Account Settings */}
