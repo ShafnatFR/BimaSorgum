@@ -65,20 +65,30 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   }, [isSaved, recipe.id, recipe.slug]);
 
   const handleSavePersonalNotes = async () => {
-    if (!recipe.id) return;
     setIsSavingNotes(true);
     try {
-      const { saveRecipeForUser, supabase, getUserIdAsync } = await import('../../lib/supabase');
+      const { supabase, getUserIdAsync, fetchRecipeBySlug } = await import('../../lib/supabase');
       const userId = await getUserIdAsync();
       if (userId) {
-        await supabase.from('saved_recipes').upsert(
-          { user_id: userId, recipe_id: recipe.id, notes: personalNotes, is_favorite: true },
+        // Resolve valid DB UUID if recipe.id is a string source_id
+        let targetUuid = recipe.id;
+        if (!targetUuid || !targetUuid.includes('-0000-') && targetUuid.length !== 36) {
+          const dbRec = await fetchRecipeBySlug(recipeSlug);
+          if (dbRec && dbRec.id) targetUuid = dbRec.id;
+        }
+
+        const { error } = await supabase.from('saved_recipes').upsert(
+          { user_id: userId, recipe_id: targetUuid, notes: personalNotes, is_favorite: true },
           { onConflict: 'user_id,recipe_id' }
         );
-        setNotesToast('Catatan berhasil disimpan!');
+
+        if (error) throw error;
+
+        setNotesToast('Catatan berhasil disimpan ke DB!');
         setTimeout(() => setNotesToast(null), 3000);
       }
-    } catch {
+    } catch (err: any) {
+      console.error('Notes save error:', err);
       setNotesToast('Gagal menyimpan catatan');
       setTimeout(() => setNotesToast(null), 3000);
     } finally {
