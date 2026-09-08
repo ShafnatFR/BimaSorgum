@@ -126,13 +126,24 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           <h1 className="text-2xl md:text-3xl font-bold text-[#163422] tracking-tight">{userName}</h1>
           <p className="text-sm text-[#424843] mt-1 max-w-xs mx-auto">{userRole}</p>
           
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 flex items-center justify-center gap-2">
             <span className="bg-[#cbebc3] text-[#324d30] px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
               MBG Phase 2
             </span>
             <span className="bg-[#fdc65c] text-[#745200] px-3 py-1 rounded-full text-xs font-semibold tracking-wide">
               Gold Member
             </span>
+            <button
+              onClick={() => {
+                setEditNameInput(userName);
+                setEditRoleInput(userRole);
+                setIsEditingInfo(true);
+              }}
+              className="bg-[#163422] text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-[#2d4b37] flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+            >
+              <Edit3 className="w-3 h-3" />
+              <span>Edit Profil</span>
+            </button>
           </div>
         </section>
 

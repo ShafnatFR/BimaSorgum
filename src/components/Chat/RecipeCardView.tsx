@@ -121,13 +121,28 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
       {/* BAHAN-BAHAN Breakdown (Estimasi Rp ...) */}
       <div className="space-y-2 bg-white rounded-2xl p-4 border border-[#e2e3e1] shadow-xs">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-xs font-bold text-[#424843] uppercase tracking-wider">
             BAHAN-BAHAN (ESTIMASI {formatRupiah(recipe.estimatedCost)}):
           </h3>
-          <span className="text-[11px] font-medium text-[#7c5800] bg-[#fdc65c]/20 px-2 py-0.5 rounded-full">
-            Target: Rp {recipe.targetBudget.toLocaleString('id-ID')}
-          </span>
+          
+          {/* Stepper Porsi */}
+          <div className="flex items-center gap-1.5 bg-[#f4f4f2] px-2 py-0.5 rounded-full border border-[#e2e3e1]">
+            <span className="text-[11px] font-bold text-[#727972]">Porsi:</span>
+            <button
+              onClick={() => setPortionMultiplier((p) => Math.max(1, p - 1))}
+              className="w-5 h-5 rounded-full bg-white text-[#163422] font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#e2e3e1]"
+            >
+              -
+            </button>
+            <span className="text-xs font-bold text-[#163422] px-1">{portionMultiplier}x</span>
+            <button
+              onClick={() => setPortionMultiplier((p) => Math.min(5, p + 1))}
+              className="w-5 h-5 rounded-full bg-[#163422] text-white font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#2d4b37]"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <ul className="space-y-1.5 pt-1">

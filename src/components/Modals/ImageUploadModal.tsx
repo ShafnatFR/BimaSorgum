@@ -12,7 +12,32 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   onClose,
   onSelectSampleImage,
 }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleCustomFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProcessUploadedPhoto = () => {
+    if (selectedFile || filePreview) {
+      onSelectSampleImage(
+        selectedFile ? selectedFile.name : 'Foto Bahan Pilihan',
+        `Foto bahan terunggah (${selectedFile?.name || 'foto.jpg'}). Tolong buatkan resep hidangan sorgum yang cocok dari bahan-bahan di foto ini!`
+      );
+      onClose();
+    }
+  };
 
   const sampleIngredients = [
     {
@@ -51,9 +76,60 @@ export const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
 
         {/* Body */}
         <div className="p-5 space-y-4">
-          <p className="text-xs text-[#424843]">
-            Pilih contoh bahan foto di bawah ini atau gunakan kamera Anda untuk mendapatkan inspirasi resep sorgum otomatis dari AI.
-          </p>
+          {/* Custom Upload Input Section */}
+          <div className="p-4 border-2 border-dashed border-[#163422]/30 rounded-2xl bg-[#f9f9f7] text-center space-y-2">
+            {filePreview ? (
+              <div className="space-y-2">
+                <div className="w-24 h-24 rounded-xl overflow-hidden mx-auto border border-[#c2c8c0] shadow-sm">
+                  <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+                <p className="text-xs font-bold text-[#163422] truncate max-w-xs mx-auto">
+                  {selectedFile?.name}
+                </p>
+                <div className="flex gap-2 justify-center">
+                  <button
+                    onClick={() => { setSelectedFile(null); setFilePreview(null); }}
+                    className="text-xs text-rose-600 font-bold px-3 py-1 bg-rose-50 rounded-lg hover:bg-rose-100"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    onClick={handleProcessUploadedPhoto}
+                    className="text-xs text-white bg-[#163422] font-bold px-4 py-1 rounded-lg hover:bg-[#2d4b37] flex items-center gap-1 shadow-sm"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#fdc65c]" />
+                    <span>Analisis Foto Ini</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="cursor-pointer block space-y-1.5">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCustomFileUpload}
+                  className="hidden"
+                />
+                <div className="w-10 h-10 rounded-full bg-[#163422]/10 text-[#163422] flex items-center justify-center mx-auto">
+                  <Upload className="w-5 h-5" />
+                </div>
+                <p className="text-xs font-bold text-[#163422]">
+                  Unggah Foto Bahan Makanan Anda
+                </p>
+                <p className="text-[11px] text-[#727972]">
+                  Ketuk di sini untuk mengambil foto dari galeri/kamera
+                </p>
+              </label>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-px bg-[#e2e3e1]" />
+            <span className="text-[11px] text-[#727972] font-bold uppercase tracking-wider">
+              Atau Pilih Contoh Foto
+            </span>
+            <div className="flex-1 h-px bg-[#e2e3e1]" />
+          </div>
 
           <div className="space-y-2.5">
             {sampleIngredients.map((sample, idx) => (
