@@ -13,7 +13,7 @@ import {
   RECENT_CHAT_TOPICS 
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
-import { generateRecipeFromWizard, generateCustomRecipeQuery } from './services/recipeGenerator';
+import { generateRecipeFromWizard, generateCustomRecipeQuery, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync } from './services/recipeGenerator';
 import { 
   getCurrentPath, 
   parseRoute, 
@@ -346,7 +346,7 @@ export default function App() {
     }));
   };
 
-  const handleGenerateFromWizard = () => {
+  const handleGenerateFromWizard = async () => {
     setIsGenerating(true);
     setTypingStatusText('Sedang menganalisis kandungan nutrisi sorgum...');
     
@@ -354,7 +354,7 @@ export default function App() {
       wizardData.targetConsumers.join(', ')
     } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}`;
 
-    const newRecipe = generateRecipeFromWizard(wizardData);
+    const newRecipe = await generateRecipeFromWizardAsync(wizardData);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
     // Persist generated recipe to Supabase (user recipe, RLS owner-scoped)
     generateAndSave(newRecipe).then((stored) => {
@@ -405,7 +405,7 @@ export default function App() {
   };
 
   // Chat Handlers
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
       sender: 'user',
@@ -413,7 +413,7 @@ export default function App() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    const newRecipe = generateCustomRecipeQuery(text);
+    const newRecipe = await generateCustomRecipeQueryAsync(text);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
     // Persist chat-generated recipe to Supabase
     generateAndSave(newRecipe).then((stored) => {
