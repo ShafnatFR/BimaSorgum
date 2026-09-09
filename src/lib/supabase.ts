@@ -135,6 +135,8 @@ export interface DbChatMessageRow {
   content: string | null;
   recipe_id: string | null;
   created_at: string;
+  // populated when selecting '*, recipe:recipes(*)'
+  recipe?: DbRecipeRow | null;
 }
 
 /* ================================================================== *
@@ -531,6 +533,68 @@ export async function fetchChatSessions(): Promise<DbChatSessionRow[]> {
     .order('updated_at', { ascending: false });
   if (error) return [];
   return (data as DbChatSessionRow[]) || [];
+}
+
+/** Fetch full messages (with optional recipe embed) for a chat session. */
+export async function fetchChatSessionMessages(
+  sessionId: string
+): Promise<DbChatMessageRow[]> {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*, recipe:recipes(*)')
+    .eq('session_id', sessionId)
+    .order('created_at', { ascending: true });
+  if (error) {
+    console.error('fetchChatSessionMessages error:', error.message);
+    return [];
+  }
+  const rows = (data as DbChatMessageRow[]) || [];
+  // Hydrate full recipe cards: fetch children (ingredients/steps) for any
+  // embedded recipe so re-opened sessions show complete recipes.
+  const recipeRows = rows.filter((r) => r.recipe).map((r) => r.recipe as DbRecipeRow);
+  if (recipeRows.length) {
+    const [ings, sts] = await Promise.all([
+      supabase.from('recipe_ingredients').select('*').in('recipe_id', recipeRows.map((r) => r.id)),
+      supabase.from('recipe_steps').select('*').in('recipe_id', recipeRows.map((r) => r.id)),
+    ]);
+    const ingBy = groupBy((ings.data as DbIngredientRow[]) || [], 'recipe_id');
+    const stBy = groupBy((sts.data as DbStepRow[]) || [], 'recipe_id');
+    for (const row of rows) {
+      if (row.recipe) {
+        (row as any)._recipeWithChildren = mapRecipe(
+          row.recipe,
+          ingBy.get(row.recipe.id) || [],
+          stBy.get(row.recipe.id) || []
+        );
+      }
+    }
+  }
+  return rows;
+}
+
+/** Rename an existing chat session (smart summary titles). */
+export async function renameChatSession(
+  sessionId: string,
+  title: string
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('chat_sessions')
+    .update({ title })
+    .eq('id', sessionId);
+  if (error) {
+    console.error('renameChatSession error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Bump updated_at so "Recent" sorts by most recent activity. */
+export async function touchChatSession(sessionId: string): Promise<void> {
+  const { error } = await supabase
+    .from('chat_sessions')
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', sessionId);
+  if (error) console.error('touchChatSession error:', error.message);
 }
 
 export async function createChatSession(title: string): Promise<DbChatSessionRow | null> {

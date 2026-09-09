@@ -50,7 +50,8 @@ import { ImageUploadModal } from './components/Modals/ImageUploadModal';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
-import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions } from './lib/supabase';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe } from './lib/supabase';
+import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
 
 import { Menu, History, Sparkles, Plus, ArrowLeft } from 'lucide-react';
@@ -86,15 +87,46 @@ export default function App() {
   const [activeChatId, setActiveChatId] = useState<string>('chat-4');
   // Chat sessions loaded from Supabase (anonymous user's history)
   const [chatSessions, setChatSessions] = useState<{ id: string; title: string; created_at?: string }[]>([]);
+  // DB id of the currently-open chat session (null = fresh unsaved conversation)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  // Sync mirror so async persist doesn't double-create sessions on rapid sends.
+  const currentSessionIdRef = React.useRef<string | null>(null);
+  const setSessionIdBoth = (id: string | null) => {
+      currentSessionIdRef.current = id;
+      setCurrentSessionId(id);
+    };
+
+    // Convert persisted chat_messages rows into the same shape used by the UI.
+    const rowsToChatMessages = (rows: DbChatMessageRow[]): ChatMessage[] =>
+      rows.map((row) => {
+        const timestamp = row.created_at
+          ? new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : '';
+        if (row.sender === 'user') return { id: `msg-${row.id}`, sender: 'user', text: row.content || '', timestamp };
+        if (row.recipe && (row as any)._recipeWithChildren) {
+          return { id: `msg-${row.id}`, sender: 'ai', recipe: (row as any)._recipeWithChildren, timestamp };
+        }
+        if (row.recipe && (row.recipe as unknown as Recipe)?.title) {
+          return { id: `msg-${row.id}`, sender: 'ai', recipe: mapRecipe(row.recipe as any), timestamp };
+        }
+        return { id: `msg-${row.id}`, sender: 'ai', text: row.content || '', timestamp };
+      });
 
   // Load chat sessions from DB once user is ready
   useEffect(() => {
     if (!ready) return;
     let alive = true;
-    fetchChatSessions().then((sessions) => {
-      if (alive && sessions.length) {
-        setChatSessions(sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at })));
-      }
+    fetchChatSessions().then(async (sessions) => {
+      if (!alive) return;
+      if (!sessions.length) return;
+      const mapped = sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at }));
+      setChatSessions(mapped);
+      setSessionIdBoth(sessions[0].id);
+      setActiveChatId(sessions[0].id);
+      // Auto-open the most recent session so the chat shows its real history.
+      const rows = await fetchChatSessionMessages(sessions[0].id);
+      if (!alive || !rows.length) return;
+      setChatMessages(rowsToChatMessages(rows));
     });
     return () => { alive = false; };
   }, [ready]);
@@ -109,22 +141,8 @@ export default function App() {
     prepTimeLimit: 'Maks 30 Menit',
   });
   
-  // Initial messages
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg-user-1',
-      sender: 'user',
-      text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
-      timestamp: '10:42 AM',
-    },
-    {
-      id: 'msg-ai-1',
-      sender: 'ai',
-      recipe: INITIAL_FEATURED_RECIPE,
-      timestamp: 'Baru saja',
-      isTypingStep: false,
-    },
-  ]);
+  // Initial messages — start clean; the hero/empty-state shows when empty.
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -387,6 +405,8 @@ export default function App() {
     setGeneratorMode('chat');
     setCurrentTab('generate');
     navigateToSlug(RouteSlugs.generate());
+    // Persist the wizard conversation as a new chat session (title = recipe name).
+    persistChatExchange(userPromptText, newRecipe.title, newRecipe);
 
     setTimeout(() => {
       setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
@@ -491,27 +511,53 @@ export default function App() {
     }
   };
 
+  // Derive a concise, conversational session title from a user prompt.
+  const deriveSessionTitle = (userText: string, recipe: Recipe | null): string => {
+    // If we generated a recipe, use its dish name — reads like a topic, like GPT.
+    if (recipe?.title) {
+      return recipe.title.length > 60 ? recipe.title.slice(0, 57).trimEnd() + '…' : recipe.title;
+    }
+    // General chat: strip leading boilerplate ("tolong", "berikan saya", ...) and
+    // keep the core ask. Fall back to truncated raw text if nothing else remains.
+    const cleaned = userText
+      .replace(/^(tolong|bantu|bisa|mohon|kak|bang|mas|bu|pak)?\s*(saya|aku)?\s*(mau|ingin|butuh)?\s*(berikan|carikan|buatkan|buatin|kasih|resepkan|tolong)\s+(saya|aku)?\s*/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const base = cleaned || userText;
+    return base.length > 60 ? base.slice(0, 57).trimEnd() + '…' : base;
+  };
+
   // Persist a chat exchange to Supabase (session + messages + optional recipe).
   const persistChatExchange = async (userText: string, aiText: string, recipe: Recipe | null) => {
     try {
-      let sessionId: string | null = chatSessions.length > 0 ? chatSessions[0].id : null;
+      let sessionId = currentSessionIdRef.current;
       if (!sessionId) {
-        const session = await createChatSession(userText.slice(0, 60) || 'Percakapan baru');
-        if (session) {
-          sessionId = session.id;
-          setChatSessions((prev) => [{ id: session.id, title: session.title }, ...prev]);
-        }
+        // Fresh conversation: create a session, title = smart summary.
+        const title = deriveSessionTitle(userText, recipe);
+        const session = await createChatSession(title);
+        if (!session) return;
+        sessionId = session.id;
+        setSessionIdBoth(session.id);
+        setChatSessions((prev) => [{ id: session.id, title: session.title, created_at: session.created_at }, ...prev]);
+        setActiveChatId(session.id);
       }
-      if (!sessionId) return;
       let recipeId: string | null = null;
       if (recipe) {
         const stored = await generateAndSave(recipe);
         recipeId = stored?.id ?? null;
+        // Session title = dish name (reads like a GPT/Gemini topic summary).
+        const betterTitle = recipe.title.length > 60 ? recipe.title.slice(0, 57).trimEnd() + '…' : recipe.title;
+        if (sessionId && betterTitle) {
+          await renameChatSession(sessionId, betterTitle);
+          setChatSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, title: betterTitle } : s)));
+        }
       }
       await saveChatMessages(sessionId, [
         { sender: 'user', content: userText },
         { sender: 'ai', content: aiText, recipe_id: recipeId },
       ]);
+      // Keep session ordering by most-recent-activity in Recent lists.
+      await touchChatSession(sessionId);
     } catch (e) {
       console.error('persistChat error:', e);
     }
@@ -532,59 +578,78 @@ export default function App() {
     );
   };
 
-  const handleSelectRecentChat = (chatId: string) => {
-    setActiveChatId(chatId);
-    setGeneratorMode('chat');
-    setCurrentTab('generate');
-    if (chatId === 'chat-1') {
-      const pRecipe = INITIAL_SAVED_RECIPES[0].recipe;
-      setChatMessages([
-        {
-          id: `msg-pancake-user`,
-          sender: 'user',
-          text: 'Bagikan resep gluten-free pancake sorgum yang lembut untuk balita.',
-          timestamp: '10:42 AM',
-        },
-        {
-          id: `msg-pancake-ai`,
-          sender: 'ai',
-          recipe: pRecipe,
-          timestamp: 'Kemarin',
-        },
-      ]);
-    } else if (chatId === 'chat-2') {
-      const bRecipe = INITIAL_SAVED_RECIPES[1].recipe;
-      setChatMessages([
-        {
-          id: `msg-bread-user`,
-          sender: 'user',
-          text: 'Resep roti tawar sorgum tanpa tepung gandum untuk penderita diabetes.',
-          timestamp: 'Kemarin',
-        },
-        {
-          id: `msg-bread-ai`,
-          sender: 'ai',
-          recipe: bRecipe,
-          timestamp: 'Kemarin',
-        },
-      ]);
-    } else {
-      setChatMessages([
-        {
-          id: 'msg-user-1',
-          sender: 'user',
-          text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
-          timestamp: '10:42 AM',
-        },
-        {
-          id: 'msg-ai-1',
-          sender: 'ai',
-          recipe: INITIAL_FEATURED_RECIPE,
-          timestamp: 'Baru saja',
-        },
-      ]);
-    }
-  };
+  const handleSelectRecentChat = async (chatId: string) => {
+      setActiveChatId(chatId);
+      setGeneratorMode('chat');
+      setCurrentTab('generate');
+
+      // Only DB session ids (uuid) can be loaded back.
+      if (chatId === 'chat-1' || chatId === 'chat-2' || chatId === 'chat-3' || chatId === 'chat-4') {
+        // Legacy mock topics (no persisted session): keep the preset kit.
+        handleSelectMockRecent(chatId);
+        return;
+      }
+
+      setSessionIdBoth(chatId);
+      const rows = await fetchChatSessionMessages(chatId);
+      if (!rows.length) {
+        setChatMessages([]);
+        return;
+      }
+      setChatMessages(rowsToChatMessages(rows));
+    };
+
+    // Legacy mock chat presets (shown when no DB session exists yet).
+    const handleSelectMockRecent = (chatId: string) => {
+      if (chatId === 'chat-1') {
+        const pRecipe = INITIAL_SAVED_RECIPES[0].recipe;
+        setChatMessages([
+          {
+            id: `msg-pancake-user`,
+            sender: 'user',
+            text: 'Bagikan resep gluten-free pancake sorgum yang lembut untuk balita.',
+            timestamp: '10:42 AM',
+          },
+          {
+            id: `msg-pancake-ai`,
+            sender: 'ai',
+            recipe: pRecipe,
+            timestamp: 'Kemarin',
+          },
+        ]);
+      } else if (chatId === 'chat-2') {
+        const bRecipe = INITIAL_SAVED_RECIPES[1].recipe;
+        setChatMessages([
+          {
+            id: `msg-bread-user`,
+            sender: 'user',
+            text: 'Resep roti tawar sorgum tanpa tepung gandum untuk penderita diabetes.',
+            timestamp: 'Kemarin',
+          },
+          {
+            id: `msg-bread-ai`,
+            sender: 'ai',
+            recipe: bRecipe,
+            timestamp: 'Kemarin',
+          },
+        ]);
+      } else {
+        setChatMessages([
+          {
+            id: 'msg-user-1',
+            sender: 'user',
+            text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
+            timestamp: '10:42 AM',
+          },
+          {
+            id: 'msg-ai-1',
+            sender: 'ai',
+            recipe: INITIAL_FEATURED_RECIPE,
+            timestamp: 'Baru saja',
+          },
+        ]);
+      }
+    };
 
   const startGeneratorWithCategory = (categoryKey: string) => {
     setWizardData((prev) => ({
@@ -672,15 +737,16 @@ export default function App() {
                   isOpen={isSidebarOpen}
                   onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
-                    // Reset to a fresh chat session in-place (stay in chat mode).
-                    setChatMessages([]);
-                    setActiveChatId(`chat-${Date.now()}`);
-                    setGeneratorMode('chat');
-                    setCurrentTab('generate');
-                    setIsGenerating(false);
-                    setIsSidebarOpen(false);
-                    navigateToSlug(RouteSlugs.generate());
-                  }}
+                                      // Reset to a fresh chat session in-place (stay in chat mode).
+                                      setChatMessages([]);
+                                      setSessionIdBoth(null);
+                                      setActiveChatId(`chat-${Date.now()}`);
+                                      setGeneratorMode('chat');
+                                      setCurrentTab('generate');
+                                      setIsGenerating(false);
+                                      setIsSidebarOpen(false);
+                                      navigateToSlug(RouteSlugs.generate());
+                                    }}
                   recentChats={
                     chatSessions.length
                       ? chatSessions.map((s) => ({
@@ -1032,7 +1098,7 @@ export default function App() {
               </div>
 
               <div className="py-4 space-y-2">
-                {RECENT_CHAT_TOPICS.map((chat) => (
+                {(chatSessions.length ? chatSessions : RECENT_CHAT_TOPICS).map((chat: any) => (
                   <button
                     key={chat.id}
                     onClick={() => {
@@ -1043,7 +1109,9 @@ export default function App() {
                   >
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-bold text-xs text-[#163422]">{chat.title}</span>
-                      <span className="text-[10px] text-[#727972]">{chat.time}</span>
+                      <span className="text-[10px] text-[#727972]">
+                        {chat.time || (chat.created_at ? new Date(chat.created_at).toLocaleDateString('id-ID') : '')}
+                      </span>
                     </div>
                     <p className="text-[11px] text-[#424843] truncate">{chat.preview}</p>
                   </button>
@@ -1052,11 +1120,12 @@ export default function App() {
             </div>
 
             <button
-              onClick={() => {
-                setChatMessages([]);
-                handleSetWizardStep(1);
-                setIsHistoryDrawerOpen(false);
-              }}
+                          onClick={() => {
+                            setChatMessages([]);
+                            setSessionIdBoth(null);
+                            handleSetWizardStep(1);
+                            setIsHistoryDrawerOpen(false);
+                          }}
               className="w-full py-3 bg-[#163422] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
             >
               <Plus className="w-4 h-4" />
