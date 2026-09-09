@@ -8,7 +8,8 @@
  * prompt with relevant knowledge chunks.
  */
 const BIMA_BASE_URL = import.meta.env.VITE_BIMA_API_URL || 'https://bima-dashboard.livinglabs.id';
-const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || 'EveryFree';
+// Leave empty to use the backend's default model (from its /api/config).
+const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';
 const BIMA_API_KEY = import.meta.env.VITE_BIMA_API_KEY || '';
 
 export interface BimaChatMessage {
@@ -30,10 +31,13 @@ export async function bimaChat(
 ): Promise<BimaChatResult> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'X-Model': opts.model || BIMA_MODEL,
     'X-Use-RAG': String(opts.useRag ?? true),
     'X-Stream': String(opts.stream ?? false),
   };
+  // Only send X-Model when a model was explicitly chosen; the backend's
+  // default model is used otherwise (sending an invalid id returns 502).
+  const model = opts.model || BIMA_MODEL;
+  if (model) headers['X-Model'] = model;
   if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
 
   const payload: Record<string, unknown> = { message };
