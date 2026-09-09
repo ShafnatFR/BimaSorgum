@@ -516,8 +516,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       {step.title}
                     </h4>
                     {step.timerMinutes && (
-                      <span className="text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full">
-                        ⏱️ {step.timerMinutes} Menit
+                      <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
+                        <Clock className="w-3.5 h-3.5 text-[#7c5800]" />
+                        {step.timerMinutes} Menit
                       </span>
                     )}
                   </div>
