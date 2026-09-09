@@ -2,29 +2,36 @@ import { WizardFormData, Recipe, RecipeIngredient, RecipeStep } from '../types';
 import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
-import { GoogleGenAI } from '@google/genai';
+import { bimaChat, extractJsonFromLlm } from './bimaClient';
 
-// Initialize Gemini API client if environment variable is present
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+/** Build a Recipe object from a parsed LLM JSON, tolerating missing fields. */
+function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, fallbackCategory: string): Recipe {
+  const title = parsed.title || 'Resep Sorgum Spesial';
+  return {
+    id: `recipe-ai-${Date.now()}`,
+    slug: slugify(title),
+    title,
+    subtitle: parsed.subtitle || 'Resep sehat terpersonalisasi oleh SorghumCare AI',
+    targetAge: parsed.targetAge || 'Semua Umur',
+    dishCategory: parsed.dishCategory || fallbackCategory,
+    targetBudget: parsed.targetBudget ?? fallbackBudget,
+    estimatedCost: parsed.estimatedCost ?? Math.min(fallbackBudget, 9500),
+    prepTimeMinutes: parsed.prepTimeMinutes ?? 10,
+    cookTimeMinutes: parsed.cookTimeMinutes ?? 15,
+    servings: parsed.servings ?? 1,
+    ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+    nutritionHighlight: parsed.nutritionHighlight || {
+      title: 'Nutrisi Unggulan',
+      description: 'Tinggi serat dan gizi, bebas gluten.',
+    },
+    steps: Array.isArray(parsed.steps) ? parsed.steps : [],
+    imageUrl: getRecipeImage(title, parsed.dishCategory || fallbackCategory),
+    tags: Array.isArray(parsed.tags) && parsed.tags.length ? parsed.tags : ['Bebas Gluten', 'Sorgum Sehat'],
+    createdAt: new Date().toISOString(),
+  };
+}
 
-/**
- * Async function to generate a recipe from Wizard data using Google Gemini LLM
- * if VITE_GEMINI_API_KEY is configured, falling back to smart dynamic generator.
- */
-export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe> {
-  if (ai) {
-    try {
-      const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
-Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
-- Target Konsumen: ${formData.targetConsumers.join(', ')}
-- Kategori Hidangan: ${formData.dishCategory}
-- Bahan Pilihan: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
-- Target Budget per porsi: Rp ${formData.budgetPerPortion}
-- Batas Waktu Persiapan: ${formData.prepTimeLimit}
-
-Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
-{
+const RECIPE_JSON_SCHEMA = `{
   "title": "string",
   "subtitle": "string",
   "targetAge": "string",
@@ -40,41 +47,33 @@ Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
   "tags": ["string"]
 }`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-      });
+/**
+ * Generate a recipe from Wizard data using the BIMA AI LLM (Living Labs).
+ * Falls back to the offline smart generator if the call fails.
+ */
+export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe> {
+  try {
+    const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
+Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
+- Target Konsumen: ${formData.targetConsumers.join(', ')}
+- Kategori Hidangan: ${formData.dishCategory}
+- Bahan Pilihan: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
+- Target Budget per porsi: Rp ${formData.budgetPerPortion}
+- Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
-      const text = response.text || '';
-      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJson);
+Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
+${RECIPE_JSON_SCHEMA}`;
 
-      const title = parsed.title || 'Resep Sorgum Spesial';
-      return {
-        id: `recipe-ai-${Date.now()}`,
-        slug: slugify(title),
-        title,
-        subtitle: parsed.subtitle || 'Resep sehat terpersonalisasi oleh SorghumCare AI',
-        targetAge: parsed.targetAge || 'Semua Umur',
-        dishCategory: parsed.dishCategory || 'Makanan Berat',
-        targetBudget: parsed.targetBudget || formData.budgetPerPortion,
-        estimatedCost: parsed.estimatedCost || Math.min(formData.budgetPerPortion, 9500),
-        prepTimeMinutes: parsed.prepTimeMinutes || 10,
-        cookTimeMinutes: parsed.cookTimeMinutes || 15,
-        servings: parsed.servings || 1,
-        ingredients: parsed.ingredients || [],
-        nutritionHighlight: parsed.nutritionHighlight || { title: 'Nutrisi Unggulan', description: 'Tinggi serat dan gizi' },
-        steps: parsed.steps || [],
-        imageUrl: getRecipeImage(title, formData.dishCategory),
-        tags: parsed.tags || ['Bebas Gluten', 'Sorgum Sehat'],
-        createdAt: new Date().toISOString(),
-      };
-    } catch (err) {
-      console.warn('Gemini API call failed or unconfigured, using fallback generator:', err);
+    const result = await bimaChat(prompt, [], { useRag: true });
+    const parsed = extractJsonFromLlm(result.response);
+    if (parsed && parsed.title) {
+      return recipeFromLlmJson(parsed, formData.budgetPerPortion, formData.dishCategory);
     }
+    console.warn('BIMA AI returned non-JSON, falling back to offline generator.');
+  } catch (err) {
+    console.warn('BIMA AI call failed, using offline fallback generator:', err);
   }
 
-  // Fallback to offline smart generator
   return generateRecipeFromWizard(formData);
 }
 
@@ -392,63 +391,24 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
 }
 
 /**
- * Async function to generate a custom recipe from user prompt using Google Gemini LLM
- * if VITE_GEMINI_API_KEY is configured, falling back to smart dynamic query matcher.
+ * Generate a custom recipe from a user prompt using the BIMA AI LLM.
+ * Falls back to the offline smart query matcher if the call fails.
  */
 export async function generateCustomRecipeQueryAsync(userPrompt: string): Promise<Recipe> {
-  if (ai) {
-    try {
-      const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
+  try {
+    const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
 Pengguna meminta: "${userPrompt}"
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid tanpa markdown triple backticks dengan struktur:
-{
-  "title": "string",
-  "subtitle": "string",
-  "targetAge": "string",
-  "dishCategory": "string",
-  "targetBudget": number,
-  "estimatedCost": number,
-  "prepTimeMinutes": number,
-  "cookTimeMinutes": number,
-  "servings": number,
-  "ingredients": [{"name": "string", "amount": "string", "estimatedPrice": number}],
-  "nutritionHighlight": {"title": "string", "description": "string", "fiberGrams": number, "proteinGrams": number, "glycemicIndex": "string", "caloriesEstimate": number},
-  "steps": [{"stepNumber": number, "title": "string", "instruction": "string", "timerMinutes": number}],
-  "tags": ["string"]
-}`;
+${RECIPE_JSON_SCHEMA}`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-      });
-
-      const text = response.text || '';
-      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJson);
-
-      const title = parsed.title || 'Resep Sorgum Spesial';
-      return {
-        id: `recipe-custom-${Date.now()}`,
-        slug: slugify(title),
-        title,
-        subtitle: parsed.subtitle || `Rekomendasi terpersonalisasi untuk: "${userPrompt}"`,
-        targetAge: parsed.targetAge || 'Semua Umur',
-        dishCategory: parsed.dishCategory || 'Camilan Sehat',
-        targetBudget: parsed.targetBudget || 12000,
-        estimatedCost: parsed.estimatedCost || 9500,
-        prepTimeMinutes: parsed.prepTimeMinutes || 10,
-        cookTimeMinutes: parsed.cookTimeMinutes || 15,
-        servings: parsed.servings || 1,
-        ingredients: parsed.ingredients || [],
-        nutritionHighlight: parsed.nutritionHighlight || { title: 'Nutrisi Unggulan', description: 'Tinggi serat dan gizi' },
-        steps: parsed.steps || [],
-        imageUrl: getRecipeImage(title, parsed.dishCategory || 'camilan_sehat'),
-        tags: parsed.tags || ['Sorgum Sehat', 'Resep AI'],
-        createdAt: new Date().toISOString(),
-      };
-    } catch (err) {
-      console.warn('Gemini custom query generation failed, using offline fallback:', err);
+    const result = await bimaChat(prompt, [], { useRag: true });
+    const parsed = extractJsonFromLlm(result.response);
+    if (parsed && parsed.title) {
+      return recipeFromLlmJson(parsed, 12000, 'camilan_sehat');
     }
+    console.warn('BIMA AI returned non-JSON for custom query, falling back.');
+  } catch (err) {
+    console.warn('BIMA AI custom query failed, using offline fallback:', err);
   }
 
   return generateCustomRecipeQuery(userPrompt);
