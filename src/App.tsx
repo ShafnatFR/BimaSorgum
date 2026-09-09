@@ -375,7 +375,9 @@ export default function App() {
     
     const userPromptText = `Rekomendasi resep ${wizardData.dishCategory.replace('_', ' ')} untuk ${
       wizardData.targetConsumers.join(', ')
-    } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}`;
+    } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}${
+      wizardData.prepTimeLimit ? ` dan waktu persiapan ${wizardData.prepTimeLimit.toLowerCase()}` : ''
+    }`;
 
     const newRecipe = await generateRecipeFromWizardAsync(wizardData);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
