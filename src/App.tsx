@@ -42,6 +42,7 @@ import { WizardStep4 } from './components/Wizard/WizardStep4';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { RecipeCardView } from './components/Chat/RecipeCardView';
 import { ChatInputBar } from './components/Chat/ChatInputBar';
+import MarkdownText from './components/Chat/MarkdownText';
 
 import { CookModeModal } from './components/Modals/CookModeModal';
 import { RecipeDetailPage } from './components/RecipeDetail/RecipeDetailPage';
@@ -919,9 +920,7 @@ export default function App() {
                                           <span className="text-xs">{msg.typingText || 'Mengetik...'}</span>
                                         </div>
                                       ) : (
-                                        <p className="text-sm sm:text-base font-normal leading-relaxed whitespace-pre-wrap">
-                                          {msg.text}
-                                        </p>
+                                        <MarkdownText text={msg.text} />
                                       )}
                                     </div>
                                     <span className="text-[10px] text-[#727972] mt-1 px-2">
