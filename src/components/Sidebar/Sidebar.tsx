@@ -13,6 +13,7 @@ interface SidebarProps {
   onDeleteChat?: (chatId: string) => void;
   savedRecipes: SavedRecipe[];
   onSelectSavedRecipe: (saved: SavedRecipe) => void;
+  onSeeAllRecipes?: () => void;
   onOpenProfile: () => void;
   onStartWizard: () => void;
   onNavigateTab?: (tab: 'home' | 'explore' | 'generate' | 'profile') => void;
@@ -28,6 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteChat,
   savedRecipes,
   onSelectSavedRecipe,
+  onSeeAllRecipes,
   onOpenProfile,
   onStartWizard,
   onNavigateTab,
@@ -177,9 +179,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <h3 className="text-xs font-bold text-[#727972] uppercase tracking-wider">
                 My Recipes
               </h3>
-              <span className="text-[11px] font-semibold text-[#163422] bg-[#163422]/10 px-1.5 py-0.5 rounded-full">
-                {savedRecipes.length}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-[#163422] bg-[#163422]/10 px-1.5 py-0.5 rounded-full">
+                  {savedRecipes.length}
+                </span>
+                {onSeeAllRecipes && (
+                  <button
+                    onClick={onSeeAllRecipes}
+                    className="text-[10px] font-bold text-[#163422] border border-[#163422]/30 hover:bg-[#163422] hover:text-white px-2 py-0.5 rounded-full transition-colors cursor-pointer"
+                    title="Lihat semua resep tersimpan"
+                  >
+                    See All
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 px-1">

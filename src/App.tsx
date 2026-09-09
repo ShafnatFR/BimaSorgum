@@ -54,7 +54,7 @@ import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
 
-import { Menu, History, Sparkles, Plus, ArrowLeft } from 'lucide-react';
+import { Menu, Sparkles, Plus, ArrowLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -79,7 +79,9 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
   const [wizardStep, setWizardStep] = useState<number>(1);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  );
   const [exploreCategoryKey, setExploreCategoryKey] = useState<string>('all');
 
   // Dynamic & saved recipes
@@ -155,7 +157,6 @@ export default function App() {
   const [selectedVideoTutorial, setSelectedVideoTutorial] = useState<VideoTutorialItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isImagePickerOpen, setIsImagePickerOpen] = useState<boolean>(false);
-  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState<boolean>(false);
 
   // Sync state from URL slug on mount and popstate/hashchange
   useEffect(() => {
@@ -802,12 +803,12 @@ export default function App() {
           )}
 
           {currentTab === 'generate' && (
-            <div className="flex-1 flex flex-row min-h-screen w-full relative">
-              {/* Sidebar drawer in Chat mode */}
-              {generatorMode === 'chat' && (
-                <Sidebar
-                  isOpen={isSidebarOpen}
-                  onClose={() => setIsSidebarOpen(false)}
+                      <div className="flex-1 flex flex-row min-h-screen w-full relative">
+                        {/* Sidebar (left) — hidden completely when toggled off */}
+                        {generatorMode === 'chat' && isSidebarOpen && (
+                          <Sidebar
+                            isOpen={isSidebarOpen}
+                            onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
                                       // Reset to a fresh chat session in-place (stay in chat mode).
                                       setChatMessages([]);
@@ -832,7 +833,12 @@ export default function App() {
                   onSelectChat={handleSelectRecentChat}
                   onDeleteChat={handleDeleteRecentSession}
                   savedRecipes={savedRecipes}
-                  onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
+                                    onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
+                                    onSeeAllRecipes={() => {
+                                      setSelectedRecipeDetail(null);
+                                      handleSelectTab('profile');
+                                      setIsSidebarOpen(false);
+                                    }}
                   onOpenProfile={() => {
                     setSelectedRecipeDetail(null);
                     handleSelectTab('profile');
@@ -913,23 +919,18 @@ export default function App() {
                       <div className="flex items-center gap-2">
                         <button
                           id="btn-hamburger-menu"
-                          onClick={() => setIsSidebarOpen(true)}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-[#1A1C1B] hover:bg-[#e2e3e1] transition-colors cursor-pointer"
-                          aria-label="Buka Menu"
+                          onClick={() => setIsSidebarOpen((v) => !v)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                            isSidebarOpen ? 'bg-[#163422] text-white' : 'text-[#1A1C1B] hover:bg-[#e2e3e1]'
+                          }`}
+                          aria-label={isSidebarOpen ? 'Sembunyikan Menu' : 'Tampilkan Menu'}
+                          title={isSidebarOpen ? 'Sembunyikan sidebar' : 'Tampilkan sidebar'}
                         >
                           <Menu className="w-5 h-5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setIsHistoryDrawerOpen(!isHistoryDrawerOpen)}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-[#424843] hover:bg-[#e2e3e1] active:scale-95 transition-all duration-150 cursor-pointer"
-                          title="Riwayat Resep"
-                        >
-                          <History className="w-5 h-5" />
-                        </button>
-                      </div>
+                      <div className="flex items-center gap-2" />
                     </header>
 
                     <main className="flex-1 overflow-y-auto px-4 md:px-8 pb-36 pt-6 md:pt-10 flex flex-col items-center">
@@ -1154,62 +1155,6 @@ export default function App() {
           handleSendMessage(prompt);
         }}
       />
-
-      {/* History Drawer Modal */}
-      {isHistoryDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-[#1A1C1B]/40 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-xs bg-white h-full shadow-2xl p-5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-[#e2e3e1]">
-                <h3 className="font-bold text-base text-[#163422] flex items-center gap-2">
-                  <History className="w-5 h-5" />
-                  Riwayat Percakapan
-                </h3>
-                <button
-                  onClick={() => setIsHistoryDrawerOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#f4f4f2] flex items-center justify-center text-sm font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="py-4 space-y-2">
-                {(chatSessions.length ? chatSessions : RECENT_CHAT_TOPICS).map((chat: any) => (
-                  <button
-                    key={chat.id}
-                    onClick={() => {
-                      handleSelectRecentChat(chat.id);
-                      setIsHistoryDrawerOpen(false);
-                    }}
-                    className="w-full text-left p-3 rounded-xl hover:bg-[#f9f9f7] border border-[#e2e3e1] transition-all"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-xs text-[#163422]">{chat.title}</span>
-                      <span className="text-[10px] text-[#727972]">
-                        {chat.time || (chat.created_at ? new Date(chat.created_at).toLocaleDateString('id-ID') : '')}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[#424843] truncate">{chat.preview}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-                          onClick={() => {
-                            setChatMessages([]);
-                            setSessionIdBoth(null);
-                            handleSetWizardStep(1);
-                            setIsHistoryDrawerOpen(false);
-                          }}
-              className="w-full py-3 bg-[#163422] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Mulai Percakapan Baru
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
