@@ -333,6 +333,14 @@ export async function upsertRecipe(recipe: Recipe): Promise<Recipe | null> {
   };
   const categoryKey = categoryToKey(recipe.dishCategory);
 
+  // Normalize glycemic_index to the DB check constraint values.
+  const giRaw = (nh.glycemicIndex || '').toLowerCase();
+  const glycemicIndex =
+    giRaw.includes('sangat') ? 'Sangat Rendah'
+    : giRaw.includes('rendah') || giRaw.includes('low') ? 'Rendah (Low GI)'
+    : giRaw.includes('sedang') || giRaw.includes('medium') || giRaw.includes('moderate') ? 'Sedang'
+    : null;
+
   const row: Partial<DbRecipeRow> = {
     source_id: recipe.id || `user-${Date.now()}`,
     slug,
@@ -350,7 +358,7 @@ export async function upsertRecipe(recipe: Recipe): Promise<Recipe | null> {
     calories_estimate: nh.caloriesEstimate,
     fiber_grams: nh.fiberGrams,
     protein_grams: nh.proteinGrams,
-    glycemic_index: nh.glycemicIndex || null,
+    glycemic_index: glycemicIndex,
     nutrition_title: nh.title || null,
     nutrition_description: nh.description || null,
     is_system: false,
