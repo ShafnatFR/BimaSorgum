@@ -50,6 +50,7 @@ import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
 import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions } from './lib/supabase';
+import { bimaChat } from './services/bimaClient';
 
 import { Menu, History, Sparkles, Plus, ArrowLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -406,63 +407,98 @@ export default function App() {
 
   // Chat Handlers
   const handleSendMessage = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    // 1) Optimistic user message — render immediately, no waiting on the LLM.
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
       sender: 'user',
-      text: text,
+      text: trimmed,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
-
-    const newRecipe = await generateCustomRecipeQueryAsync(text);
-    setDynamicRecipes((prev) => [newRecipe, ...prev]);
-
-    const aiMsg: ChatMessage = {
-      id: `msg-ai-${Date.now()}`,
+    const aiPlaceholderId = `msg-ai-${Date.now()}`;
+    const aiPlaceholder: ChatMessage = {
+      id: aiPlaceholderId,
       sender: 'ai',
-      recipe: newRecipe,
+      text: 'Sedang menyusun respons...',
       timestamp: 'Baru saja',
       isTypingStep: true,
-      typingText: 'Sedang menyusun resep lezat sorgum...',
+      typingText: 'SorghumCare AI sedang berpikir...',
     };
-
-    setChatMessages((prev) => [...prev, userMsg, aiMsg]);
+    setChatMessages((prev) => [...prev, userMsg, aiPlaceholder]);
     setGeneratorMode('chat');
     setCurrentTab('generate');
     navigateToSlug(RouteSlugs.generate());
     setIsGenerating(true);
 
-    // Persist chat exchange to Supabase: ensure a session exists, save both messages.
-    const persistChat = async () => {
-      try {
-        let sessionId: string | null = null;
-        if (chatSessions.length > 0) {
-          sessionId = chatSessions[0].id;
-        } else {
-          const session = await createChatSession(text.slice(0, 60) || 'Percakapan baru');
-          if (session) {
-            sessionId = session.id;
-            setChatSessions((prev) => [{ id: session.id, title: session.title }, ...prev]);
-          }
-        }
-        if (sessionId) {
-          const stored = await generateAndSave(newRecipe);
-          await saveChatMessages(sessionId, [
-            { sender: 'user', content: text },
-            { sender: 'ai', content: newRecipe.title, recipe_id: stored?.id ?? null },
-          ]);
-        }
-      } catch (e) {
-        console.error('persistChat error:', e);
-      }
-    };
-    persistChat();
+    // 2) Decide: is this a recipe request or a general chat message?
+    const isRecipeRequest = /resep|masak|menu|makanan|hidangan|bekal|sarapan|makan malam|makan siang|camilan|bubur|pancake|roti|kue|nasi|sorgum|membuat|buatkan|masakan|gizi|nutrisi|rendah|gluten|budget|hemat|modal|porsi/i.test(trimmed);
 
-    setTimeout(() => {
-      setIsGenerating(false);
+    try {
+      if (isRecipeRequest) {
+        // Recipe flow: generate a structured recipe (with DB persistence).
+        const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
+        setDynamicRecipes((prev) => [newRecipe, ...prev]);
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiPlaceholderId
+              ? { ...m, recipe: newRecipe, text: undefined, isTypingStep: false }
+              : m
+          )
+        );
+        persistChatExchange(trimmed, newRecipe.title, newRecipe);
+      } else {
+        // General chat flow: free-form AI answer, no recipe card.
+        const answer = await bimaChat(trimmed, [], { useRag: true });
+        const replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiPlaceholderId
+              ? { ...m, text: replyText, isTypingStep: false }
+              : m
+          )
+        );
+        persistChatExchange(trimmed, replyText.slice(0, 60), null);
+      }
+    } catch (e) {
+      console.error('chat error:', e);
       setChatMessages((prev) =>
-        prev.map((m) => (m.id === aiMsg.id ? { ...m, isTypingStep: false } : m))
+        prev.map((m) =>
+          m.id === aiPlaceholderId
+            ? { ...m, text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.', isTypingStep: false }
+            : m
+        )
       );
-    }, 1400);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Persist a chat exchange to Supabase (session + messages + optional recipe).
+  const persistChatExchange = async (userText: string, aiText: string, recipe: Recipe | null) => {
+    try {
+      let sessionId: string | null = chatSessions.length > 0 ? chatSessions[0].id : null;
+      if (!sessionId) {
+        const session = await createChatSession(userText.slice(0, 60) || 'Percakapan baru');
+        if (session) {
+          sessionId = session.id;
+          setChatSessions((prev) => [{ id: session.id, title: session.title }, ...prev]);
+        }
+      }
+      if (!sessionId) return;
+      let recipeId: string | null = null;
+      if (recipe) {
+        const stored = await generateAndSave(recipe);
+        recipeId = stored?.id ?? null;
+      }
+      await saveChatMessages(sessionId, [
+        { sender: 'user', content: userText },
+        { sender: 'ai', content: aiText, recipe_id: recipeId },
+      ]);
+    } catch (e) {
+      console.error('persistChat error:', e);
+    }
   };
 
   const handleToggleSaveRecipe = (recipe: Recipe) => {
@@ -620,8 +656,14 @@ export default function App() {
                   isOpen={isSidebarOpen}
                   onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
+                    // Reset to a fresh chat session in-place (stay in chat mode).
                     setChatMessages([]);
-                    handleSetWizardStep(1);
+                    setActiveChatId(`chat-${Date.now()}`);
+                    setGeneratorMode('chat');
+                    setCurrentTab('generate');
+                    setIsGenerating(false);
+                    setIsSidebarOpen(false);
+                    navigateToSlug(RouteSlugs.generate());
                   }}
                   recentChats={
                     chatSessions.length
@@ -856,6 +898,33 @@ export default function App() {
                                       onOpenCookMode={handleOpenCookMode}
                                     />
                                     <span className="text-[10px] text-[#727972] mt-2 px-1">
+                                      {msg.timestamp}
+                                    </span>
+                                  </div>
+                                );
+                              }
+
+                              // AI text message (general chat, no recipe card)
+                              if (msg.sender === 'ai' && msg.text) {
+                                return (
+                                  <div key={msg.id} className="flex flex-col items-start w-full">
+                                    <div className="bg-white text-[#1A1C1B] p-4 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[75%] shadow-sm border border-[#e2e3e1]">
+                                      {msg.isTypingStep ? (
+                                        <div className="flex items-center gap-2 text-[#727972]">
+                                          <span className="flex gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '300ms' }} />
+                                          </span>
+                                          <span className="text-xs">{msg.typingText || 'Mengetik...'}</span>
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm sm:text-base font-normal leading-relaxed whitespace-pre-wrap">
+                                          {msg.text}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <span className="text-[10px] text-[#727972] mt-1 px-2">
                                       {msg.timestamp}
                                     </span>
                                   </div>
