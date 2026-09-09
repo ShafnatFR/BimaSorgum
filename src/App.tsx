@@ -46,7 +46,6 @@ import MarkdownText from './components/Chat/MarkdownText';
 
 import { CookModeModal } from './components/Modals/CookModeModal';
 import { RecipeDetailPage } from './components/RecipeDetail/RecipeDetailPage';
-import { ImageUploadModal } from './components/Modals/ImageUploadModal';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
@@ -156,7 +155,6 @@ export default function App() {
   const [selectedRecipeDetail, setSelectedRecipeDetail] = useState<Recipe | null>(null);
   const [selectedVideoTutorial, setSelectedVideoTutorial] = useState<VideoTutorialItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [isImagePickerOpen, setIsImagePickerOpen] = useState<boolean>(false);
 
   // Sync state from URL slug on mount and popstate/hashchange
   useEffect(() => {
@@ -1102,7 +1100,6 @@ export default function App() {
                       <ChatInputBar
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
-                        onOpenImagePicker={() => setIsImagePickerOpen(true)}
                       />
                     </div>
                   </div>
@@ -1148,15 +1145,6 @@ export default function App() {
           onClose={handleCloseCookMode}
         />
       )}
-
-      {/* Image Upload Modal */}
-      <ImageUploadModal
-        isOpen={isImagePickerOpen}
-        onClose={() => setIsImagePickerOpen(false)}
-        onSelectSampleImage={(title, prompt) => {
-          handleSendMessage(prompt);
-        }}
-      />
     </div>
   );
 }
