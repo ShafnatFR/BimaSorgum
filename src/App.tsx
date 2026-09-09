@@ -497,7 +497,8 @@ export default function App() {
               : m
           )
         );
-        persistChatExchange(trimmed, replyText.slice(0, 60), null);
+        // Persist the FULL reply so history playback is never truncated.
+        persistChatExchange(trimmed, replyText, null);
       }
     } catch (e) {
       console.error('chat error:', e);
