@@ -1,13 +1,13 @@
 /**
- * BIMA AI client — talks to the Living Labs BIMA Dashboard LLM backend.
- * Base URL: https://bima-dashboard.livinglabs.id
+ * BIMA AI client — talks to the SorghumCare LLM backend.
+ * Base URL: https://api.llmsorgum.online
  * Endpoint: POST /api/chat  body {message, history?} → {response}
  *
  * The backend is a RAG-powered FastAPI service with ChromaDB knowledge base
  * (34 chunks on sorgum). X-Api-Key is optional; X-Use-RAG true enriches the
  * prompt with relevant knowledge chunks.
  */
-const BIMA_BASE_URL = import.meta.env.VITE_BIMA_API_URL || 'https://bima-dashboard.livinglabs.id';
+const BIMA_BASE_URL = import.meta.env.VITE_BIMA_API_URL || 'https://api.llmsorgum.online';
 // Leave empty to use the backend's default model (from its /api/config).
 const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';
 const BIMA_API_KEY = import.meta.env.VITE_BIMA_API_KEY || '';
