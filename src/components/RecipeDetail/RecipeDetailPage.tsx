@@ -435,10 +435,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                   <span className="font-semibold text-[#1a1c1b]">{fiber}g</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[rgba(45,75,55,0.05)]">
-                  <span className="text-[#424843]">Protein</span>
-                  <span className="font-semibold text-[#1a1c1b]">{protein}g</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-[rgba(45,75,55,0.05)]">
                   <span className="text-[#424843]">Glycemic Index</span>
                   <span className="font-semibold text-[#1a1c1b]">
                     {nh.glycemicIndex || 'Rendah (Low GI)'}
