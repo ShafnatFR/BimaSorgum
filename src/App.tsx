@@ -433,11 +433,26 @@ export default function App() {
     navigateToSlug(RouteSlugs.generate());
     setIsGenerating(true);
 
-    // 2) Decide: is this a recipe request or a general chat message?
-    const isRecipeRequest = /resep|masak|menu|makanan|hidangan|bekal|sarapan|makan malam|makan siang|camilan|bubur|pancake|roti|kue|nasi|sorgum|membuat|buatkan|masakan|gizi|nutrisi|rendah|gluten|budget|hemat|modal|porsi/i.test(trimmed);
+    // 2) Build conversation history (for multi-turn context on general chat).
+    const history = chatMessages
+      .filter((m) => m.text || m.recipe)
+      .map((m) => ({
+        role: (m.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+        content: m.text || m.recipe?.title || '',
+      }))
+      .filter((h) => h.content.trim());
+
+    // 3) Decide intent. Only an EXPLICIT recipe order ("buatkan resep X") should
+    //    trigger the structured recipe card. Vague questions like "bingung mau
+    //    apa / ada saran / rekomendasi" stay conversational (list + follow-up).
+    const explicitRecipeOrder =
+      /\b(buatkan?|berikan?|carikan?|tuliskan?|buatin|kasih(?:kan)?|resep(?:kan)?)\b.*\b(resep|masak(?:an)?|menu|hidangan|makanan)\b/i.test(trimmed) ||
+      /^(resep|buat|bikinin?)\b/i.test(trimmed);
+
+    const isConversational = /bingung|saran|rekomendasi|apa saja|ada apa|pilih|pilihan|ide|gagasan|inspirasi|rekomend|\?$|gimana|bagaimana|apa yang/i.test(trimmed);
 
     try {
-      if (isRecipeRequest) {
+      if (explicitRecipeOrder && !isConversational) {
         // Recipe flow: generate a structured recipe (with DB persistence).
         const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
         setDynamicRecipes((prev) => [newRecipe, ...prev]);
@@ -451,7 +466,7 @@ export default function App() {
         persistChatExchange(trimmed, newRecipe.title, newRecipe);
       } else {
         // General chat flow: free-form AI answer, no recipe card.
-        const answer = await bimaChat(trimmed, [], { useRag: true });
+        const answer = await bimaChat(trimmed, history, { useRag: true });
         const replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
         setChatMessages((prev) =>
           prev.map((m) =>
