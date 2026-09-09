@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
+import { getRecipeSlug } from '../../utils/slugify';
+import { getShareableUrl, RouteSlugs } from '../../utils/slugRouter';
 
 interface RecipeCardViewProps {
   recipe: Recipe;
@@ -38,6 +40,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 }) => {
   const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
+  const [sharedLink, setSharedLink] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
@@ -60,6 +63,32 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         colors: ['#163422', '#7c5800', '#f4be55', '#afcfa9'],
       });
     }
+  };
+
+  const handleShareRecipe = async () => {
+    const shareText = `${recipe.title} — resep sorgum sehat dari SorghumCare\n\n${recipe.subtitle || ''}`;
+    const shareUrl = getShareableUrl(RouteSlugs.recipeSlug(getRecipeSlug(recipe)));
+    // Prefer the native Web Share API when available (mobile/desktop share sheet).
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.title, text: shareText, url: shareUrl });
+        return;
+      } catch {
+        /* user closed the sheet — fall back to copy */
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = `${shareText}\n${shareUrl}`;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+    setSharedLink(true);
+    setTimeout(() => setSharedLink(false), 2200);
   };
 
   const handleCopyRecipe = () => {
@@ -288,15 +317,24 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </button>
 
         {/* Guided Cooking Mode button */}
-        <button
-          onClick={() => onOpenCookMode(recipe)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs"
-        >
-          <Play className="w-3.5 h-3.5 fill-current text-[#fdc65c]" />
-          <span>Panduan Masak Interaktif</span>
-        </button>
+                <button
+                  onClick={() => onOpenCookMode(recipe)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current text-[#fdc65c]" />
+                  <span>Panduan Masak Interaktif</span>
+                </button>
 
-        {/* Text to Speech Read Aloud */}
+                {/* Share button */}
+                <button
+                  onClick={handleShareRecipe}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-[#c2c8c0] text-[#163422] hover:bg-[#f4f4f2] transition-all shadow-xs"
+                >
+                  {sharedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
+                  <span>{sharedLink ? 'Tautan Disalin' : 'Share'}</span>
+                </button>
+
+                {/* Text to Speech Read Aloud */}
         <button
           onClick={handleSpeakRecipe}
           className={`p-2 rounded-xl border text-xs font-semibold transition-all ${

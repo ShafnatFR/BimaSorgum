@@ -100,9 +100,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const toggleSave = useCallback(
     async (recipe: Recipe) => {
       const isSaved = isSavedForRecipe(recipe);
-      // Resolve the db uuid for this recipe (from catalog or the recipe itself)
-      const dbRecipe = getRecipeById(recipe.id) || getRecipeBySlug(recipe.slug || '') || recipe;
-      const recipeId = dbRecipe.id || recipe.id;
+      // Resolve the db uuid for this recipe. Generated recipes carry a
+      // client-side fake id (recipe-ai-...), so upsert-by-slug first to get
+      // the real uuid before writing saved_recipes (FK requires recipes.id).
+      let dbRecipe = getRecipeById(recipe.id) || getRecipeBySlug(recipe.slug || '');
+      if (!dbRecipe) {
+        const stored = await upsertRecipe(recipe);
+        if (stored) {
+          setRecipes((prev) => [stored, ...prev.filter((r) => r.slug !== stored.slug)]);
+          dbRecipe = stored;
+        }
+      }
+      const recipeId = (dbRecipe || recipe).id;
       if (isSaved) {
         const ok = await unsaveRecipeForUser(recipeId);
         if (ok) await refetchSaved();
