@@ -144,12 +144,22 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
     window.speechSynthesis.speak(utterance);
   };
 
-  // Macro estimates (scaled with servings)
-  const carbs = Math.round(45 * servingsMultiplier);
-  const protein = Math.round(15 * servingsMultiplier);
-  const fat = Math.round(12 * servingsMultiplier);
-  const calories = Math.round(380 * servingsMultiplier);
-  const fiber = Math.round(8 * servingsMultiplier);
+  // Macro estimates — DYNAMIC from the recipe's own nutrition data when present,
+  // scaled by the selected servings multiplier. Falls back to sensible sorghum
+  // defaults only when a value is genuinely absent.
+  const nh = recipe.nutritionHighlight || {};
+  const baseCalories = nh.caloriesEstimate || 380;
+  const baseProtein = nh.proteinGrams || 15;
+  const baseFiber = nh.fiberGrams || 8;
+  // Fat is not stored per-recipe; derive a moderate share (~28% of kcal / 9 kcal per g).
+  const derivedFat = Math.max(4, Math.round((baseCalories * 0.28) / 9));
+  // Carbs = remaining calories after protein & fat (4 kcal per g).
+  const derivedCarbs = Math.max(10, Math.round((baseCalories - baseProtein * 4 - derivedFat * 9) / 4));
+  const carbs = Math.round(derivedCarbs * servingsMultiplier);
+  const protein = Math.round(baseProtein * servingsMultiplier);
+  const fat = Math.round(derivedFat * servingsMultiplier);
+  const calories = Math.round(baseCalories * servingsMultiplier);
+  const fiber = Math.round(baseFiber * servingsMultiplier);
 
   return (
     <div className="bg-[#f9f9f7] text-[#1a1c1b] min-h-screen pb-24 md:pb-16 font-['Manrope',sans-serif] antialiased">
@@ -352,9 +362,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold text-[#1a1c1b]">Nutrition Facts</h3>
-                <span className="text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2.5 py-0.5 rounded-full">
-                  Superfood
-                </span>
+                                <span className="text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2.5 py-0.5 rounded-full">
+                                  {recipe.tags && recipe.tags.length ? recipe.tags[0] : 'Superfood'}
+                                </span>
               </div>
 
               {/* Macro Rings */}
@@ -425,8 +435,14 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                   <span className="font-semibold text-[#1a1c1b]">{fiber}g</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[rgba(45,75,55,0.05)]">
-                  <span className="text-[#424843]">Iron</span>
-                  <span className="font-semibold text-[#1a1c1b]">15% DV</span>
+                  <span className="text-[#424843]">Protein</span>
+                  <span className="font-semibold text-[#1a1c1b]">{protein}g</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-[rgba(45,75,55,0.05)]">
+                  <span className="text-[#424843]">Glycemic Index</span>
+                  <span className="font-semibold text-[#1a1c1b]">
+                    {nh.glycemicIndex || 'Rendah (Low GI)'}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-[#424843]">Estimasi Modal</span>
@@ -443,7 +459,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 info
               </span>
               <p>
-                Sorghum provides a lower glycemic index compared to white rice, supporting stable blood sugar levels.
+                {nh.glycemicIndex
+                  ? `Sorghum-based meals typically carry a ${nh.glycemicIndex.toLowerCase()} glycemic index, supporting stable blood sugar levels.`
+                  : 'Sorghum provides a lower glycemic index compared to white rice, supporting stable blood sugar levels.'}
               </p>
             </div>
           </div>
