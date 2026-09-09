@@ -62,7 +62,73 @@ function MarkdownText({ text }: { text: string }) {
   const blocks: React.ReactNode[] = [];
   let listBuffer: { type: 'ul' | 'ol'; items: string[] } | null = null;
   let paragraphBuffer: string[] = [];
+  // Table buffer: raw "| ... |" rows until flushed
+  let tableBuffer: string[] | null = null;
   let key = 0;
+
+  const isTableSeparator = (line: string) => {
+    // Matches rows like | --- | :---: | ---: | (dashes/colons/spaces only inside pipes)
+    const inner = line.trim().replace(/^\|/, '').replace(/\|$/, '');
+    return inner.split('|').every((cell) => /^[\s:|-]+$/.test(cell) && cell.includes('-'));
+  };
+
+  const parseTableRow = (line: string): string[] => {
+    let l = line.trim();
+    if (l.startsWith('|')) l = l.slice(1);
+    if (l.endsWith('|')) l = l.slice(0, -1);
+    return l.split('|').map((c) => c.trim());
+  };
+
+  const flushTable = () => {
+    if (!tableBuffer || tableBuffer.length === 0) {
+      tableBuffer = null;
+      return;
+    }
+    // Header = first row; second row (separator) is skipped if present.
+    const header = parseTableRow(tableBuffer[0]);
+    let startIdx = 1;
+    if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
+      startIdx = 2;
+    }
+    const body = tableBuffer.slice(startIdx).map(parseTableRow);
+
+    blocks.push(
+      <div key={`t${key++}`} className="my-2 overflow-x-auto">
+        <table className="w-full text-xs sm:text-sm border-collapse rounded-xl overflow-hidden">
+          <thead>
+            <tr className="bg-[#163422] text-white">
+              {header.map((cell, idx) => (
+                <th
+                  key={idx}
+                  className="px-3 py-2 text-left font-bold whitespace-nowrap border border-[#163422]/40"
+                >
+                  {renderInline(cell, `th${idx}`)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {body.map((row, ridx) => (
+              <tr
+                key={ridx}
+                className={ridx % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f2]/70'}
+              >
+                {row.map((cell, cidx) => (
+                  <td
+                    key={cidx}
+                    className="px-3 py-2 border border-[#e2e3e1] text-[#1A1C1B] align-top"
+                  >
+                    {renderInline(cell, `td${ridx}-${cidx}`)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+    tableBuffer = null;
+  };
 
   const flushList = () => {
     if (!listBuffer) return;
@@ -102,14 +168,34 @@ function MarkdownText({ text }: { text: string }) {
     }
   };
 
+  const flushAll = () => {
+    flushTable();
+    flushList();
+    flushParagraph();
+  };
+
   for (const raw of lines) {
     const line = raw.trimEnd();
 
     // Blank line: flush everything
     if (line.trim() === '') {
+      flushAll();
+      continue;
+    }
+
+    // Table row (starts with a pipe)
+    if (line.trim().startsWith('|')) {
       flushList();
       flushParagraph();
+      // Separator row after header: keep accumulating, it's part of table
+      if (!tableBuffer) tableBuffer = [];
+      tableBuffer.push(line.trim());
       continue;
+    }
+
+    // Any non-table line ends an in-progress table
+    if (tableBuffer && tableBuffer.length > 0) {
+      flushTable();
     }
 
     // Heading
@@ -159,8 +245,7 @@ function MarkdownText({ text }: { text: string }) {
 
     // Horizontal rule
     if (/^\s*(---+|\*\*\*+|___+)\s*$/.test(line)) {
-      flushList();
-      flushParagraph();
+      flushAll();
       blocks.push(<hr key={`hr${key++}`} className="my-2 border-[#e2e3e1]" />);
       continue;
     }
@@ -170,8 +255,7 @@ function MarkdownText({ text }: { text: string }) {
     paragraphBuffer.push(line.trim());
   }
 
-  flushList();
-  flushParagraph();
+  flushAll();
 
   return <div className="space-y-0.5">{blocks}</div>;
 }
