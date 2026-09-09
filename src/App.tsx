@@ -415,14 +415,6 @@ export default function App() {
 
     const newRecipe = await generateCustomRecipeQueryAsync(text);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
-    // Persist chat-generated recipe to Supabase
-    generateAndSave(newRecipe).then((stored) => {
-      if (stored && stored.slug) {
-        setDynamicRecipes((prev) =>
-          prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
-        );
-      }
-    });
 
     const aiMsg: ChatMessage = {
       id: `msg-ai-${Date.now()}`,
