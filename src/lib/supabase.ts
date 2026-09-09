@@ -209,6 +209,8 @@ export function mapRecipe(
     imageUrl: r.image_url || getRecipeImage(r.title, r.dish_category || undefined),
     tags: r.tags || [],
     createdAt: r.created_at || new Date().toISOString(),
+    isPublished: r.is_published,
+    canPublish: !!r.created_by && !r.is_system,
   };
 }
 
@@ -309,10 +311,15 @@ function groupBy<T>(arr: T[], key: keyof T): Map<string, T[]> {
  *  we store a user-created recipe row + children)
  * ================================================================== */
 
-/** Persist a generated recipe. Returns stored recipe (with slug) or null. */
-export async function upsertRecipe(recipe: Recipe): Promise<Recipe | null> {
+/** Persist a generated recipe (PRIVATE by default). Returns stored recipe (with slug) or null. */
+export async function upsertRecipe(
+  recipe: Recipe,
+  opts: { publish?: boolean } = {}
+): Promise<Recipe | null> {
+  const publish = !!opts.publish || !!recipe.isPublished;
   let slug = recipe.slug || slugifyTitle(recipe.title);
   const userId = await getUserIdAsync();
+  let wasPublished = false;
 
   // User-generated recipe that collides with a system/other-user slug must
   // get a unique slug (system rows are public-read, not user-owned, so an
@@ -322,11 +329,13 @@ export async function upsertRecipe(recipe: Recipe): Promise<Recipe | null> {
   if (userId) {
     const { data: existing } = await supabase
       .from('recipes')
-      .select('id, created_by')
+      .select('id, created_by, is_published')
       .eq('slug', slug)
       .maybeSingle();
     if (existing && existing.created_by !== userId) {
       slug = `${slug}-${Date.now().toString(36).slice(-5)}`;
+    } else if (existing) {
+      wasPublished = !!existing.is_published;
     }
   }
   const nh: NutritionHighlight = recipe.nutritionHighlight ?? {
@@ -364,7 +373,9 @@ export async function upsertRecipe(recipe: Recipe): Promise<Recipe | null> {
     nutrition_title: nh.title || null,
     nutrition_description: nh.description || null,
     is_system: false,
-    is_published: true,
+    // New generations stay PRIVATE until the owner presses "Unggah";
+    // system catalog rows keep is_published=true from the seed.
+    is_published: publish || wasPublished,
     created_by: userId ?? undefined,
   };
 
@@ -425,6 +436,22 @@ export function categoryToKey(label: string): DbRecipeRow['dish_category'] {
   if (l.includes('minuman')) return 'minuman_nutrisi';
   if (l.includes('dessert') || l.includes('rendah gi') || l.includes('kue')) return 'dessert_rendah_gi';
   return 'makanan_berat';
+}
+
+/** Publish an owned recipe so it appears in the public Explore catalog. */
+export async function publishRecipe(recipeId: string): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('recipes')
+    .update({ is_published: true })
+    .eq('id', recipeId)
+    .eq('created_by', userId);
+  if (error) {
+    console.error('publishRecipe error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 /* ================================================================== *
@@ -622,6 +649,50 @@ export async function saveChatMessages(
   }));
   const { error } = await supabase.from('chat_messages').insert(rows);
   return !error;
+}
+
+/** Delete a chat session (messages cascade). Returns true on success. */
+export async function deleteChatSession(sessionId: string): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('chat_sessions')
+    .delete()
+    .eq('id', sessionId)
+    .eq('user_id', userId);
+  if (error) {
+    console.error('deleteChatSession error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Get recipe ids referenced by messages in a session (to also delete user recipes). */
+export async function fetchSessionRecipeIds(sessionId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('recipe_id')
+    .eq('session_id', sessionId)
+    .not('recipe_id', 'is', null);
+  if (error || !data) return [];
+  return Array.from(new Set((data as { recipe_id: string }[]).map((d) => d.recipe_id!)));
+}
+
+/** Delete an owned recipe (only user-generated, not system). Cascade removes children. */
+export async function deleteOwnedRecipe(recipeId: string): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('recipes')
+    .delete()
+    .eq('id', recipeId)
+    .eq('created_by', userId)
+    .eq('is_system', false);
+  if (error) {
+    console.error('deleteOwnedRecipe error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 /* ================================================================== *

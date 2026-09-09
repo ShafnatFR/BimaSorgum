@@ -8,7 +8,7 @@ import {
   Clock, 
   Sparkles, 
   Copy, 
-  Share2, 
+  UploadCloud, 
   Check, 
   Flame, 
   Wheat, 
@@ -18,8 +18,6 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
-import { getRecipeSlug } from '../../utils/slugify';
-import { getShareableUrl, RouteSlugs } from '../../utils/slugRouter';
 
 interface RecipeCardViewProps {
   recipe: Recipe;
@@ -28,6 +26,12 @@ interface RecipeCardViewProps {
   isSaved: boolean;
   onToggleSave: (recipe: Recipe) => void;
   onOpenCookMode: (recipe: Recipe) => void;
+  /** true when this recipe is public (appears in Explore) */
+  isPublished?: boolean;
+  /** called when the owner clicks "Unggah" to publish the recipe */
+  onPublish?: (recipe: Recipe) => void | Promise<void>;
+  /** uploading state shown on the button */
+  isPublishing?: boolean;
 }
 
 export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
@@ -37,10 +41,12 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   isSaved,
   onToggleSave,
   onOpenCookMode,
+  isPublished = false,
+  onPublish,
+  isPublishing = false,
 }) => {
   const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
-  const [sharedLink, setSharedLink] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
@@ -65,30 +71,13 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     }
   };
 
-  const handleShareRecipe = async () => {
-    const shareText = `${recipe.title} — resep sorgum sehat dari SorghumCare\n\n${recipe.subtitle || ''}`;
-    const shareUrl = getShareableUrl(RouteSlugs.recipeSlug(getRecipeSlug(recipe)));
-    // Prefer the native Web Share API when available (mobile/desktop share sheet).
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: recipe.title, text: shareText, url: shareUrl });
-        return;
-      } catch {
-        /* user closed the sheet — fall back to copy */
-      }
-    }
+  const handlePublishRecipe = async () => {
+    if (!onPublish || isPublished) return;
     try {
-      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-    } catch {
-      const textArea = document.createElement('textarea');
-      textArea.value = `${shareText}\n${shareUrl}`;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
+      await onPublish(recipe);
+    } catch (e) {
+      console.error('Publish recipe failed:', e);
     }
-    setSharedLink(true);
-    setTimeout(() => setSharedLink(false), 2200);
   };
 
   const handleCopyRecipe = () => {
@@ -325,13 +314,33 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
                   <span>Panduan Masak Interaktif</span>
                 </button>
 
-                {/* Share button */}
+                {/* Unggah (publish to Explore) button */}
                 <button
-                  onClick={handleShareRecipe}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-[#c2c8c0] text-[#163422] hover:bg-[#f4f4f2] transition-all shadow-xs"
+                  onClick={handlePublishRecipe}
+                  disabled={isPublished || isPublishing || !onPublish}
+                  title={isPublished ? 'Resep ini sudah tampil di Explore' : 'Unggah resep agar terlihat di Explore'}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs ${
+                    isPublished
+                      ? 'bg-[#cbebc3] text-[#163422] border border-[#163422]/30 cursor-default'
+                      : 'bg-white border border-[#c2c8c0] text-[#163422] hover:bg-[#163422] hover:text-white'
+                  } ${isPublishing ? 'opacity-60' : ''}`}
                 >
-                  {sharedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
-                  <span>{sharedLink ? 'Tautan Disalin' : 'Share'}</span>
+                  {isPublished ? (
+                    <>
+                      <Check className="w-4 h-4 text-[#163422]" />
+                      <span>Di Explore</span>
+                    </>
+                  ) : isPublishing ? (
+                    <>
+                      <UploadCloud className="w-4 h-4 animate-pulse" />
+                      <span>Mengunggah...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-4 h-4" />
+                      <span>Unggah</span>
+                    </>
+                  )}
                 </button>
 
                 {/* Text to Speech Read Aloud */}

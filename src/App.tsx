@@ -50,7 +50,7 @@ import { ImageUploadModal } from './components/Modals/ImageUploadModal';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
-import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe } from './lib/supabase';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
 
@@ -67,6 +67,8 @@ export default function App() {
     toggleSave, 
     isSavedForRecipe, 
     generateAndSave, 
+    publishRecipe: publishRecipeCtx,
+    removeGeneratedRecipe: removeGeneratedRecipeCtx,
     refetchSaved, 
     getRecipeBySlug: dbGetRecipeBySlug,
     getRecipeById: dbGetRecipeById,
@@ -396,7 +398,7 @@ export default function App() {
       id: `msg-ai-${Date.now()}`,
       sender: 'ai',
       recipe: newRecipe,
-      timestamp: 'Baru saja',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isTypingStep: true,
       typingText: 'Sedang menulis langkah memasak...',
     };
@@ -443,7 +445,7 @@ export default function App() {
       id: aiPlaceholderId,
       sender: 'ai',
       text: 'Sedang menyusun respons...',
-      timestamp: 'Baru saja',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isTypingStep: true,
       typingText: 'SorghumCare AI sedang berpikir...',
     };
@@ -571,10 +573,79 @@ export default function App() {
     // Optimistic update is handled by context state change after refetch.
   };
 
+  // Recipes currently being uploaded (publish-to-Explore) by their db/source id.
+  const [publishingIds, setPublishingIds] = useState<Set<string>>(new Set());
+
+  const handlePublishRecipe = async (recipe: Recipe) => {
+    // Ensure the recipe row exists in DB (it may still carry a client-side id).
+    const stored = recipe.id.startsWith('recipe-')
+      ? await generateAndSave(recipe, { publish: true })
+      : recipe;
+    if (!stored?.id) return;
+    setPublishingIds((prev) => new Set(prev).add(stored.id));
+    try {
+      const ok = await publishRecipeCtx(stored.id);
+      if (ok) {
+        // Update any in-memory copy so the button flips to "Di Explore".
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.recipe && (m.recipe.id === recipe.id || m.recipe.slug === recipe.slug)
+              ? { ...m, recipe: { ...m.recipe, isPublished: true } }
+              : m
+          )
+        );
+        setDynamicRecipes((prev) =>
+          prev.map((r) =>
+            r.id === stored.id || r.slug === stored.slug ? { ...r, isPublished: true } : r
+          )
+        );
+        // Refresh catalog so the recipe appears in Explore immediately.
+        refetchSaved();
+        generateAndSave({ ...stored, isPublished: true }, { publish: true });
+      }
+    } finally {
+      setPublishingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(stored.id);
+        return next;
+      });
+    }
+  };
+
+  const handleDeleteRecentSession = async (sessionId: string) => {
+    try {
+      // Collect recipe ids inside this session first (before messages are gone).
+      const recipeIds = await fetchSessionRecipeIds(sessionId);
+      const ok = await deleteChatSession(sessionId);
+      if (!ok) return;
+      // Remove owned generated recipes referenced by the session.
+      for (const rid of recipeIds) {
+        await deleteOwnedRecipe(rid);
+      }
+      setChatSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      if (currentSessionIdRef.current === sessionId) {
+        setSessionIdBoth(null);
+        setChatMessages([]);
+        setActiveChatId(`chat-${Date.now()}`);
+      }
+      refetchSaved();
+    } catch (e) {
+      console.error('delete recent session error:', e);
+    }
+  };
+
   const isRecipeSaved = (recipeId?: string, title?: string) => {
     if (recipeId && savedIds.has(recipeId)) return true;
     return savedRecipes.some(
       (s) => (recipeId && s.recipe.id === recipeId) || (title && s.recipe.title === title)
+    );
+  };
+
+  // Is this recipe currently public (in Explore catalog)?
+  const isRecipePublished = (recipe: Recipe): boolean => {
+    if (recipe.isPublished) return true;
+    return dbRecipes.some(
+      (r) => r.slug === recipe.slug || r.id === recipe.id
     );
   };
 
@@ -758,6 +829,7 @@ export default function App() {
                   }
                   activeChatId={activeChatId}
                   onSelectChat={handleSelectRecentChat}
+                  onDeleteChat={handleDeleteRecentSession}
                   savedRecipes={savedRecipes}
                   onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
                   onOpenProfile={() => {
@@ -978,6 +1050,9 @@ export default function App() {
                                       isSaved={isRecipeSaved(msg.recipe.id, msg.recipe.title)}
                                       onToggleSave={handleToggleSaveRecipe}
                                       onOpenCookMode={handleOpenCookMode}
+                                      isPublished={!!msg.recipe.isPublished || isRecipePublished(msg.recipe)}
+                                      onPublish={handlePublishRecipe}
+                                      isPublishing={publishingIds.has(msg.recipe.id) || publishingIds.has(msg.recipe.slug || '')}
                                     />
                                     <span className="text-[10px] text-[#727972] mt-2 px-1">
                                       {msg.timestamp}

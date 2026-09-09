@@ -16,6 +16,8 @@ import {
   unsaveRecipeForUser,
   upsertRecipe,
   fetchRecipeBySlug,
+  publishRecipe as publishRecipeDb,
+  deleteOwnedRecipe,
 } from './supabase';
 
 interface DataContextValue {
@@ -29,7 +31,11 @@ interface DataContextValue {
   getRecipeById: (id: string) => Recipe | null;
   toggleSave: (recipe: Recipe) => Promise<boolean>;
   isSavedForRecipe: (recipe: Recipe) => boolean;
-  generateAndSave: (recipe: Recipe) => Promise<Recipe | null>;
+  generateAndSave: (recipe: Recipe, opts?: { publish?: boolean }) => Promise<Recipe | null>;
+  /** Publish an owned recipe (sets is_published = true) so it shows in Explore. */
+  publishRecipe: (recipeId: string) => Promise<boolean>;
+  /** Remove a generated recipe owned by the user. */
+  removeGeneratedRecipe: (recipeId: string) => Promise<boolean>;
   refetchSaved: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -107,7 +113,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (!dbRecipe) {
         const stored = await upsertRecipe(recipe);
         if (stored) {
-          setRecipes((prev) => [stored, ...prev.filter((r) => r.slug !== stored.slug)]);
+          // Keep the catalog clean: only public recipes belong in Explore.
+          setRecipes((prev) =>
+            stored.isPublished
+              ? [stored, ...prev.filter((r) => r.slug !== stored.slug)]
+              : prev.filter((r) => r.slug !== stored.slug)
+          );
           dbRecipe = stored;
         }
       }
@@ -126,15 +137,35 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const generateAndSave = useCallback(
-    async (recipe: Recipe) => {
-      const stored = await upsertRecipe(recipe);
+    async (recipe: Recipe, opts?: { publish?: boolean }) => {
+      const stored = await upsertRecipe(recipe, opts);
       if (stored) {
-        setRecipes((prev) => [stored, ...prev.filter((r) => r.slug !== stored.slug)]);
+        setRecipes((prev) => {
+          // Only public recipes belong in the Explore catalog list.
+          if (!stored.isPublished) {
+            return prev.filter((r) => r.slug !== stored.slug);
+          }
+          return [stored, ...prev.filter((r) => r.slug !== stored.slug)];
+        });
       }
       return stored;
     },
     []
   );
+
+  const publishRecipe = useCallback(async (recipeId: string) => {
+    const ok = await publishRecipeDb(recipeId);
+    if (ok) await refetchSaved();
+    return ok;
+  }, [refetchSaved]);
+
+  const removeGeneratedRecipe = useCallback(async (recipeId: string) => {
+    const ok = await deleteOwnedRecipe(recipeId);
+    if (ok) {
+      await Promise.all([refetchSaved(), loadCatalog()]);
+    }
+    return ok;
+  }, [refetchSaved, loadCatalog]);
 
   const value = useMemo<DataContextValue>(
     () => ({
@@ -148,6 +179,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       toggleSave,
       isSavedForRecipe,
       generateAndSave,
+      publishRecipe,
+      removeGeneratedRecipe,
       refetchSaved,
       refresh,
     }),
@@ -162,6 +195,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       toggleSave,
       isSavedForRecipe,
       generateAndSave,
+      publishRecipe,
+      removeGeneratedRecipe,
       refetchSaved,
       refresh,
     ]

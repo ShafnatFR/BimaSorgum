@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Settings, X, Sparkles, BookOpen, ArrowLeft } from 'lucide-react';
+import { Plus, MessageSquare, Settings, X, Sparkles, BookOpen, ArrowLeft, Trash2 } from 'lucide-react';
 import { SavedRecipe } from '../../types';
 import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 
@@ -10,6 +10,7 @@ interface SidebarProps {
   recentChats: { id: string; title: string; time?: string; preview?: string }[];
   activeChatId: string;
   onSelectChat: (chatId: string) => void;
+  onDeleteChat?: (chatId: string) => void;
   savedRecipes: SavedRecipe[];
   onSelectSavedRecipe: (saved: SavedRecipe) => void;
   onOpenProfile: () => void;
@@ -24,6 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   recentChats,
   activeChatId,
   onSelectChat,
+  onDeleteChat,
   savedRecipes,
   onSelectSavedRecipe,
   onOpenProfile,
@@ -44,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         id="sidebar"
-        className={`fixed md:static inset-y-0 left-0 w-[280px] bg-white z-50 shadow-2xl md:shadow-none flex flex-col h-full overflow-y-auto border-r border-[#e2e3e1] transition-transform duration-300 ease-in-out ${
+        className={`fixed md:sticky inset-y-0 left-0 w-[280px] bg-white z-50 md:top-0 md:self-start md:h-screen shadow-2xl md:shadow-none flex flex-col h-full overflow-y-auto border-r border-[#e2e3e1] transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
@@ -136,14 +138,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <ul className="space-y-1">
               {recentChats.map((chat) => {
                 const isActive = activeChatId === chat.id;
+                const isLegacy = chat.id.startsWith('chat-');
                 return (
-                  <li key={chat.id}>
+                  <li key={chat.id} className="group flex items-center gap-1">
                     <button
                       onClick={() => {
                         onSelectChat(chat.id);
                         if (window.innerWidth < 768) onClose();
                       }}
-                      className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all text-left text-xs sm:text-sm ${
+                      className={`flex-1 min-w-0 flex items-center gap-3 p-2.5 rounded-xl transition-all text-left text-xs sm:text-sm ${
                         isActive
                           ? 'bg-[#163422]/10 text-[#163422] font-semibold'
                           : 'text-[#424843] hover:bg-[#f4f4f2] hover:text-[#163422]'
@@ -152,6 +155,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <MessageSquare className="w-4 h-4 text-[#727972] flex-shrink-0" />
                       <span className="truncate flex-1">{chat.title}</span>
                     </button>
+                    {!isLegacy && onDeleteChat && (
+                      <button
+                        onClick={() => onDeleteChat(chat.id)}
+                        title="Hapus sesi & resepnya"
+                        aria-label="Hapus sesi"
+                        className="w-7 h-7 shrink-0 rounded-lg flex items-center justify-center text-[#b0b5af] hover:text-[#ba1a1a] hover:bg-[#ffdad6]/40 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
