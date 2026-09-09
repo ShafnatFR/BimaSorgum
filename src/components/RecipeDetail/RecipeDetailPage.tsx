@@ -46,55 +46,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [personalNotes, setPersonalNotes] = useState<string>('');
-  const [isSavingNotes, setIsSavingNotes] = useState<boolean>(false);
-  const [notesToast, setNotesToast] = useState<string | null>(null);
-
-  // Load existing note from Supabase if saved
-  React.useEffect(() => {
-    if (isSaved && recipe.id) {
-      import('../../lib/supabase').then(m => {
-        m.fetchSavedRecipes().then(list => {
-          const matched = list.find(s => s.recipe.id === recipe.id || s.recipe.slug === recipe.slug);
-          if (matched && matched.notes) {
-            setPersonalNotes(matched.notes);
-          }
-        });
-      });
-    }
-  }, [isSaved, recipe.id, recipe.slug]);
-
-  const handleSavePersonalNotes = async () => {
-    setIsSavingNotes(true);
-    try {
-      const { supabase, getUserIdAsync, fetchRecipeBySlug } = await import('../../lib/supabase');
-      const userId = await getUserIdAsync();
-      if (userId) {
-        // Resolve valid DB UUID if recipe.id is a string source_id
-        let targetUuid = recipe.id;
-        if (!targetUuid || !targetUuid.includes('-0000-') && targetUuid.length !== 36) {
-          const dbRec = await fetchRecipeBySlug(recipeSlug);
-          if (dbRec && dbRec.id) targetUuid = dbRec.id;
-        }
-
-        const { error } = await supabase.from('saved_recipes').upsert(
-          { user_id: userId, recipe_id: targetUuid, notes: personalNotes, is_favorite: true },
-          { onConflict: 'user_id,recipe_id' }
-        );
-
-        if (error) throw error;
-
-        setNotesToast('Catatan berhasil disimpan ke DB!');
-        setTimeout(() => setNotesToast(null), 3000);
-      }
-    } catch (err: any) {
-      console.error('Notes save error:', err);
-      setNotesToast('Gagal menyimpan catatan');
-      setTimeout(() => setNotesToast(null), 3000);
-    } finally {
-      setIsSavingNotes(false);
-    }
-  };
 
   const recipeSlug = getRecipeSlug(recipe);
   const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
@@ -584,49 +535,18 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
           </div>
 
           {/* Bottom CTA within instructions */}
-          <div className="pt-4 border-t border-[#e2e3e1] flex justify-end">
-            <button
-              onClick={() => onOpenCookMode(recipe)}
-              className="py-3 px-6 bg-[#163422] text-white hover:bg-[#2d4b37] rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
-            >
-              <Play className="w-4 h-4 fill-current text-[#fdc65c]" />
-              <span>Buka Panduan Langkah Interaktif (Cook Mode)</span>
-            </button>
-          </div>
-
-          {/* Personal Cooking Notes Section */}
-          <div className="mt-6 pt-6 border-t border-[#e2e3e1] space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-[#163422] flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-base text-[#7c5800]">edit_note</span>
-                <span>Catatan Pribadi Koki</span>
-              </h4>
-              {notesToast && (
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  {notesToast}
-                </span>
-              )}
-            </div>
-            <textarea
-              value={personalNotes}
-              onChange={(e) => setPersonalNotes(e.target.value)}
-              placeholder="Tambahkan catatan pribadi (misal: kurangi gula 1 sdt, ganti santan dengan susu kedelai)..."
-              rows={3}
-              className="w-full p-3 text-xs sm:text-sm border border-[#c2c8c0] rounded-xl outline-none focus:border-[#163422] focus:ring-1 focus:ring-[#163422] bg-[#f9f9f7]"
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={handleSavePersonalNotes}
-                disabled={isSavingNotes}
-                className="py-2 px-4 bg-[#163422] text-white text-xs font-bold rounded-xl hover:bg-[#2d4b37] transition-all cursor-pointer disabled:opacity-50"
-              >
-                {isSavingNotes ? 'Menyimpan...' : 'Simpan Catatan ke DB'}
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-};
+                    <div className="pt-4 border-t border-[#e2e3e1] flex justify-end">
+                      <button
+                        onClick={() => onOpenCookMode(recipe)}
+                        className="py-3 px-6 bg-[#163422] text-white hover:bg-[#2d4b37] rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <Play className="w-4 h-4 fill-current text-[#fdc65c]" />
+                        <span>Buka Panduan Langkah Interaktif (Cook Mode)</span>
+                      </button>
+                    </div>
+                  </section>
+                </main>
+              </div>
+            );
+          };
 
