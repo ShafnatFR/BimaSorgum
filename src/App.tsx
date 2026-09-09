@@ -446,13 +446,13 @@ export default function App() {
     //    trigger the structured recipe card. Vague questions like "bingung mau
     //    apa / ada saran / rekomendasi" stay conversational (list + follow-up).
     const explicitRecipeOrder =
-      /\b(buatkan?|berikan?|carikan?|tuliskan?|buatin|kasih(?:kan)?|resep(?:kan)?)\b.*\b(resep|masak(?:an)?|menu|hidangan|makanan)\b/i.test(trimmed) ||
-      /^(resep|buat|bikinin?)\b/i.test(trimmed);
+      /\b(buatkan?|berikan?|carikan?|tuliskan?|buatin|kasih(?:kan)?|resep(?:kan)?)\b.*\b(resep|masak(?:an)?|menu|hidangan|makanan)\b/i.test(trimmed) &&
+      !/bingung|saran|rekomendasi|apa saja|ada apa|pilih|pilihan|ide|gagasan|inspirasi|rekomend|\?$|gimana|bagaimana|apa yang/i.test(trimmed);
 
-    const isConversational = /bingung|saran|rekomendasi|apa saja|ada apa|pilih|pilihan|ide|gagasan|inspirasi|rekomend|\?$|gimana|bagaimana|apa yang/i.test(trimmed);
+    const isConversational = !explicitRecipeOrder;
 
     try {
-      if (explicitRecipeOrder && !isConversational) {
+      if (explicitRecipeOrder) {
         // Recipe flow: generate a structured recipe (with DB persistence).
         const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
         setDynamicRecipes((prev) => [newRecipe, ...prev]);
