@@ -81,6 +81,8 @@ export interface Recipe {
   canPublish?: boolean;
   /** validation/robustness issues surfaced to the UI (see recipeGuard.ts) */
   aiWarnings?: { level: 'warning' | 'error'; message: string }[];
+  /** full explanation text when the AI declined the request (illogical/price) */
+  aiRefusalText?: string;
 }
 
 export interface ChatMessage {

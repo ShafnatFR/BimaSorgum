@@ -57,15 +57,20 @@ const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
 4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
 5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).`;
 
-/** One attempt at calling the LLM and parsing a recipe JSON. Returns parsed or null. */
-async function tryGenerate(prompt: string): Promise<Record<string, any> | null> {
+/** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
+async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
   const result = await bimaChat(prompt, [], { useRag: true });
   if (!result || !result.response) return null;
-  return extractJsonFromLlm(result.response);
+  const parsed = extractJsonFromLlm(result.response);
+  if (parsed) return parsed;
+  // LLM declined with a prose explanation instead of JSON — surface it.
+  const msg = result.response.trim();
+  if (msg) return { __refusal: true, message: msg };
+  return null;
 }
 
 /** Call the LLM up to 2 times; retries once on empty/bad JSON. */
-async function generateWithRetry(prompt: string): Promise<Record<string, any> | null> {
+async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const parsed = await tryGenerate(prompt);
@@ -96,13 +101,22 @@ ${PROMPT_RULES}
 Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
 ${RECIPE_JSON_SCHEMA}`;
 
-    const parsed = await generateWithRetry(prompt);
-    if (parsed && parsed.title) {
-      const { issues, repaired } = validateRecipe(parsed, formData.budgetPerPortion);
+    const result = await generateWithRetry(prompt);
+    if (result && !('__refusal' in result) && result.title) {
+      const { issues, repaired } = validateRecipe(result, formData.budgetPerPortion);
       const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
       // Surface validation issues on the recipe object so the UI can warn the user.
       (recipe as any).aiWarnings = issues;
       return recipe;
+    }
+    if (result && '__refusal' in result) {
+      const refusalRecipe = recipeFromLlmJson(
+        { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
+        formData.budgetPerPortion,
+        formData.dishCategory
+      );
+      (refusalRecipe as any).aiRefusalText = result.message;
+      return refusalRecipe;
     }
     console.warn('BIMA AI returned non-JSON, falling back to offline generator.');
   } catch (err) {
@@ -442,12 +456,22 @@ ${RECIPE_JSON_SCHEMA}
 
 ${PROMPT_RULES}`;
 
-    const parsed = await generateWithRetry(prompt);
-    if (parsed && parsed.title) {
-      const { issues, repaired } = validateRecipe(parsed, 12000);
+    const result = await generateWithRetry(prompt);
+    if (result && !('__refusal' in result) && result.title) {
+      const { issues, repaired } = validateRecipe(result, 12000);
       const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
       (recipe as any).aiWarnings = issues;
       return recipe;
+    }
+    if (result && '__refusal' in result) {
+      // LLM declined with a prose explanation — carry the full text for the UI.
+      const refusalRecipe = recipeFromLlmJson(
+        { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
+        12000,
+        'camilan_sehat'
+      );
+      (refusalRecipe as any).aiRefusalText = result.message;
+      return refusalRecipe;
     }
     console.warn('BIMA AI returned non-JSON for custom query, falling back.');
   } catch (err) {

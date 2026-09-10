@@ -479,11 +479,15 @@ export default function App() {
         // Recipe flow: generate a structured recipe (with DB persistence).
         const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
 
-        // AI may refuse an illogical request (empty ingredients + refusal message).
-        // Render it as a text answer instead of a broken recipe card.
+        // AI may refuse an illogical/over-budget request. Render the full
+        // explanation as a text answer instead of a broken recipe card.
         const refusal = !newRecipe.ingredients || newRecipe.ingredients.length === 0;
         if (refusal) {
-          const msg = (newRecipe as any).aiWarnings?.[0]?.message || newRecipe.subtitle || 'Kombinasi bahan tidak dapat dibuat menjadi resep.';
+          const msg =
+            (newRecipe as any).aiRefusalText ||
+            (newRecipe as any).aiWarnings?.[0]?.message ||
+            newRecipe.subtitle ||
+            'Kombinasi bahan tidak dapat dibuat menjadi resep.';
           setChatMessages((prev) =>
             prev.map((m) =>
               m.id === aiPlaceholderId ? { ...m, text: msg, recipe: undefined, isTypingStep: false } : m
