@@ -62,7 +62,15 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
   const result = await bimaChat(prompt, [], { useRag: true });
   if (!result || !result.response) return null;
   const parsed = extractJsonFromLlm(result.response);
-  if (parsed) return parsed;
+  if (parsed) {
+    // Some responses are an explicit refusal object: {status:"ditolak", message:...}
+    const status = String((parsed as any).status || '').toLowerCase();
+    if (status === 'ditolak' || status === 'rejected' || status === 'refused') {
+      const msg = (parsed as any).message || (parsed as any).subtitle || '';
+      if (msg) return { __refusal: true, message: msg };
+    }
+    return parsed;
+  }
   // LLM declined with a prose explanation instead of JSON — surface it.
   const msg = result.response.trim();
   if (msg) return { __refusal: true, message: msg };
@@ -103,6 +111,18 @@ ${RECIPE_JSON_SCHEMA}`;
 
     const result = await generateWithRetry(prompt);
     if (result && !('__refusal' in result) && result.title) {
+      const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
+      if (ingredients.length === 0) {
+        // Valid JSON but empty ingredients — the LLM declined via an empty recipe.
+        const refusalRecipe = recipeFromLlmJson(
+          { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
+          formData.budgetPerPortion,
+          formData.dishCategory
+        );
+        (refusalRecipe as any).aiRefusalText =
+          (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
+        return refusalRecipe;
+      }
       const { issues, repaired } = validateRecipe(result, formData.budgetPerPortion);
       const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
       // Surface validation issues on the recipe object so the UI can warn the user.
@@ -458,6 +478,17 @@ ${PROMPT_RULES}`;
 
     const result = await generateWithRetry(prompt);
     if (result && !('__refusal' in result) && result.title) {
+      const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
+      if (ingredients.length === 0) {
+        const refusalRecipe = recipeFromLlmJson(
+          { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
+          12000,
+          'camilan_sehat'
+        );
+        (refusalRecipe as any).aiRefusalText =
+          (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
+        return refusalRecipe;
+      }
       const { issues, repaired } = validateRecipe(result, 12000);
       const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
       (recipe as any).aiWarnings = issues;
