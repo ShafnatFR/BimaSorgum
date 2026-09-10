@@ -14,6 +14,22 @@ export interface RecipeIssue {
   message: string;
 }
 
+/** Detect when the LLM declined to make a recipe (empty ingredients / refusal title). */
+export function isRefusal(parsed: Record<string, any> | null | undefined): { refused: boolean; message: string } {
+  if (!parsed) return { refused: false, message: '' };
+  const title = (parsed.title || '').toLowerCase();
+  const subtitle = (parsed.subtitle || '').toLowerCase();
+  const ings = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
+  const refusalKeywords = /tidak dapat dibuat|tidak bisa|tidak dapat disusun|tolak|tidak lazim|tidak cocok|menolak/i;
+  if (refusalKeywords.test(title) || refusalKeywords.test(subtitle) || ings.length === 0) {
+    return {
+      refused: true,
+      message: parsed.subtitle || parsed.title || 'Kombinasi bahan tidak dapat dibuat menjadi resep.',
+    };
+  }
+  return { refused: false, message: '' };
+}
+
 /** Ingredient keyword -> realistic minimum price (IDR) per standard portion. */
 const PREMIUM_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> = [
   { match: /salmon/i, min: 8000, label: 'salmon' },

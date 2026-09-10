@@ -478,15 +478,29 @@ export default function App() {
       if (explicitRecipeOrder) {
         // Recipe flow: generate a structured recipe (with DB persistence).
         const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
-        setDynamicRecipes((prev) => [newRecipe, ...prev]);
-        setChatMessages((prev) =>
-          prev.map((m) =>
-            m.id === aiPlaceholderId
-              ? { ...m, recipe: newRecipe, text: undefined, isTypingStep: false }
-              : m
-          )
-        );
-        persistChatExchange(trimmed, newRecipe.title, newRecipe);
+
+        // AI may refuse an illogical request (empty ingredients + refusal message).
+        // Render it as a text answer instead of a broken recipe card.
+        const refusal = !newRecipe.ingredients || newRecipe.ingredients.length === 0;
+        if (refusal) {
+          const msg = (newRecipe as any).aiWarnings?.[0]?.message || newRecipe.subtitle || 'Kombinasi bahan tidak dapat dibuat menjadi resep.';
+          setChatMessages((prev) =>
+            prev.map((m) =>
+              m.id === aiPlaceholderId ? { ...m, text: msg, recipe: undefined, isTypingStep: false } : m
+            )
+          );
+          persistChatExchange(trimmed, msg, null);
+        } else {
+          setDynamicRecipes((prev) => [newRecipe, ...prev]);
+          setChatMessages((prev) =>
+            prev.map((m) =>
+              m.id === aiPlaceholderId
+                ? { ...m, recipe: newRecipe, text: undefined, isTypingStep: false }
+                : m
+            )
+          );
+          persistChatExchange(trimmed, newRecipe.title, newRecipe);
+        }
       } else {
         // General chat flow: free-form AI answer, no recipe card.
         const answer = await bimaChat(trimmed, history, { useRag: true });
