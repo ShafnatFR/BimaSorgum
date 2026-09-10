@@ -31,7 +31,9 @@ export function isRefusal(parsed: Record<string, any> | null | undefined): { ref
 }
 
 /** Ingredient keyword -> realistic minimum price (IDR) per standard portion. */
-const PREMIUM_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> = [
+export interface PremiumFloor { match: RegExp; min: number; label: string }
+
+const PREMIUM_PRICE_FLOOR: Array<PremiumFloor> = [
   { match: /salmon/i, min: 8000, label: 'salmon' },
   { match: /wagyu/i, min: 15000, label: 'wagyu' },
   { match: /udang\s*jumbo|udang\s*windu|udang\s*besar/i, min: 8000, label: 'udang besar' },
@@ -45,6 +47,14 @@ const PREMIUM_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> 
   { match: /telur\s*(ayam\s*kampung|kampung)/i, min: 2500, label: 'telur kampung' },
   { match: /ayam\s*(utuh|fillet|dada|paha)/i, min: 5000, label: 'ayam' },
 ];
+
+/** Look up the realistic minimum price for an ingredient name, or null if it's a normal (cheap) ingredient. */
+export function getPremiumFloor(name: string): { min: number; label: string } | null {
+  for (const floor of PREMIUM_PRICE_FLOOR) {
+    if (floor.match.test(name)) return { min: floor.min, label: floor.label };
+  }
+  return null;
+}
 
 /** Pairs of flavours that clash and should trigger a warning (not an error). */
 const CONFLICTING_PAIRS: Array<{ a: RegExp; b: RegExp; reason: string }> = [

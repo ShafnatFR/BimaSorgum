@@ -52,6 +52,8 @@ import { useData } from './lib/dataContext';
 import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
+import { preflightPrompt, type PreflightResult } from './services/preflight';
+import { PreflightWarningModal } from './components/Modals/PreflightWarningModal';
 
 import { Menu, Sparkles, Plus, ArrowLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -82,6 +84,12 @@ export default function App() {
     typeof window !== 'undefined' ? window.innerWidth >= 768 : true
   );
   const [exploreCategoryKey, setExploreCategoryKey] = useState<string>('all');
+
+  // Preflight (pre-generation sanity check) state
+  const [preflight, setPreflight] = useState<{
+    result: PreflightResult;
+    prompt: string;
+  } | null>(null);
 
   // Dynamic & saved recipes
   const [dynamicRecipes, setDynamicRecipes] = useState<Recipe[]>([]);
@@ -434,6 +442,15 @@ export default function App() {
     const trimmed = text.trim();
     if (!trimmed) return;
 
+    // Preflight sanity check: catch illogical ingredient combos / unrealistic
+    // budget BEFORE hitting the AI, so we can warn the user instead of showing
+    // a recipe with red guard badges.
+    const pf = preflightPrompt(trimmed);
+    if (!pf.ok && /(buatkan?|berikan?|carikan?|resep|masak|menu|hidangan|makanan)/i.test(trimmed)) {
+      setPreflight({ result: pf, prompt: trimmed });
+      return;
+    }
+
     // 1) Optimistic user message — render immediately, no waiting on the LLM.
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
@@ -530,6 +547,22 @@ export default function App() {
       );
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Called when the user fixes the preflight warnings and proceeds.
+  const handlePreflightProceed = (correctedPrompt: string, raisedBudget: number | null) => {
+    setPreflight(null);
+    let finalPrompt = correctedPrompt;
+    if (raisedBudget != null) {
+      // Replace any existing "budget X" mention with the raised figure.
+      finalPrompt = finalPrompt.replace(/budget\s*(?:rp\s*)?[0-9][0-9.,]*(?:\s*ribu)?/gi, `budget ${raisedBudget}`);
+      if (!/budget/i.test(finalPrompt)) {
+        finalPrompt = `${finalPrompt} (budget ${raisedBudget})`;
+      }
+    }
+    if (finalPrompt.trim()) {
+      handleSendMessage(finalPrompt.trim());
     }
   };
 
@@ -1161,6 +1194,17 @@ export default function App() {
         <CookModeModal
           recipe={cookModeRecipe}
           onClose={handleCloseCookMode}
+        />
+      )}
+
+      {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
+      {preflight && (
+        <PreflightWarningModal
+          isOpen={true}
+          result={preflight.result}
+          originalPrompt={preflight.prompt}
+          onClose={() => setPreflight(null)}
+          onProceed={handlePreflightProceed}
         />
       )}
     </div>
