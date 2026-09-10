@@ -3,6 +3,7 @@ import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
+import { validateRecipe } from './recipeGuard';
 
 /** Build a Recipe object from a parsed LLM JSON, tolerating missing fields. */
 function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, fallbackCategory: string): Recipe {
@@ -47,6 +48,35 @@ const RECIPE_JSON_SCHEMA = `{
   "tags": ["string"]
 }`;
 
+// Rules injected into every generate prompt to harden against illogical
+// ingredient combos and unrealistic pricing (see recipeGuard.ts).
+const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
+1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis), JANGAN paksa membuat resep — tolak dengan sopan dan jelaskan alasannya singkat.
+2. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
+3. Jika total harga bahan melebihi budget, jangan paksa — sarankan menaikkan budget atau mengurangi bahan.
+4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
+5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).`;
+
+/** One attempt at calling the LLM and parsing a recipe JSON. Returns parsed or null. */
+async function tryGenerate(prompt: string): Promise<Record<string, any> | null> {
+  const result = await bimaChat(prompt, [], { useRag: true });
+  if (!result || !result.response) return null;
+  return extractJsonFromLlm(result.response);
+}
+
+/** Call the LLM up to 2 times; retries once on empty/bad JSON. */
+async function generateWithRetry(prompt: string): Promise<Record<string, any> | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const parsed = await tryGenerate(prompt);
+      if (parsed) return parsed;
+    } catch (err) {
+      console.warn(`BIMA AI attempt ${attempt + 1} failed:`, err);
+    }
+  }
+  return null;
+}
+
 /**
  * Generate a recipe from Wizard data using the BIMA AI LLM (Living Labs).
  * Falls back to the offline smart generator if the call fails.
@@ -61,20 +91,29 @@ Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria ber
 - Target Budget per porsi: Rp ${formData.budgetPerPortion}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
+${PROMPT_RULES}
+
 Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
 ${RECIPE_JSON_SCHEMA}`;
 
-    const result = await bimaChat(prompt, [], { useRag: true });
-    const parsed = extractJsonFromLlm(result.response);
+    const parsed = await generateWithRetry(prompt);
     if (parsed && parsed.title) {
-      return recipeFromLlmJson(parsed, formData.budgetPerPortion, formData.dishCategory);
+      const { issues, repaired } = validateRecipe(parsed, formData.budgetPerPortion);
+      const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
+      // Surface validation issues on the recipe object so the UI can warn the user.
+      (recipe as any).aiWarnings = issues;
+      return recipe;
     }
     console.warn('BIMA AI returned non-JSON, falling back to offline generator.');
   } catch (err) {
     console.warn('BIMA AI call failed, using offline fallback generator:', err);
   }
 
-  return generateRecipeFromWizard(formData);
+  const fallback = generateRecipeFromWizard(formData);
+  (fallback as any).aiWarnings = [
+    { level: 'error', message: 'AI tidak menghasilkan resep valid; ini resep cadangan (bukan hasil AI).' },
+  ];
+  return fallback;
 }
 
 export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
@@ -399,19 +438,27 @@ export async function generateCustomRecipeQueryAsync(userPrompt: string): Promis
     const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
 Pengguna meminta: "${userPrompt}"
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid tanpa markdown triple backticks dengan struktur:
-${RECIPE_JSON_SCHEMA}`;
+${RECIPE_JSON_SCHEMA}
 
-    const result = await bimaChat(prompt, [], { useRag: true });
-    const parsed = extractJsonFromLlm(result.response);
+${PROMPT_RULES}`;
+
+    const parsed = await generateWithRetry(prompt);
     if (parsed && parsed.title) {
-      return recipeFromLlmJson(parsed, 12000, 'camilan_sehat');
+      const { issues, repaired } = validateRecipe(parsed, 12000);
+      const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
+      (recipe as any).aiWarnings = issues;
+      return recipe;
     }
     console.warn('BIMA AI returned non-JSON for custom query, falling back.');
   } catch (err) {
     console.warn('BIMA AI custom query failed, using offline fallback:', err);
   }
 
-  return generateCustomRecipeQuery(userPrompt);
+  const fallback = generateCustomRecipeQuery(userPrompt);
+  (fallback as any).aiWarnings = [
+    { level: 'error', message: 'AI tidak menghasilkan resep valid; ini resep cadangan (bukan hasil AI).' },
+  ];
+  return fallback;
 }
 
 export function generateCustomRecipeQuery(userPrompt: string): Recipe {

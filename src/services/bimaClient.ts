@@ -55,65 +55,61 @@ export async function bimaChat(
   }
 
   const data = await res.json();
+  const response = data.response ?? data.answer ?? '';
+  // Backend sometimes returns a sentinel empty-string message instead of a real answer.
+  if (!response || !response.trim()) {
+    throw new Error('BIMA AI returned an empty response.');
+  }
+  if (/tidak ada teks respons/i.test(response)) {
+    throw new Error('BIMA AI backend failed to produce a response (empty text).');
+  }
   return {
-    response: data.response ?? data.answer ?? '',
+    response,
     sources: data.sources,
     model: data.model,
   };
 }
 
-/** Parse a recipe JSON from LLM text (tolerant of markdown fences & prose). */
+/** Parse a recipe JSON from LLM text (tolerant of markdown fences, prose & minor JSON defects). */
 export function extractJsonFromLlm(text: string): Record<string, any> | null {
   if (!text) return null;
 
-  // 1) Direct JSON parse
-  try {
-    return JSON.parse(text);
-  } catch {
-    /* continue */
-  }
+  const tryParse = (s: string): Record<string, any> | null => {
+    try {
+      const v = JSON.parse(s);
+      return v && typeof v === 'object' ? v : null;
+    } catch {
+      return null;
+    }
+  };
 
-  // 2) Strip markdown code fences
+  const candidates: string[] = [text.trim()];
+
+  // Strip markdown code fences into separate candidate blocks
   const fenced = text.replace(/```json/gi, '```').split('```');
   for (let i = 0; i < fenced.length; i++) {
     const block = fenced[i].trim();
-    if (block.startsWith('{') || block.startsWith('[')) {
-      try {
-        return JSON.parse(block);
-      } catch {
-        /* continue */
-      }
-    }
+    if (block.startsWith('{') || block.startsWith('[')) candidates.push(block);
   }
 
-  // 3) Extract the first {...} or [...] balanced substring
+  // Balanced substring from first { or [ to the LAST matching close
   const start = text.search(/[{[]/);
-  if (start === -1) return null;
-  const open = text[start];
-  const close = open === '{' ? '}' : ']';
-  let depth = 0;
-  let inString = false;
-  let esc = false;
-  for (let i = start; i < text.length; i++) {
-    const c = text[i];
-    if (inString) {
-      if (esc) esc = false;
-      else if (c === '\\') esc = true;
-      else if (c === '"') inString = false;
-      continue;
-    }
-    if (c === '"') inString = true;
-    else if (c === open) depth++;
-    else if (c === close) {
-      depth--;
-      if (depth === 0) {
-        try {
-          return JSON.parse(text.slice(start, i + 1));
-        } catch {
-          return null;
-        }
-      }
-    }
+  if (start !== -1) {
+    const open = text[start];
+    const close = open === '{' ? '}' : ']';
+    const lastClose = text.lastIndexOf(close);
+    if (lastClose > start) candidates.push(text.slice(start, lastClose + 1));
   }
+
+  for (const raw of candidates) {
+    const direct = tryParse(raw);
+    if (direct) return direct;
+    // Repair common LLM defect: a field key with no value ("key",) becomes ("key": null,).
+    // Only matches a bare key that is preceded by ',' or '{' (not a value), followed by a comma.
+    const repaired = raw.replace(/(?<=[,{]\s*)"([^"]+)"\s*,/g, '"$1": null,');
+    const fixed = tryParse(repaired);
+    if (fixed) return fixed;
+  }
+
   return null;
 }

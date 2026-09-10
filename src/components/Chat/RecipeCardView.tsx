@@ -137,6 +137,27 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </p>
       </div>
 
+      {/* AI robustness warnings (illogical combos, price/budget issues, fallback) */}
+      {recipe.aiWarnings && recipe.aiWarnings.length > 0 && (
+        <div className="space-y-1.5">
+          {recipe.aiWarnings.map((w, i) => (
+            <div
+              key={i}
+              className={`flex items-start gap-2 p-3 rounded-xl text-xs sm:text-sm border ${
+                w.level === 'error'
+                  ? 'bg-[#ffdad6]/50 border-[#ba1a1a]/30 text-[#ba1a1a]'
+                  : 'bg-[#fdc65c]/15 border-[#fdc65c]/40 text-[#7c5800]'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {w.level === 'error' ? 'error' : 'warning'}
+              </span>
+              <span className="leading-relaxed">{w.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* BAHAN-BAHAN Breakdown (Estimasi Rp ...) */}
       <div className="space-y-2 bg-white rounded-2xl p-4 border border-[#e2e3e1] shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-2">
