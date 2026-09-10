@@ -1,20 +1,17 @@
-import React, { useState, useRef } from 'react';
-import { Image, Mic, MicOff, Send, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mic, MicOff, Send, Sparkles } from 'lucide-react';
 
 interface ChatInputBarProps {
-  onSendMessage: (text: string, imageFile?: File | null) => void;
+  onSendMessage: (text: string) => void;
   isLoading?: boolean;
-  onOpenImagePicker?: () => void;
 }
 
 export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   onSendMessage,
   isLoading = false,
-  onOpenImagePicker,
 }) => {
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const quickPrompts = [
     'Bekal anak SD budget Rp 10.000',
@@ -70,17 +67,6 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      onSendMessage(
-        `Saya punya bahan makanan seperti pada foto ini. Tolong buatkan resep hidangan sorgum yang cocok!`,
-        file
-      );
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
   return (
     <div className="w-full bg-gradient-to-t from-[#F9F9F7] via-[#F9F9F7]/95 to-transparent pt-1.5 pb-2 sm:pt-2 sm:pb-2.5 px-3 sm:px-6">
       <div className="max-w-2xl mx-auto space-y-1.5">
@@ -107,32 +93,6 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
           onSubmit={handleSubmit}
           className="bg-white rounded-full shadow-xs border border-[#c2c8c0]/60 p-1 sm:p-1.5 pl-2 sm:pl-3 flex items-center gap-1.5 sm:gap-2 focus-within:border-[#163422]/50 focus-within:ring-2 focus-within:ring-[#163422]/10 transition-all"
         >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-
-          {/* Photo attach button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenImagePicker) {
-                onOpenImagePicker();
-              } else if (fileInputRef.current) {
-                fileInputRef.current.click();
-              }
-            }}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-[#424843] hover:bg-[#f4f4f2] hover:text-[#163422] transition-colors flex-shrink-0 cursor-pointer"
-            title="Tambah Foto Bahan"
-          >
-            <span className="material-symbols-outlined text-[20px] sm:text-[22px]">
-              add_photo_alternate
-            </span>
-          </button>
-
           {/* Text Input */}
           <input
             type="text"

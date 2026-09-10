@@ -46,14 +46,14 @@ import MarkdownText from './components/Chat/MarkdownText';
 
 import { CookModeModal } from './components/Modals/CookModeModal';
 import { RecipeDetailPage } from './components/RecipeDetail/RecipeDetailPage';
-import { ImageUploadModal } from './components/Modals/ImageUploadModal';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
-import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions } from './lib/supabase';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
+import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
 
-import { Menu, History, Sparkles, Plus, ArrowLeft } from 'lucide-react';
+import { Menu, Sparkles, Plus, ArrowLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -66,6 +66,8 @@ export default function App() {
     toggleSave, 
     isSavedForRecipe, 
     generateAndSave, 
+    publishRecipe: publishRecipeCtx,
+    removeGeneratedRecipe: removeGeneratedRecipeCtx,
     refetchSaved, 
     getRecipeBySlug: dbGetRecipeBySlug,
     getRecipeById: dbGetRecipeById,
@@ -76,7 +78,9 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
   const [wizardStep, setWizardStep] = useState<number>(1);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  );
   const [exploreCategoryKey, setExploreCategoryKey] = useState<string>('all');
 
   // Dynamic & saved recipes
@@ -86,15 +90,46 @@ export default function App() {
   const [activeChatId, setActiveChatId] = useState<string>('chat-4');
   // Chat sessions loaded from Supabase (anonymous user's history)
   const [chatSessions, setChatSessions] = useState<{ id: string; title: string; created_at?: string }[]>([]);
+  // DB id of the currently-open chat session (null = fresh unsaved conversation)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  // Sync mirror so async persist doesn't double-create sessions on rapid sends.
+  const currentSessionIdRef = React.useRef<string | null>(null);
+  const setSessionIdBoth = (id: string | null) => {
+      currentSessionIdRef.current = id;
+      setCurrentSessionId(id);
+    };
+
+    // Convert persisted chat_messages rows into the same shape used by the UI.
+    const rowsToChatMessages = (rows: DbChatMessageRow[]): ChatMessage[] =>
+      rows.map((row) => {
+        const timestamp = row.created_at
+          ? new Date(row.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          : '';
+        if (row.sender === 'user') return { id: `msg-${row.id}`, sender: 'user', text: row.content || '', timestamp };
+        if (row.recipe && (row as any)._recipeWithChildren) {
+          return { id: `msg-${row.id}`, sender: 'ai', recipe: (row as any)._recipeWithChildren, timestamp };
+        }
+        if (row.recipe && (row.recipe as unknown as Recipe)?.title) {
+          return { id: `msg-${row.id}`, sender: 'ai', recipe: mapRecipe(row.recipe as any), timestamp };
+        }
+        return { id: `msg-${row.id}`, sender: 'ai', text: row.content || '', timestamp };
+      });
 
   // Load chat sessions from DB once user is ready
   useEffect(() => {
     if (!ready) return;
     let alive = true;
-    fetchChatSessions().then((sessions) => {
-      if (alive && sessions.length) {
-        setChatSessions(sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at })));
-      }
+    fetchChatSessions().then(async (sessions) => {
+      if (!alive) return;
+      if (!sessions.length) return;
+      const mapped = sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at }));
+      setChatSessions(mapped);
+      setSessionIdBoth(sessions[0].id);
+      setActiveChatId(sessions[0].id);
+      // Auto-open the most recent session so the chat shows its real history.
+      const rows = await fetchChatSessionMessages(sessions[0].id);
+      if (!alive || !rows.length) return;
+      setChatMessages(rowsToChatMessages(rows));
     });
     return () => { alive = false; };
   }, [ready]);
@@ -109,22 +144,8 @@ export default function App() {
     prepTimeLimit: 'Maks 30 Menit',
   });
   
-  // Initial messages
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg-user-1',
-      sender: 'user',
-      text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
-      timestamp: '10:42 AM',
-    },
-    {
-      id: 'msg-ai-1',
-      sender: 'ai',
-      recipe: INITIAL_FEATURED_RECIPE,
-      timestamp: 'Baru saja',
-      isTypingStep: false,
-    },
-  ]);
+  // Initial messages — start clean; the hero/empty-state shows when empty.
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -134,8 +155,6 @@ export default function App() {
   const [selectedRecipeDetail, setSelectedRecipeDetail] = useState<Recipe | null>(null);
   const [selectedVideoTutorial, setSelectedVideoTutorial] = useState<VideoTutorialItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [isImagePickerOpen, setIsImagePickerOpen] = useState<boolean>(false);
-  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState<boolean>(false);
 
   // Sync state from URL slug on mount and popstate/hashchange
   useEffect(() => {
@@ -354,7 +373,9 @@ export default function App() {
     
     const userPromptText = `Rekomendasi resep ${wizardData.dishCategory.replace('_', ' ')} untuk ${
       wizardData.targetConsumers.join(', ')
-    } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}`;
+    } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}${
+      wizardData.prepTimeLimit ? ` dan waktu persiapan ${wizardData.prepTimeLimit.toLowerCase()}` : ''
+    }`;
 
     const newRecipe = await generateRecipeFromWizardAsync(wizardData);
     setDynamicRecipes((prev) => [newRecipe, ...prev]);
@@ -378,7 +399,7 @@ export default function App() {
       id: `msg-ai-${Date.now()}`,
       sender: 'ai',
       recipe: newRecipe,
-      timestamp: 'Baru saja',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isTypingStep: true,
       typingText: 'Sedang menulis langkah memasak...',
     };
@@ -387,6 +408,8 @@ export default function App() {
     setGeneratorMode('chat');
     setCurrentTab('generate');
     navigateToSlug(RouteSlugs.generate());
+    // Persist the wizard conversation as a new chat session (title = recipe name).
+    persistChatExchange(userPromptText, newRecipe.title, newRecipe);
 
     setTimeout(() => {
       setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
@@ -423,7 +446,7 @@ export default function App() {
       id: aiPlaceholderId,
       sender: 'ai',
       text: 'Sedang menyusun respons...',
-      timestamp: 'Baru saja',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isTypingStep: true,
       typingText: 'SorghumCare AI sedang berpikir...',
     };
@@ -475,7 +498,8 @@ export default function App() {
               : m
           )
         );
-        persistChatExchange(trimmed, replyText.slice(0, 60), null);
+        // Persist the FULL reply so history playback is never truncated.
+        persistChatExchange(trimmed, replyText, null);
       }
     } catch (e) {
       console.error('chat error:', e);
@@ -491,27 +515,53 @@ export default function App() {
     }
   };
 
+  // Derive a concise, conversational session title from a user prompt.
+  const deriveSessionTitle = (userText: string, recipe: Recipe | null): string => {
+    // If we generated a recipe, use its dish name — reads like a topic, like GPT.
+    if (recipe?.title) {
+      return recipe.title.length > 60 ? recipe.title.slice(0, 57).trimEnd() + '…' : recipe.title;
+    }
+    // General chat: strip leading boilerplate ("tolong", "berikan saya", ...) and
+    // keep the core ask. Fall back to truncated raw text if nothing else remains.
+    const cleaned = userText
+      .replace(/^(tolong|bantu|bisa|mohon|kak|bang|mas|bu|pak)?\s*(saya|aku)?\s*(mau|ingin|butuh)?\s*(berikan|carikan|buatkan|buatin|kasih|resepkan|tolong)\s+(saya|aku)?\s*/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const base = cleaned || userText;
+    return base.length > 60 ? base.slice(0, 57).trimEnd() + '…' : base;
+  };
+
   // Persist a chat exchange to Supabase (session + messages + optional recipe).
   const persistChatExchange = async (userText: string, aiText: string, recipe: Recipe | null) => {
     try {
-      let sessionId: string | null = chatSessions.length > 0 ? chatSessions[0].id : null;
+      let sessionId = currentSessionIdRef.current;
       if (!sessionId) {
-        const session = await createChatSession(userText.slice(0, 60) || 'Percakapan baru');
-        if (session) {
-          sessionId = session.id;
-          setChatSessions((prev) => [{ id: session.id, title: session.title }, ...prev]);
-        }
+        // Fresh conversation: create a session, title = smart summary.
+        const title = deriveSessionTitle(userText, recipe);
+        const session = await createChatSession(title);
+        if (!session) return;
+        sessionId = session.id;
+        setSessionIdBoth(session.id);
+        setChatSessions((prev) => [{ id: session.id, title: session.title, created_at: session.created_at }, ...prev]);
+        setActiveChatId(session.id);
       }
-      if (!sessionId) return;
       let recipeId: string | null = null;
       if (recipe) {
         const stored = await generateAndSave(recipe);
         recipeId = stored?.id ?? null;
+        // Session title = dish name (reads like a GPT/Gemini topic summary).
+        const betterTitle = recipe.title.length > 60 ? recipe.title.slice(0, 57).trimEnd() + '…' : recipe.title;
+        if (sessionId && betterTitle) {
+          await renameChatSession(sessionId, betterTitle);
+          setChatSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, title: betterTitle } : s)));
+        }
       }
       await saveChatMessages(sessionId, [
         { sender: 'user', content: userText },
         { sender: 'ai', content: aiText, recipe_id: recipeId },
       ]);
+      // Keep session ordering by most-recent-activity in Recent lists.
+      await touchChatSession(sessionId);
     } catch (e) {
       console.error('persistChat error:', e);
     }
@@ -525,6 +575,67 @@ export default function App() {
     // Optimistic update is handled by context state change after refetch.
   };
 
+  // Recipes currently being uploaded (publish-to-Explore) by their db/source id.
+  const [publishingIds, setPublishingIds] = useState<Set<string>>(new Set());
+
+  const handlePublishRecipe = async (recipe: Recipe) => {
+    // Ensure the recipe row exists in DB (it may still carry a client-side id).
+    const stored = recipe.id.startsWith('recipe-')
+      ? await generateAndSave(recipe, { publish: true })
+      : recipe;
+    if (!stored?.id) return;
+    setPublishingIds((prev) => new Set(prev).add(stored.id));
+    try {
+      const ok = await publishRecipeCtx(stored.id);
+      if (ok) {
+        // Update any in-memory copy so the button flips to "Di Explore".
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.recipe && (m.recipe.id === recipe.id || m.recipe.slug === recipe.slug)
+              ? { ...m, recipe: { ...m.recipe, isPublished: true } }
+              : m
+          )
+        );
+        setDynamicRecipes((prev) =>
+          prev.map((r) =>
+            r.id === stored.id || r.slug === stored.slug ? { ...r, isPublished: true } : r
+          )
+        );
+        // Refresh catalog so the recipe appears in Explore immediately.
+        refetchSaved();
+        generateAndSave({ ...stored, isPublished: true }, { publish: true });
+      }
+    } finally {
+      setPublishingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(stored.id);
+        return next;
+      });
+    }
+  };
+
+  const handleDeleteRecentSession = async (sessionId: string) => {
+    try {
+      // Collect recipe ids inside this session first (before messages are gone).
+      const recipeIds = await fetchSessionRecipeIds(sessionId);
+      const ok = await deleteChatSession(sessionId);
+      if (!ok) return;
+      // Remove owned generated recipes referenced by the session.
+      for (const rid of recipeIds) {
+        await deleteOwnedRecipe(rid);
+      }
+      setChatSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      if (currentSessionIdRef.current === sessionId) {
+        setSessionIdBoth(null);
+        setChatMessages([]);
+        setActiveChatId(`chat-${Date.now()}`);
+      }
+      refetchSaved();
+    } catch (e) {
+      console.error('delete recent session error:', e);
+    }
+  };
+
   const isRecipeSaved = (recipeId?: string, title?: string) => {
     if (recipeId && savedIds.has(recipeId)) return true;
     return savedRecipes.some(
@@ -532,59 +643,86 @@ export default function App() {
     );
   };
 
-  const handleSelectRecentChat = (chatId: string) => {
-    setActiveChatId(chatId);
-    setGeneratorMode('chat');
-    setCurrentTab('generate');
-    if (chatId === 'chat-1') {
-      const pRecipe = INITIAL_SAVED_RECIPES[0].recipe;
-      setChatMessages([
-        {
-          id: `msg-pancake-user`,
-          sender: 'user',
-          text: 'Bagikan resep gluten-free pancake sorgum yang lembut untuk balita.',
-          timestamp: '10:42 AM',
-        },
-        {
-          id: `msg-pancake-ai`,
-          sender: 'ai',
-          recipe: pRecipe,
-          timestamp: 'Kemarin',
-        },
-      ]);
-    } else if (chatId === 'chat-2') {
-      const bRecipe = INITIAL_SAVED_RECIPES[1].recipe;
-      setChatMessages([
-        {
-          id: `msg-bread-user`,
-          sender: 'user',
-          text: 'Resep roti tawar sorgum tanpa tepung gandum untuk penderita diabetes.',
-          timestamp: 'Kemarin',
-        },
-        {
-          id: `msg-bread-ai`,
-          sender: 'ai',
-          recipe: bRecipe,
-          timestamp: 'Kemarin',
-        },
-      ]);
-    } else {
-      setChatMessages([
-        {
-          id: 'msg-user-1',
-          sender: 'user',
-          text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
-          timestamp: '10:42 AM',
-        },
-        {
-          id: 'msg-ai-1',
-          sender: 'ai',
-          recipe: INITIAL_FEATURED_RECIPE,
-          timestamp: 'Baru saja',
-        },
-      ]);
-    }
+  // Is this recipe currently public (in Explore catalog)?
+  const isRecipePublished = (recipe: Recipe): boolean => {
+    if (recipe.isPublished) return true;
+    return dbRecipes.some(
+      (r) => r.slug === recipe.slug || r.id === recipe.id
+    );
   };
+
+  const handleSelectRecentChat = async (chatId: string) => {
+      setActiveChatId(chatId);
+      setGeneratorMode('chat');
+      setCurrentTab('generate');
+
+      // Only DB session ids (uuid) can be loaded back.
+      if (chatId === 'chat-1' || chatId === 'chat-2' || chatId === 'chat-3' || chatId === 'chat-4') {
+        // Legacy mock topics (no persisted session): keep the preset kit.
+        handleSelectMockRecent(chatId);
+        return;
+      }
+
+      setSessionIdBoth(chatId);
+      const rows = await fetchChatSessionMessages(chatId);
+      if (!rows.length) {
+        setChatMessages([]);
+        return;
+      }
+      setChatMessages(rowsToChatMessages(rows));
+    };
+
+    // Legacy mock chat presets (shown when no DB session exists yet).
+    const handleSelectMockRecent = (chatId: string) => {
+      if (chatId === 'chat-1') {
+        const pRecipe = INITIAL_SAVED_RECIPES[0].recipe;
+        setChatMessages([
+          {
+            id: `msg-pancake-user`,
+            sender: 'user',
+            text: 'Bagikan resep gluten-free pancake sorgum yang lembut untuk balita.',
+            timestamp: '10:42 AM',
+          },
+          {
+            id: `msg-pancake-ai`,
+            sender: 'ai',
+            recipe: pRecipe,
+            timestamp: 'Kemarin',
+          },
+        ]);
+      } else if (chatId === 'chat-2') {
+        const bRecipe = INITIAL_SAVED_RECIPES[1].recipe;
+        setChatMessages([
+          {
+            id: `msg-bread-user`,
+            sender: 'user',
+            text: 'Resep roti tawar sorgum tanpa tepung gandum untuk penderita diabetes.',
+            timestamp: 'Kemarin',
+          },
+          {
+            id: `msg-bread-ai`,
+            sender: 'ai',
+            recipe: bRecipe,
+            timestamp: 'Kemarin',
+          },
+        ]);
+      } else {
+        setChatMessages([
+          {
+            id: 'msg-user-1',
+            sender: 'user',
+            text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
+            timestamp: '10:42 AM',
+          },
+          {
+            id: 'msg-ai-1',
+            sender: 'ai',
+            recipe: INITIAL_FEATURED_RECIPE,
+            timestamp: 'Baru saja',
+          },
+        ]);
+      }
+    };
 
   const startGeneratorWithCategory = (categoryKey: string) => {
     setWizardData((prev) => ({
@@ -665,22 +803,23 @@ export default function App() {
           )}
 
           {currentTab === 'generate' && (
-            <div className="flex-1 flex flex-row min-h-screen w-full relative">
-              {/* Sidebar drawer in Chat mode */}
-              {generatorMode === 'chat' && (
-                <Sidebar
-                  isOpen={isSidebarOpen}
-                  onClose={() => setIsSidebarOpen(false)}
+                      <div className="flex-1 flex flex-row min-h-screen w-full relative">
+                        {/* Sidebar (left) — hidden completely when toggled off */}
+                        {generatorMode === 'chat' && isSidebarOpen && (
+                          <Sidebar
+                            isOpen={isSidebarOpen}
+                            onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
-                    // Reset to a fresh chat session in-place (stay in chat mode).
-                    setChatMessages([]);
-                    setActiveChatId(`chat-${Date.now()}`);
-                    setGeneratorMode('chat');
-                    setCurrentTab('generate');
-                    setIsGenerating(false);
-                    setIsSidebarOpen(false);
-                    navigateToSlug(RouteSlugs.generate());
-                  }}
+                                      // Reset to a fresh chat session in-place (stay in chat mode).
+                                      setChatMessages([]);
+                                      setSessionIdBoth(null);
+                                      setActiveChatId(`chat-${Date.now()}`);
+                                      setGeneratorMode('chat');
+                                      setCurrentTab('generate');
+                                      setIsGenerating(false);
+                                      setIsSidebarOpen(false);
+                                      navigateToSlug(RouteSlugs.generate());
+                                    }}
                   recentChats={
                     chatSessions.length
                       ? chatSessions.map((s) => ({
@@ -692,8 +831,14 @@ export default function App() {
                   }
                   activeChatId={activeChatId}
                   onSelectChat={handleSelectRecentChat}
+                  onDeleteChat={handleDeleteRecentSession}
                   savedRecipes={savedRecipes}
-                  onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
+                                    onSelectSavedRecipe={(saved) => handleViewRecipe(saved.recipe)}
+                                    onSeeAllRecipes={() => {
+                                      setSelectedRecipeDetail(null);
+                                      handleSelectTab('profile');
+                                      setIsSidebarOpen(false);
+                                    }}
                   onOpenProfile={() => {
                     setSelectedRecipeDetail(null);
                     handleSelectTab('profile');
@@ -774,23 +919,18 @@ export default function App() {
                       <div className="flex items-center gap-2">
                         <button
                           id="btn-hamburger-menu"
-                          onClick={() => setIsSidebarOpen(true)}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-[#1A1C1B] hover:bg-[#e2e3e1] transition-colors cursor-pointer"
-                          aria-label="Buka Menu"
+                          onClick={() => setIsSidebarOpen((v) => !v)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                            isSidebarOpen ? 'bg-[#163422] text-white' : 'text-[#1A1C1B] hover:bg-[#e2e3e1]'
+                          }`}
+                          aria-label={isSidebarOpen ? 'Sembunyikan Menu' : 'Tampilkan Menu'}
+                          title={isSidebarOpen ? 'Sembunyikan sidebar' : 'Tampilkan sidebar'}
                         >
                           <Menu className="w-5 h-5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setIsHistoryDrawerOpen(!isHistoryDrawerOpen)}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-[#424843] hover:bg-[#e2e3e1] active:scale-95 transition-all duration-150 cursor-pointer"
-                          title="Riwayat Resep"
-                        >
-                          <History className="w-5 h-5" />
-                        </button>
-                      </div>
+                      <div className="flex items-center gap-2" />
                     </header>
 
                     <main className="flex-1 overflow-y-auto px-4 md:px-8 pb-36 pt-6 md:pt-10 flex flex-col items-center">
@@ -912,6 +1052,9 @@ export default function App() {
                                       isSaved={isRecipeSaved(msg.recipe.id, msg.recipe.title)}
                                       onToggleSave={handleToggleSaveRecipe}
                                       onOpenCookMode={handleOpenCookMode}
+                                      isPublished={!!msg.recipe.isPublished || isRecipePublished(msg.recipe)}
+                                      onPublish={handlePublishRecipe}
+                                      isPublishing={publishingIds.has(msg.recipe.id) || publishingIds.has(msg.recipe.slug || '')}
                                     />
                                     <span className="text-[10px] text-[#727972] mt-2 px-1">
                                       {msg.timestamp}
@@ -957,7 +1100,6 @@ export default function App() {
                       <ChatInputBar
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
-                        onOpenImagePicker={() => setIsImagePickerOpen(true)}
                       />
                     </div>
                   </div>
@@ -1002,68 +1144,6 @@ export default function App() {
           recipe={cookModeRecipe}
           onClose={handleCloseCookMode}
         />
-      )}
-
-      {/* Image Upload Modal */}
-      <ImageUploadModal
-        isOpen={isImagePickerOpen}
-        onClose={() => setIsImagePickerOpen(false)}
-        onSelectSampleImage={(title, prompt) => {
-          handleSendMessage(prompt);
-        }}
-      />
-
-      {/* History Drawer Modal */}
-      {isHistoryDrawerOpen && (
-        <div className="fixed inset-0 z-50 bg-[#1A1C1B]/40 backdrop-blur-xs flex justify-end">
-          <div className="w-full max-w-xs bg-white h-full shadow-2xl p-5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-[#e2e3e1]">
-                <h3 className="font-bold text-base text-[#163422] flex items-center gap-2">
-                  <History className="w-5 h-5" />
-                  Riwayat Percakapan
-                </h3>
-                <button
-                  onClick={() => setIsHistoryDrawerOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#f4f4f2] flex items-center justify-center text-sm font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="py-4 space-y-2">
-                {RECENT_CHAT_TOPICS.map((chat) => (
-                  <button
-                    key={chat.id}
-                    onClick={() => {
-                      handleSelectRecentChat(chat.id);
-                      setIsHistoryDrawerOpen(false);
-                    }}
-                    className="w-full text-left p-3 rounded-xl hover:bg-[#f9f9f7] border border-[#e2e3e1] transition-all"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-xs text-[#163422]">{chat.title}</span>
-                      <span className="text-[10px] text-[#727972]">{chat.time}</span>
-                    </div>
-                    <p className="text-[11px] text-[#424843] truncate">{chat.preview}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setChatMessages([]);
-                handleSetWizardStep(1);
-                setIsHistoryDrawerOpen(false);
-              }}
-              className="w-full py-3 bg-[#163422] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Mulai Percakapan Baru
-            </button>
-          </div>
-        </div>
       )}
     </div>
   );

@@ -75,6 +75,10 @@ export interface Recipe {
   imageUrl?: string;
   tags: string[];
   createdAt: string;
+  /** false = private (only visible to owner); true = public in Explore */
+  isPublished?: boolean;
+  /** whether this recipe can be published (owner's own generated recipe) */
+  canPublish?: boolean;
 }
 
 export interface ChatMessage {

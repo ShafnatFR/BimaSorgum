@@ -48,6 +48,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showToast, setShowToast] = useState<string | null>(null);
+  // "See All" gallery mode: false = recent preview (first 4), true = full grid gallery
+  const [showAllSaved, setShowAllSaved] = useState(false);
 
   useEffect(() => {
     setUserName(userNameProp);
@@ -171,21 +173,40 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Saved Recipes */}
         <section className="space-y-3">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">Recent Saved Recipes</h2>
-            {savedRecipes.length > 0 && (
-              <span className="text-xs font-bold text-[#163422]">{savedRecipes.length} tersimpan</span>
-            )}
+            <div>
+              <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">
+                {showAllSaved ? 'Galeri Resep Tersimpan' : 'Recent Saved Recipes'}
+              </h2>
+              {showAllSaved && (
+                <p className="text-[11px] text-[#727972] mt-0.5">
+                  Semua resep favoritmu dalam satu tampilan grid.
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {savedRecipes.length > 4 && (
+                <button
+                  onClick={() => setShowAllSaved((v) => !v)}
+                  className="text-xs font-bold text-[#163422] bg-[#163422]/10 hover:bg-[#163422]/20 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                >
+                  {showAllSaved ? 'Ringkas' : `See All (${savedRecipes.length})`}
+                </button>
+              )}
+              {!showAllSaved && savedRecipes.length > 0 && (
+                <span className="text-xs font-bold text-[#163422]">{savedRecipes.length} tersimpan</span>
+              )}
+            </div>
           </div>
           {savedRecipes.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
               <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
               <p className="text-xs text-[#727972]">
-                Belum ada resep tersimpan. Ketuk ikon hati di halaman resep untuk menyimpan favorit Anda.
+                Belum ada resep tersimpan. Ketuk "Simpan Resep" pada kartu resep untuk menyimpan favorit Anda.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
-              {savedRecipes.map((saved) => (
+              {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 4)).map((saved) => (
                 <div
                   key={saved.id}
                   onClick={() => handleRecipeClick(saved.recipe)}

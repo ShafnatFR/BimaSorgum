@@ -8,7 +8,7 @@ import {
   Clock, 
   Sparkles, 
   Copy, 
-  Share2, 
+  UploadCloud, 
   Check, 
   Flame, 
   Wheat, 
@@ -26,6 +26,12 @@ interface RecipeCardViewProps {
   isSaved: boolean;
   onToggleSave: (recipe: Recipe) => void;
   onOpenCookMode: (recipe: Recipe) => void;
+  /** true when this recipe is public (appears in Explore) */
+  isPublished?: boolean;
+  /** called when the owner clicks "Unggah" to publish the recipe */
+  onPublish?: (recipe: Recipe) => void | Promise<void>;
+  /** uploading state shown on the button */
+  isPublishing?: boolean;
 }
 
 export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
@@ -35,6 +41,9 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   isSaved,
   onToggleSave,
   onOpenCookMode,
+  isPublished = false,
+  onPublish,
+  isPublishing = false,
 }) => {
   const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
@@ -59,6 +68,15 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         origin: { y: 0.8 },
         colors: ['#163422', '#7c5800', '#f4be55', '#afcfa9'],
       });
+    }
+  };
+
+  const handlePublishRecipe = async () => {
+    if (!onPublish || isPublished) return;
+    try {
+      await onPublish(recipe);
+    } catch (e) {
+      console.error('Publish recipe failed:', e);
     }
   };
 
@@ -288,15 +306,44 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </button>
 
         {/* Guided Cooking Mode button */}
-        <button
-          onClick={() => onOpenCookMode(recipe)}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs"
-        >
-          <Play className="w-3.5 h-3.5 fill-current text-[#fdc65c]" />
-          <span>Panduan Masak Interaktif</span>
-        </button>
+                <button
+                  onClick={() => onOpenCookMode(recipe)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current text-[#fdc65c]" />
+                  <span>Panduan Masak Interaktif</span>
+                </button>
 
-        {/* Text to Speech Read Aloud */}
+                {/* Unggah (publish to Explore) button */}
+                <button
+                  onClick={handlePublishRecipe}
+                  disabled={isPublished || isPublishing || !onPublish}
+                  title={isPublished ? 'Resep ini sudah tampil di Explore' : 'Unggah resep agar terlihat di Explore'}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-xs ${
+                    isPublished
+                      ? 'bg-[#cbebc3] text-[#163422] border border-[#163422]/30 cursor-default'
+                      : 'bg-white border border-[#c2c8c0] text-[#163422] hover:bg-[#163422] hover:text-white'
+                  } ${isPublishing ? 'opacity-60' : ''}`}
+                >
+                  {isPublished ? (
+                    <>
+                      <Check className="w-4 h-4 text-[#163422]" />
+                      <span>Di Explore</span>
+                    </>
+                  ) : isPublishing ? (
+                    <>
+                      <UploadCloud className="w-4 h-4 animate-pulse" />
+                      <span>Mengunggah...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-4 h-4" />
+                      <span>Unggah</span>
+                    </>
+                  )}
+                </button>
+
+                {/* Text to Speech Read Aloud */}
         <button
           onClick={handleSpeakRecipe}
           className={`p-2 rounded-xl border text-xs font-semibold transition-all ${

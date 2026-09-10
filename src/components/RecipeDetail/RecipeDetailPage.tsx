@@ -46,55 +46,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [personalNotes, setPersonalNotes] = useState<string>('');
-  const [isSavingNotes, setIsSavingNotes] = useState<boolean>(false);
-  const [notesToast, setNotesToast] = useState<string | null>(null);
-
-  // Load existing note from Supabase if saved
-  React.useEffect(() => {
-    if (isSaved && recipe.id) {
-      import('../../lib/supabase').then(m => {
-        m.fetchSavedRecipes().then(list => {
-          const matched = list.find(s => s.recipe.id === recipe.id || s.recipe.slug === recipe.slug);
-          if (matched && matched.notes) {
-            setPersonalNotes(matched.notes);
-          }
-        });
-      });
-    }
-  }, [isSaved, recipe.id, recipe.slug]);
-
-  const handleSavePersonalNotes = async () => {
-    setIsSavingNotes(true);
-    try {
-      const { supabase, getUserIdAsync, fetchRecipeBySlug } = await import('../../lib/supabase');
-      const userId = await getUserIdAsync();
-      if (userId) {
-        // Resolve valid DB UUID if recipe.id is a string source_id
-        let targetUuid = recipe.id;
-        if (!targetUuid || !targetUuid.includes('-0000-') && targetUuid.length !== 36) {
-          const dbRec = await fetchRecipeBySlug(recipeSlug);
-          if (dbRec && dbRec.id) targetUuid = dbRec.id;
-        }
-
-        const { error } = await supabase.from('saved_recipes').upsert(
-          { user_id: userId, recipe_id: targetUuid, notes: personalNotes, is_favorite: true },
-          { onConflict: 'user_id,recipe_id' }
-        );
-
-        if (error) throw error;
-
-        setNotesToast('Catatan berhasil disimpan ke DB!');
-        setTimeout(() => setNotesToast(null), 3000);
-      }
-    } catch (err: any) {
-      console.error('Notes save error:', err);
-      setNotesToast('Gagal menyimpan catatan');
-      setTimeout(() => setNotesToast(null), 3000);
-    } finally {
-      setIsSavingNotes(false);
-    }
-  };
 
   const recipeSlug = getRecipeSlug(recipe);
   const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
@@ -144,12 +95,22 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
     window.speechSynthesis.speak(utterance);
   };
 
-  // Macro estimates (scaled with servings)
-  const carbs = Math.round(45 * servingsMultiplier);
-  const protein = Math.round(15 * servingsMultiplier);
-  const fat = Math.round(12 * servingsMultiplier);
-  const calories = Math.round(380 * servingsMultiplier);
-  const fiber = Math.round(8 * servingsMultiplier);
+  // Macro estimates — DYNAMIC from the recipe's own nutrition data when present,
+  // scaled by the selected servings multiplier. Falls back to sensible sorghum
+  // defaults only when a value is genuinely absent.
+  const nh = recipe.nutritionHighlight || {};
+  const baseCalories = nh.caloriesEstimate || 380;
+  const baseProtein = nh.proteinGrams || 15;
+  const baseFiber = nh.fiberGrams || 8;
+  // Fat is not stored per-recipe; derive a moderate share (~28% of kcal / 9 kcal per g).
+  const derivedFat = Math.max(4, Math.round((baseCalories * 0.28) / 9));
+  // Carbs = remaining calories after protein & fat (4 kcal per g).
+  const derivedCarbs = Math.max(10, Math.round((baseCalories - baseProtein * 4 - derivedFat * 9) / 4));
+  const carbs = Math.round(derivedCarbs * servingsMultiplier);
+  const protein = Math.round(baseProtein * servingsMultiplier);
+  const fat = Math.round(derivedFat * servingsMultiplier);
+  const calories = Math.round(baseCalories * servingsMultiplier);
+  const fiber = Math.round(baseFiber * servingsMultiplier);
 
   return (
     <div className="bg-[#f9f9f7] text-[#1a1c1b] min-h-screen pb-24 md:pb-16 font-['Manrope',sans-serif] antialiased">
@@ -352,9 +313,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold text-[#1a1c1b]">Nutrition Facts</h3>
-                <span className="text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2.5 py-0.5 rounded-full">
-                  Superfood
-                </span>
+                                <span className="text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2.5 py-0.5 rounded-full">
+                                  {recipe.tags && recipe.tags.length ? recipe.tags[0] : 'Superfood'}
+                                </span>
               </div>
 
               {/* Macro Rings */}
@@ -425,8 +386,10 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                   <span className="font-semibold text-[#1a1c1b]">{fiber}g</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-[rgba(45,75,55,0.05)]">
-                  <span className="text-[#424843]">Iron</span>
-                  <span className="font-semibold text-[#1a1c1b]">15% DV</span>
+                  <span className="text-[#424843]">Glycemic Index</span>
+                  <span className="font-semibold text-[#1a1c1b]">
+                    {nh.glycemicIndex || 'Rendah (Low GI)'}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-[#424843]">Estimasi Modal</span>
@@ -443,7 +406,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 info
               </span>
               <p>
-                Sorghum provides a lower glycemic index compared to white rice, supporting stable blood sugar levels.
+                {nh.glycemicIndex
+                  ? `Sorghum-based meals typically carry a ${nh.glycemicIndex.toLowerCase()} glycemic index, supporting stable blood sugar levels.`
+                  : 'Sorghum provides a lower glycemic index compared to white rice, supporting stable blood sugar levels.'}
               </p>
             </div>
           </div>
@@ -551,8 +516,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       {step.title}
                     </h4>
                     {step.timerMinutes && (
-                      <span className="text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full">
-                        ⏱️ {step.timerMinutes} Menit
+                      <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
+                        <Clock className="w-3.5 h-3.5 text-[#7c5800]" />
+                        {step.timerMinutes} Menit
                       </span>
                     )}
                   </div>
@@ -570,49 +536,18 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
           </div>
 
           {/* Bottom CTA within instructions */}
-          <div className="pt-4 border-t border-[#e2e3e1] flex justify-end">
-            <button
-              onClick={() => onOpenCookMode(recipe)}
-              className="py-3 px-6 bg-[#163422] text-white hover:bg-[#2d4b37] rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
-            >
-              <Play className="w-4 h-4 fill-current text-[#fdc65c]" />
-              <span>Buka Panduan Langkah Interaktif (Cook Mode)</span>
-            </button>
-          </div>
-
-          {/* Personal Cooking Notes Section */}
-          <div className="mt-6 pt-6 border-t border-[#e2e3e1] space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-[#163422] flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-base text-[#7c5800]">edit_note</span>
-                <span>Catatan Pribadi Koki</span>
-              </h4>
-              {notesToast && (
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  {notesToast}
-                </span>
-              )}
-            </div>
-            <textarea
-              value={personalNotes}
-              onChange={(e) => setPersonalNotes(e.target.value)}
-              placeholder="Tambahkan catatan pribadi (misal: kurangi gula 1 sdt, ganti santan dengan susu kedelai)..."
-              rows={3}
-              className="w-full p-3 text-xs sm:text-sm border border-[#c2c8c0] rounded-xl outline-none focus:border-[#163422] focus:ring-1 focus:ring-[#163422] bg-[#f9f9f7]"
-            />
-            <div className="flex justify-end">
-              <button
-                onClick={handleSavePersonalNotes}
-                disabled={isSavingNotes}
-                className="py-2 px-4 bg-[#163422] text-white text-xs font-bold rounded-xl hover:bg-[#2d4b37] transition-all cursor-pointer disabled:opacity-50"
-              >
-                {isSavingNotes ? 'Menyimpan...' : 'Simpan Catatan ke DB'}
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-};
+                    <div className="pt-4 border-t border-[#e2e3e1] flex justify-end">
+                      <button
+                        onClick={() => onOpenCookMode(recipe)}
+                        className="py-3 px-6 bg-[#163422] text-white hover:bg-[#2d4b37] rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                      >
+                        <Play className="w-4 h-4 fill-current text-[#fdc65c]" />
+                        <span>Buka Panduan Langkah Interaktif (Cook Mode)</span>
+                      </button>
+                    </div>
+                  </section>
+                </main>
+              </div>
+            );
+          };
 
