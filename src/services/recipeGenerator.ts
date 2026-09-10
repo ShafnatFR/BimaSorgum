@@ -51,11 +51,12 @@ const RECIPE_JSON_SCHEMA = `{
 // Rules injected into every generate prompt to harden against illogical
 // ingredient combos and unrealistic pricing (see recipeGuard.ts).
 const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
-1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis), JANGAN paksa membuat resep — tolak dengan sopan dan jelaskan alasannya singkat.
+1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis), JANGAN paksa membuat resep — tolak dengan kalimat sopan saja (bukan JSON) dan jelaskan alasannya.
 2. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
-3. Jika total harga bahan melebihi budget, jangan paksa — sarankan menaikkan budget atau mengurangi bahan.
+3. Jika total harga bahan melebihi budget, jangan paksa — tolak dengan kalimat sopan dan sarankan menaikkan budget atau mengurangi bahan.
 4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
-5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).`;
+5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).
+6. HANYA keluarkan JSON dengan struktur di atas. JANGAN menambahkan field lain seperti "metadata", "resep", "tips", atau "status". JANGAN gunakan markdown triple backticks.`;
 
 /** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
 async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
@@ -73,7 +74,12 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
   }
   // LLM declined with a prose explanation instead of JSON — surface it.
   const msg = result.response.trim();
-  if (msg) return { __refusal: true, message: msg };
+  if (msg) {
+    // If it looks like raw/broken JSON (leaked schema tokens), do NOT show it as prose.
+    const looksLikeJson = /^\s*[\{\[]/.test(msg) || /```json|"estimatedPrice"|"ingredients"|"metadata"/.test(msg);
+    if (looksLikeJson) return null; // let retry / fallback handle it cleanly
+    return { __refusal: true, message: msg };
+  }
   return null;
 }
 
