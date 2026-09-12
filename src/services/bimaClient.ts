@@ -7,7 +7,27 @@
  * (34 chunks on sorgum). X-Api-Key is optional; X-Use-RAG true enriches the
  * prompt with relevant knowledge chunks.
  */
-const BIMA_BASE_URL = import.meta.env.VITE_BIMA_API_URL || 'https://api.llmsorgum.online';
+/**
+ * Base URL resolution (CORS-safe).
+ *
+ * The backend `api.llmsorgum.online` only allows a whitelist of CORS origins
+ * (localhost), so a DIRECT browser call from the Vercel domain is blocked by the
+ * browser (preflight -> 400 "Disallowed CORS origin", fetch -> "Failed to fetch")
+ * and the app silently fell back to the offline generator.
+ *
+ * In the browser we therefore call our OWN origin (`/bima-api/chat`), which
+ * `vercel.json` rewrites to the backend. Same-origin requests are not subject to
+ * CORS, so no preflight is sent and the block disappears entirely.
+ *
+ * `VITE_BIMA_API_URL` still overrides everything (custom backend / self-host).
+ */
+const DIRECT_BACKEND = 'https://api.llmsorgum.online';
+const envBase = (import.meta.env.VITE_BIMA_API_URL || '').replace(/\/+$/, '');
+const inBrowser = typeof window !== 'undefined' && /^https?:$/.test(window.location.protocol);
+// '' = same-origin proxy (browser default), otherwise the explicit absolute URL.
+const BIMA_BASE_URL = envBase || (inBrowser ? '' : DIRECT_BACKEND);
+/** Path of the chat endpoint: proxied same-origin in the browser, direct elsewhere. */
+const BIMA_CHAT_PATH = BIMA_BASE_URL ? `${BIMA_BASE_URL}/api/chat` : '/bima-api/chat';
 // Leave empty to use the backend's default model (from its /api/config).
 const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';
 const BIMA_API_KEY = import.meta.env.VITE_BIMA_API_KEY || '';
@@ -43,7 +63,7 @@ export async function bimaChat(
   const payload: Record<string, unknown> = { message };
   if (history && history.length) payload.history = history;
 
-  const res = await fetch(`${BIMA_BASE_URL}/api/chat`, {
+  const res = await fetch(BIMA_CHAT_PATH, {
     method: 'POST',
     headers,
     body: JSON.stringify(payload),
