@@ -24,6 +24,23 @@ export interface BimaChatResult {
   model?: string;
 }
 
+/**
+ * Extract only the first complete JSON object from text.
+ * The backend SSE often appends metadata ("summary", "reviewer_ran", ...)
+ * after the recipe JSON, which would cause JSON.parse to fail with "Extra data".
+ * This trims everything after the first balanced closing brace.
+ */
+function extractFirstJson(text: string): string {
+  const start = text.indexOf('{');
+  if (start === -1) return text;
+  let depth = 0;
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '{') depth++;
+    else if (text[i] === '}') { depth--; if (depth === 0) return text.substring(start, i + 1); }
+  }
+  return text;
+}
+
 /** Parse SSE delta stream into a single accumulated response string. */
 async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<string> {
   const decoder = new TextDecoder();
@@ -43,14 +60,19 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
       try {
         const obj = JSON.parse(payload);
         if (obj.delta) full += obj.delta;
-        if (obj.response) full = obj.response; // overwrite with final aggregated
+        if (obj.response) full = obj.response;
       } catch { /* ignore malformed line */ }
     }
   }
+  // The backend appends metadata after the recipe JSON, which would break JSON.parse
+  // (e.g. ""summary": "", "reviewer_ran": false, ..." after the closing brace).
+  // Extract only the first complete JSON object.
+  if (full.startsWith('{')) {
+    const clean = extractFirstJson(full);
+    if (clean !== full) full = clean;
+  }
   return full;
 }
-
-/** Single-turn or multi-turn chat against the BIMA AI backend. */
 export async function bimaChat(
   message: string,
   history: BimaChatMessage[] = [],
