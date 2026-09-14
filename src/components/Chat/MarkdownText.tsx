@@ -57,6 +57,13 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
   return nodes;
 }
 
+/** Strip leading > from a blockquote line. Handles `> `, `>`, `>text`. */
+function stripQuotePrefix(line: string): string {
+  // Match optional leading whitespace, then > then optional space
+  const m = line.match(/^\s*>\s?(.*)$/);
+  return m ? m[1] : line;
+}
+
 function MarkdownText({ text }: { text: string }) {
   const lines = text.split('\n');
   const blocks: React.ReactNode[] = [];
@@ -64,6 +71,8 @@ function MarkdownText({ text }: { text: string }) {
   let paragraphBuffer: string[] = [];
   // Table buffer: raw "| ... |" rows until flushed
   let tableBuffer: string[] | null = null;
+  // Blockquote buffer: consecutive "> ..." lines
+  let quoteBuffer: string[] | null = null;
   let key = 0;
 
   const isTableSeparator = (line: string) => {
@@ -80,55 +89,80 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushTable = () => {
-    if (!tableBuffer || tableBuffer.length === 0) {
-      tableBuffer = null;
-      return;
-    }
-    // Header = first row; second row (separator) is skipped if present.
-    const header = parseTableRow(tableBuffer[0]);
-    let startIdx = 1;
-    if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
-      startIdx = 2;
-    }
-    const body = tableBuffer.slice(startIdx).map(parseTableRow);
+      if (!tableBuffer || tableBuffer.length === 0) {
+        tableBuffer = null;
+        return;
+      }
+      // Header = first row; second row (separator) is skipped if present.
+      const header = parseTableRow(tableBuffer[0]);
+      let startIdx = 1;
+      if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
+        startIdx = 2;
+      }
+      const body = tableBuffer.slice(startIdx).map(parseTableRow);
 
-    blocks.push(
-      <div key={`t${key++}`} className="my-2 overflow-x-auto">
-        <table className="w-full text-xs sm:text-sm border-collapse rounded-xl overflow-hidden">
-          <thead>
-            <tr className="bg-[#163422] text-white">
-              {header.map((cell, idx) => (
-                <th
-                  key={idx}
-                  className="px-3 py-2 text-left font-bold whitespace-nowrap border border-[#163422]/40"
-                >
-                  {renderInline(cell, `th${idx}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {body.map((row, ridx) => (
-              <tr
-                key={ridx}
-                className={ridx % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f2]/70'}
-              >
-                {row.map((cell, cidx) => (
-                  <td
-                    key={cidx}
-                    className="px-3 py-2 border border-[#e2e3e1] text-[#1A1C1B] align-top"
+      blocks.push(
+        <div key={`t${key++}`} className="my-2 overflow-x-auto">
+          <table className="w-full text-xs sm:text-sm border-collapse rounded-xl overflow-hidden">
+            <thead>
+              <tr className="bg-[#163422] text-white">
+                {header.map((cell, idx) => (
+                  <th
+                    key={idx}
+                    className="px-3 py-2 text-left font-bold whitespace-nowrap border border-[#163422]/40"
                   >
-                    {renderInline(cell, `td${ridx}-${cidx}`)}
-                  </td>
+                    {renderInline(cell, `th${idx}`)}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-    tableBuffer = null;
-  };
+            </thead>
+            <tbody>
+              {body.map((row, ridx) => (
+                <tr
+                  key={ridx}
+                  className={ridx % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f2]/70'}
+                >
+                  {row.map((cell, cidx) => (
+                    <td
+                      key={cidx}
+                      className="px-3 py-2 border border-[#e2e3e1] text-[#1A1C1B] align-top"
+                    >
+                      {renderInline(cell, `td${ridx}-${cidx}`)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      tableBuffer = null;
+    };
+
+    const flushQuote = () => {
+      if (!quoteBuffer || quoteBuffer.length === 0) {
+        quoteBuffer = null;
+        return;
+      }
+      const lines = quoteBuffer.map(stripQuotePrefix).filter((l) => l.trim() !== '');
+      if (lines.length === 0) {
+        quoteBuffer = null;
+        return;
+      }
+      blocks.push(
+        <blockquote
+          key={`bq${key++}`}
+          className="border-l-[3px] border-[#fdc65c] bg-[#fef9ed]/60 pl-4 pr-3 py-2 my-2 rounded-r-lg italic text-sm sm:text-base leading-relaxed text-[#424843]"
+        >
+          {lines.map((ln, idx) => (
+            <p key={idx} className={idx > 0 ? 'mt-1' : ''}>
+              {renderInline(ln, `bq${idx}`)}
+            </p>
+          ))}
+        </blockquote>
+      );
+      quoteBuffer = null;
+    };
 
   const flushList = () => {
     if (!listBuffer) return;
@@ -169,10 +203,11 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushAll = () => {
-    flushTable();
-    flushList();
-    flushParagraph();
-  };
+      flushTable();
+      flushQuote();
+      flushList();
+      flushParagraph();
+    };
 
   for (const raw of lines) {
     const line = raw.trimEnd();
@@ -194,12 +229,26 @@ function MarkdownText({ text }: { text: string }) {
     }
 
     // Any non-table line ends an in-progress table
-    if (tableBuffer && tableBuffer.length > 0) {
-      flushTable();
-    }
+        if (tableBuffer && tableBuffer.length > 0) {
+          flushTable();
+        }
 
-    // Heading
-    const headingMatch = line.match(/^(#{1,4})\s+(.*)$/);
+        // Blockquote (line starting with >)
+        if (/^\s*>/.test(line)) {
+          flushList();
+          flushParagraph();
+          if (!quoteBuffer) quoteBuffer = [];
+          quoteBuffer.push(line);
+          continue;
+        }
+
+        // Any non-quote line ends an in-progress blockquote
+        if (quoteBuffer && quoteBuffer.length > 0) {
+          flushQuote();
+        }
+
+        // Heading
+        const headingMatch = line.match(/^(#{1,4})\s+(.*)$/);
     if (headingMatch) {
       flushList();
       flushParagraph();
