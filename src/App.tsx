@@ -439,17 +439,15 @@ export default function App() {
 
   // Chat Handlers
   const handleSendMessage = async (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
+      const trimmed = text.trim();
+      if (!trimmed) return;
 
-    // Preflight sanity check: catch illogical ingredient combos / unrealistic
-    // budget BEFORE hitting the AI, so we can warn the user instead of showing
-    // a recipe with red guard badges.
-    const pf = preflightPrompt(trimmed);
-    if (!pf.ok && /(buatkan?|berikan?|carikan?|resep|masak|menu|hidangan|makanan)/i.test(trimmed)) {
-      setPreflight({ result: pf, prompt: trimmed });
-      return;
-    }
+      // 🔧 PREFLIGHT DINONAKTIFKAN — semua input langsung ke AI tanpa filter
+      // const pf = preflightPrompt(trimmed);
+      // if (!pf.ok && /(buatkan?|berikan?|carikan?|resep|masak|menu|hidangan|makanan)/i.test(trimmed)) {
+      //   setPreflight({ result: pf, prompt: trimmed });
+      //   return;
+      // }
 
     // 1) Optimistic user message — render immediately, no waiting on the LLM.
     const userMsg: ChatMessage = {
@@ -482,14 +480,9 @@ export default function App() {
       }))
       .filter((h) => h.content.trim());
 
-    // 3) Decide intent. Only an EXPLICIT recipe order ("buatkan resep X") should
-    //    trigger the structured recipe card. Vague questions like "bingung mau
-    //    apa / ada saran / rekomendasi" stay conversational (list + follow-up).
-    const explicitRecipeOrder =
-      /\b(buatkan?|berikan?|carikan?|tuliskan?|buatin|kasih(?:kan)?|resep(?:kan)?)\b.*\b(resep|masak(?:an)?|menu|hidangan|makanan)\b/i.test(trimmed) &&
-      !/bingung|saran|rekomendasi|apa saja|ada apa|pilih|pilihan|ide|gagasan|inspirasi|rekomend|\?$|gimana|bagaimana|apa yang/i.test(trimmed);
-
-    const isConversational = !explicitRecipeOrder;
+    // 3) 🔧 PAKSA SEMUA KE RECIPE FLOW (nonaktifkan deteksi intent)
+        const explicitRecipeOrder = true;
+        const isConversational = false;
 
     try {
       if (explicitRecipeOrder) {
