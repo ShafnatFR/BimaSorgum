@@ -518,7 +518,8 @@ export default function App() {
         }
       } else {
         // General chat flow: free-form AI answer, no recipe card.
-        const answer = await bimaChat(trimmed, history, { useRag: true });
+                const chatPrompt = `${trimmed}\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas maksudnya, atau kamu tidak yakin apa yang diminta, JANGAN menebak atau menjawab dengan asumsi. Tanyakan balik dengan sopan untuk klarifikasi — misalnya "Maaf, bisa diperjelas maksudnya? Apakah Anda ingin..." atau "Boleh saya tahu lebih detail tentang...?"]\n\n[Instruksi: Jawablah dalam bahasa Indonesia yang natural dan ramah, seperti seorang ahli gizi dan pakar sorgum yang sedang mengobrol dengan teman.]`;
+                const answer = await bimaChat(chatPrompt, history, { useRag: true });
         const replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
         setChatMessages((prev) =>
           prev.map((m) =>
