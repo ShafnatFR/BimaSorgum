@@ -85,11 +85,13 @@ export async function bimaChat(
       'X-Stream': stream ? 'true' : 'false',
       'X-Max-Tokens': '8192',
     };
-  const model = opts.model || BIMA_MODEL;
-  if (model) headers['X-Model'] = model;
-  if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
+  // 🔧 ensure max output tokens — use whatever the backend honours
+      const MAX_OUTPUT_TOKENS = 4096;
+      const model = opts.model || BIMA_MODEL;
+      if (model) headers['X-Model'] = model;
+      if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
 
-  const payload: Record<string, unknown> = { message };
+      const payload: Record<string, unknown> = { message, max_tokens: MAX_OUTPUT_TOKENS };
   if (history && history.length) payload.history = history;
 
   const res = await fetch(BIMA_CHAT_PATH, {

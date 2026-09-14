@@ -9,8 +9,8 @@ import React from 'react';
 /** Parse **bold** and *italic* inline, and [text](url) links. */
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
-  // Order matters: bold before italic; links before both.
-  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
+  // Order: inline code (`…`) → bold (**…**) → italic (*…*) → links ([…](…))
+  const regex = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
   let lastIndex = 0;
   let m: RegExpExecArray | null;
   let i = 0;
@@ -19,7 +19,13 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
       nodes.push(text.slice(lastIndex, m.index));
     }
     const token = m[0];
-    if (token.startsWith('**') && token.endsWith('**')) {
+    if (token.startsWith('`') && token.endsWith('`')) {
+      nodes.push(
+        <code key={`${keyPrefix}-c${i++}`} className="bg-[#e2e3e1]/70 text-[#163422] px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono">
+          {token.slice(1, -1)}
+        </code>
+      );
+    } else if (token.startsWith('**') && token.endsWith('**')) {
       nodes.push(
         <strong key={`${keyPrefix}-b${i++}`} className="font-bold text-[#163422]">
           {token.slice(2, -2)}
@@ -72,8 +78,10 @@ function MarkdownText({ text }: { text: string }) {
   // Table buffer: raw "| ... |" rows until flushed
   let tableBuffer: string[] | null = null;
   // Blockquote buffer: consecutive "> ..." lines
-  let quoteBuffer: string[] | null = null;
-  let key = 0;
+    let quoteBuffer: string[] | null = null;
+    // Fenced code block buffer: triple-backtick ``` ... ```
+    let codeBuffer: { lang: string; lines: string[] } | null = null;
+    let key = 0;
 
   const isTableSeparator = (line: string) => {
     // Matches rows like | --- | :---: | ---: | (dashes/colons/spaces only inside pipes)
@@ -162,9 +170,22 @@ function MarkdownText({ text }: { text: string }) {
         </blockquote>
       );
       quoteBuffer = null;
-    };
+          };
 
-  const flushList = () => {
+          const flushCode = () => {
+            if (!codeBuffer || codeBuffer.lines.length === 0) {
+              codeBuffer = null;
+              return;
+            }
+            blocks.push(
+              <pre key={`pre${key++}`} className="bg-[#1A1C1B] text-[#e2e3e1] rounded-xl px-4 py-3 my-2 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed">
+                <code>{codeBuffer.lines.join('\n')}</code>
+              </pre>
+            );
+            codeBuffer = null;
+          };
+
+        const flushList = () => {
     if (!listBuffer) return;
     if (listBuffer.type === 'ul') {
       blocks.push(
@@ -203,22 +224,43 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushAll = () => {
-      flushTable();
-      flushQuote();
-      flushList();
-      flushParagraph();
-    };
+        flushTable();
+        flushCode();
+        flushQuote();
+        flushList();
+        flushParagraph();
+      };
 
   for (const raw of lines) {
     const line = raw.trimEnd();
 
     // Blank line: flush everything
-    if (line.trim() === '') {
-      flushAll();
-      continue;
-    }
+        if (line.trim() === '') {
+          flushAll();
+          continue;
+        }
 
-    // Table row (starts with a pipe)
+        // Fenced code block (```)
+        if (/^\s*```/.test(line)) {
+          if (codeBuffer) {
+            // closing fence → flush code block
+            flushCode();
+          } else {
+            // opening fence → start code buffer
+            flushAll();
+            const lang = line.trim().slice(3).trim();
+            codeBuffer = { lang, lines: [] };
+          }
+          continue;
+        }
+
+        // Inside a fenced code block → accumulate raw lines
+        if (codeBuffer) {
+          codeBuffer.lines.push(raw); // preserve original line endings
+          continue;
+        }
+
+        // Table row (starts with a pipe)
     if (line.trim().startsWith('|')) {
       flushList();
       flushParagraph();
