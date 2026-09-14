@@ -480,9 +480,10 @@ export default function App() {
       }))
       .filter((h) => h.content.trim());
 
-    // 3) 🔧 PAKSA SEMUA KE RECIPE FLOW (nonaktifkan deteksi intent)
-        const explicitRecipeOrder = false;
-                const isConversational = true;
+    // 3) 🔧 DETEKSI INTENT: resep keyword → JSON recipe, lainnya → chat natural
+        const recipeKeywords = /(buatkan?|bikinin?|berikan?|carikan?|resep|masak|menu|hidangan|makanan|olah|kreasikan?)/i;
+        const explicitRecipeOrder = recipeKeywords.test(trimmed);
+        const isConversational = !explicitRecipeOrder;
 
     try {
       if (explicitRecipeOrder) {
