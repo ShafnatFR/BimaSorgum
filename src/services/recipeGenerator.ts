@@ -474,8 +474,9 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
  * Falls back to the offline smart query matcher if the call fails.
  */
 export async function generateCustomRecipeQueryAsync(userPrompt: string): Promise<Recipe> {
-  try {
-    const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
+  // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
+  // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
+  const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
     Pengguna meminta: "${userPrompt}"
     Buatkan 1 resep masakan sorgum sehat dalam format JSON valid (HANYA JSON — tidak boleh ada teks di luar JSON, tidak boleh pakai markdown) dengan struktur persis:
     ${RECIPE_JSON_SCHEMA}
@@ -483,163 +484,23 @@ export async function generateCustomRecipeQueryAsync(userPrompt: string): Promis
     ${PROMPT_RULES}
     PENTING: keluaran akhir hanya boleh JSON — tanpa teks tambahan apapun, tanpa tanda \`\`\`json, tanpa markdown.`;
 
-    const result = await generateWithRetry(prompt);
-    if (result && !('__refusal' in result) && result.title) {
-      const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
-      if (ingredients.length === 0) {
-        const refusalRecipe = recipeFromLlmJson(
-          { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
-          12000,
-          'camilan_sehat'
-        );
-        (refusalRecipe as any).aiRefusalText =
-          (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
-        return refusalRecipe;
-      }
-      const { issues, repaired } = validateRecipe(result, 12000);
-      const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
-      (recipe as any).aiWarnings = issues;
-      return recipe;
+  const result = await generateWithRetry(prompt);
+  if (result && !('__refusal' in result) && result.title) {
+    const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
+    if (ingredients.length === 0) {
+      const refusalText = (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
+      throw new Error(refusalText);
     }
-    if (result && '__refusal' in result) {
-      // LLM declined with a prose explanation — carry the full text for the UI.
-      const refusalRecipe = recipeFromLlmJson(
-        { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
-        12000,
-        'camilan_sehat'
-      );
-      (refusalRecipe as any).aiRefusalText = result.message;
-      return refusalRecipe;
-    }
-    console.warn('BIMA AI returned non-JSON for custom query, falling back.');
-  } catch (err) {
-    console.warn('BIMA AI custom query failed, using offline fallback:', err);
+    const { issues, repaired } = validateRecipe(result, 12000);
+    const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
+    (recipe as any).aiWarnings = issues;
+    return recipe;
+  }
+  if (result && '__refusal' in result) {
+    throw new Error(result.message);
+  }
+  throw new Error('AI backend tidak memberikan respons yang valid.');
   }
 
-  const fallback = generateCustomRecipeQuery(userPrompt);
-  (fallback as any).aiWarnings = [
-    { level: 'error', message: 'AI tidak menghasilkan resep valid; ini resep cadangan (bukan hasil AI).' },
-  ];
-  return fallback;
-}
-
-export function generateCustomRecipeQuery(userPrompt: string): Recipe {
-  const lower = userPrompt.toLowerCase();
-  
-  // Custom smart matcher
-  if (lower.includes('pancake') || lower.includes('panekuk')) {
-    const title = 'Pancake Tepung Sorgum Madu Kelapa';
-    return {
-      id: `recipe-pancake-${Date.now()}`,
-      slug: slugify(title),
-      title,
-      subtitle: 'Pancake tebal lembut bebas gluten yang kaya serat untuk menu sarapan praktis:',
-      targetAge: 'Semua Umur',
-      dishCategory: 'Camilan Sehat',
-      targetBudget: 12000,
-      estimatedCost: 10500,
-      prepTimeMinutes: 10,
-      cookTimeMinutes: 10,
-      servings: 2,
-      ingredients: [
-        { name: 'Tepung sorgum premium', amount: '100g', estimatedPrice: 3500 },
-        { name: '1 butir telur ayam', amount: '1 butir', estimatedPrice: 2000 },
-        { name: 'Susu almond / santan cair', amount: '100ml', estimatedPrice: 2000 },
-        { name: 'Madu murni / gula semut', amount: '1 sdm', estimatedPrice: 2000 },
-        { name: 'Minyak kelapa untuk memanggang', amount: '1 sdt', estimatedPrice: 1000 },
-      ],
-      nutritionHighlight: {
-        title: 'Nutrisi Unggulan',
-        description: 'Bebas alergen gandum terigu, tinggi protein dan zat besi nabati.',
-        fiberGrams: 7.5,
-        proteinGrams: 8.0,
-        glycemicIndex: 'Rendah (Low GI)',
-        caloriesEstimate: 260,
-      },
-      steps: [
-        {
-          stepNumber: 1,
-          title: 'Kocok Bahan Basah',
-          instruction: 'Kocok telur dan madu hingga larut, lalu tuang santan/susu cair.',
-          timerMinutes: 2,
-        },
-        {
-          stepNumber: 2,
-          title: 'Campur Tepung Sorgum',
-          instruction: 'Masukkan tepung sorgum sedikit demi sedikit hingga adonan licin kental.',
-          timerMinutes: 3,
-        },
-        {
-          stepNumber: 3,
-          title: 'Dadar di Teflon',
-          instruction: 'Panggang di teflon hangat dengan api kecil hingga kedua sisi kecokelatan keemasan.',
-          timerMinutes: 5,
-        },
-      ],
-      imageUrl: FOOD_IMAGES.pancake,
-      tags: ['Sarapan Sehat', 'Gluten-Free', 'High Fiber'],
-      createdAt: new Date().toISOString(),
-    };
-  }
-
-  // Default rich smart response matching the prompt or Nasi Goreng
-  const defaultTitle = 'Nasi Goreng Sorgum Ceria (SD Edition)';
-  return {
-    id: `recipe-custom-${Date.now()}`,
-    slug: 'nasi-goreng-sorgum-ceria-sd-edition',
-    title: defaultTitle,
-    subtitle: 'Tentu! Ini resep bergizi, lezat, dan sangat terjangkau untuk bekal sekolah:',
-    targetAge: 'Anak Sekolah (6-12 thn)',
-    dishCategory: 'Makanan Berat',
-    targetBudget: 10000,
-    estimatedCost: 9500,
-    prepTimeMinutes: 10,
-    cookTimeMinutes: 15,
-    servings: 1,
-    ingredients: [
-      { name: '1 piring nasi sorgum dingin', amount: '1 piring (150g)', estimatedPrice: 3000 },
-      { name: '1 butir telur, kocok lepas', amount: '1 butir', estimatedPrice: 2000 },
-      { name: 'Wortel kecil, potong dadu', amount: '1/2 buah', estimatedPrice: 1000 },
-      { name: 'Bawang merah & putih', amount: '2 siung each', estimatedPrice: 1500 },
-      { name: 'Kecap manis & garam', amount: 'Secukupnya', estimatedPrice: 1000 },
-      { name: 'Sedikit minyak goreng', amount: '1 sdm', estimatedPrice: 1000 },
-    ],
-    nutritionHighlight: {
-      title: 'Nutrisi Unggulan',
-      description: 'Tinggi serat untuk energi tahan lama & bebas gluten (aman untuk pencernaan sensitif).',
-      fiberGrams: 8.5,
-      proteinGrams: 9.2,
-      glycemicIndex: 'Rendah (Low GI)',
-      caloriesEstimate: 340,
-    },
-    steps: [
-      {
-        stepNumber: 1,
-        title: 'Persiapan Nasi Sorgum',
-        instruction: 'Gunakan nasi sorgum yang sudah dingin dari kulkas agar butirannya kenyal dan tidak lembek.',
-        timerMinutes: 2,
-      },
-      {
-        stepNumber: 2,
-        title: 'Tumis Bumbu & Orak-Arik Telur',
-        instruction: 'Tumis bawang merah & bawang putih cincang hingga wangi, orak-arik telur hingga matang harum.',
-        timerMinutes: 3,
-      },
-      {
-        stepNumber: 3,
-        title: 'Campur Wortel & Nasi Sorgum',
-        instruction: 'Masukkan potongan dadu wortel, masukkan nasi sorgum, bumbui dengan kecap manis dan sejumput garam.',
-        timerMinutes: 4,
-      },
-      {
-        stepNumber: 4,
-        title: 'Aduk Matang & Kemas',
-        instruction: 'Aduk cepat di atas api sedang hingga bumbu meresap rata. Angkat dan sajikan untuk bekal sekolah anak.',
-        timerMinutes: 3,
-      },
-    ],
-    imageUrl: FOOD_IMAGES.nasiGoreng,
-    tags: ['Bekal Sekolah', 'Bebas Gluten', 'Hemat Biaya', 'Energi Seharian'],
-    createdAt: new Date().toISOString(),
-  };
-}
+  // ---- removed offline recipe fallback (pancake/nasi goreng) ----
+  // All offline recipe generation was deleted. Only AI output is shown.

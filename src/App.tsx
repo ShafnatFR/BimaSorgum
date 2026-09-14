@@ -13,7 +13,7 @@ import {
   RECENT_CHAT_TOPICS 
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
-import { generateRecipeFromWizard, generateCustomRecipeQuery, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync } from './services/recipeGenerator';
+import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync } from './services/recipeGenerator';
 import { 
   getCurrentPath, 
   parseRoute, 
