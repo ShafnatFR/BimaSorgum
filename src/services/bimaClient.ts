@@ -79,11 +79,12 @@ export async function bimaChat(
   opts: { model?: string; useRag?: boolean; stream?: boolean } = {}
 ): Promise<BimaChatResult> {
   const stream = opts.stream !== false; // default true
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'X-Use-RAG': opts.useRag ? 'true' : 'false',
-    'X-Stream': stream ? 'true' : 'false',
-  };
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Use-RAG': opts.useRag ? 'true' : 'false',
+      'X-Stream': stream ? 'true' : 'false',
+      'X-Max-Tokens': '8192',
+    };
   const model = opts.model || BIMA_MODEL;
   if (model) headers['X-Model'] = model;
   if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
