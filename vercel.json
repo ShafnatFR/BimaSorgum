@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/bima-api/(.*)", "destination": "/api/bima/$1" },
+    { "source": "/bima-api/(.*)", "destination": "/api/bima-chat" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
