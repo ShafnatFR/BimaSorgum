@@ -79,6 +79,10 @@ export interface Recipe {
   isPublished?: boolean;
   /** whether this recipe can be published (owner's own generated recipe) */
   canPublish?: boolean;
+  /** validation/robustness issues surfaced to the UI (see recipeGuard.ts) */
+  aiWarnings?: { level: 'warning' | 'error'; message: string }[];
+  /** full explanation text when the AI declined the request (illogical/price) */
+  aiRefusalText?: string;
 }
 
 export interface ChatMessage {
