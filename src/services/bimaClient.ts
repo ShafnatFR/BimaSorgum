@@ -51,7 +51,7 @@ export async function bimaChat(
 ): Promise<BimaChatResult> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'X-Use-RAG': String(opts.useRag ?? true),
+    'X-Use-RAG': 'false',
     'X-Stream': String(opts.stream ?? false),
   };
   // Only send X-Model when a model was explicitly chosen; the backend's
