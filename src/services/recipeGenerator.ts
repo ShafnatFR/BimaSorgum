@@ -477,12 +477,7 @@ export async function generateCustomRecipeQueryAsync(userPrompt: string): Promis
   // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
   // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
   const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
-    Pengguna meminta: "${userPrompt}"
-    Buatkan 1 resep masakan sorgum sehat dalam format JSON valid (HANYA JSON — tidak boleh ada teks di luar JSON, tidak boleh pakai markdown) dengan struktur persis:
-    ${RECIPE_JSON_SCHEMA}
-
-    ${PROMPT_RULES}
-    PENTING: keluaran akhir hanya boleh JSON — tanpa teks tambahan apapun, tanpa tanda \`\`\`json, tanpa markdown.`;
+      Pengguna meminta: "${userPrompt}"`;
 
   const result = await generateWithRetry(prompt);
   if (result && !('__refusal' in result) && result.title) {

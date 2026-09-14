@@ -481,8 +481,8 @@ export default function App() {
       .filter((h) => h.content.trim());
 
     // 3) 🔧 PAKSA SEMUA KE RECIPE FLOW (nonaktifkan deteksi intent)
-        const explicitRecipeOrder = true;
-        const isConversational = false;
+        const explicitRecipeOrder = false;
+                const isConversational = true;
 
     try {
       if (explicitRecipeOrder) {
