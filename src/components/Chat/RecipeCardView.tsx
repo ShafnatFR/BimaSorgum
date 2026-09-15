@@ -268,12 +268,17 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
                     <span className="font-semibold text-xs sm:text-sm text-[#1A1C1B]">
                       {step.title}
                     </span>
-                    {step.timerMinutes && (
-                      <span className="text-[11px] font-mono text-[#727972] bg-[#f4f4f2] px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        ~{step.timerMinutes} mnt
-                      </span>
-                    )}
+                    {step.timerMinutes && step.timerMinutes > 0 ? (
+                                          <span className="text-[11px] font-mono text-[#727972] bg-[#f4f4f2] px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <Clock className="w-3 h-3" />
+                                            ~{step.timerMinutes} mnt
+                                          </span>
+                                        ) : step.timerMinutes === 0 ? (
+                                          <span className="text-[11px] font-bold text-[#163422] bg-[#cbebc3]/60 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <Check className="w-3 h-3" />
+                                            Sajikan
+                                          </span>
+                                        ) : null}
                   </div>
                   <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">
                     {step.instruction}

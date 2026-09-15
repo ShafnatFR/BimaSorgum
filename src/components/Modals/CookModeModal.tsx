@@ -166,8 +166,8 @@ export const CookModeModal: React.FC<CookModeModalProps> = ({ recipe, onClose })
           )}
 
           {/* Interactive Timer if available */}
-          {currentStep.timerMinutes && (
-            <div className="bg-[#f9f9f7] rounded-2xl p-4 border border-[#e2e3e1] flex flex-col items-center justify-center space-y-3">
+          {currentStep.timerMinutes && currentStep.timerMinutes > 0 ? (
+                      <div className="bg-[#f9f9f7] rounded-2xl p-4 border border-[#e2e3e1] flex flex-col items-center justify-center space-y-3">
               <span className="text-xs font-semibold text-[#727972] uppercase tracking-wider">
                 Timer Memasak
               </span>
@@ -207,7 +207,7 @@ export const CookModeModal: React.FC<CookModeModalProps> = ({ recipe, onClose })
                 </button>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Footer Navigation */}

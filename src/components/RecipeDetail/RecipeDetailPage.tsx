@@ -515,12 +515,17 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                     <h4 className="text-sm sm:text-base font-semibold text-[#1a1c1b]">
                       {step.title}
                     </h4>
-                    {step.timerMinutes && (
-                      <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
-                        <Clock className="w-3.5 h-3.5 text-[#7c5800]" />
-                        {step.timerMinutes} Menit
-                      </span>
-                    )}
+                    {step.timerMinutes && step.timerMinutes > 0 ? (
+                                          <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-mono font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
+                                            <Clock className="w-3.5 h-3.5 text-[#7c5800]" />
+                                            {step.timerMinutes} Menit
+                                          </span>
+                                        ) : step.timerMinutes === 0 ? (
+                                          <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-bold text-[#163422] bg-[#cbebc3]/60 px-2 py-0.5 rounded-full flex-shrink-0">
+                                            <Check className="w-3.5 h-3.5 text-[#163422]" />
+                                            Sajikan
+                                          </span>
+                                        ) : null}
                   </div>
                   <p className="text-xs sm:text-sm text-[#424843] leading-relaxed">
                     {step.instruction}
