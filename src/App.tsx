@@ -148,7 +148,7 @@ export default function App() {
     dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
     customIngredients: ['Bawang Merah', 'Santan'],
-    budgetPerPortion: 10000,
+    budgetPerPortion: 25000,
     prepTimeLimit: 'Maks 30 Menit',
   });
   

@@ -11,7 +11,7 @@ interface WizardStep4Props {
   isLoading?: boolean;
 }
 
-const PRESET_BUDGETS = [5000, 10000, 15000, 20000, 25000];
+const PRESET_BUDGETS = [15000, 25000, 50000, 100000];
 const PRESET_TIMES = ['Maks 15 Menit', 'Maks 30 Menit', 'Maks 45 Menit', 'Fleksibel'];
 const CUSTOM_PREP = '__custom__';
 
