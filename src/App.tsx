@@ -526,17 +526,8 @@ export default function App() {
                     replyText = replyText.replace(/\n*Catatan Verifikasi[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Skor kelayakan[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Draf perlu disusun[\s\S]*$/i, '').trim();
-                    // 🔧 Hapus artefak markdown di awal dan akhir (###, ---, ***, >, dll)
-                    // Strip leading artifact lines
-                    while (/^(?:#{1,6}|---+|\*\*\*+|_{3,})\s*\r?\n/.test(replyText) || /^(?:#{1,6}|---+|\*\*\*+|_{3,})\s*$/.test(replyText.split('\n')[0] || '')) {
-                      replyText = replyText.replace(/^(?:#{1,6}|---+|\*\*\*+|_{3,})\s*\r?\n/, '');
-                    }
-                    // Strip trailing artifact lines
-                    const lines = replyText.split('\n');
-                    while (lines.length > 0 && /^(?:#{1,6}|---+|\*\*\*+|_{3,})\s*$/.test(lines[lines.length - 1].trim())) {
-                      lines.pop();
-                    }
-                    replyText = lines.join('\n').trim();
+                    // 🔧 Hapus artefak markdown (###, ---, ***, ___) dari SELURUH respons — baris yang hanya berisi artefak
+                    replyText = replyText.split('\n').filter((l: string) => !/^\s*(?:#{1,6}|---+|\*\*\*+|_{3,})\s*$/.test(l.trim())).join('\n').trim();
 
                     // 🔧 Extract inspirasi dari >>> atau > lines di AKHIR respons
                     const allLines = replyText.split('\n');

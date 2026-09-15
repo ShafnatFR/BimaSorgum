@@ -80,16 +80,24 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
                     <Sparkles className="w-3 h-3 text-[#7c5800]" />
                     Inspirasi:
                   </span>
-                  {quickPrompts.map((prompt, idx) => (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  onClick={() => onSendMessage(prompt)}
-                                  className="px-2.5 py-0.5 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs font-medium shadow-xs active:scale-95"
-                                >
-                                  {prompt}
-                                </button>
-                              ))}
+                  {isLoading ? (
+                                      <>
+                                        {[1, 2, 3, 4].map((i) => (
+                                          <div key={i} className="h-6 bg-[#e2e3e1] rounded-full animate-pulse flex-shrink-0" style={{ width: `${55 + i * 18}px` }} />
+                                        ))}
+                                      </>
+                                    ) : (
+                                      quickPrompts.map((prompt, idx) => (
+                                        <button
+                                          key={idx}
+                                          type="button"
+                                          onClick={() => onSendMessage(prompt)}
+                                          className="px-2.5 py-0.5 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs font-medium shadow-xs active:scale-95"
+                                        >
+                                          {prompt}
+                                        </button>
+                                      ))
+                                    )}
                 </div>
 
         {/* Conversational Input Area container */}
