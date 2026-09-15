@@ -17,6 +17,9 @@ interface SidebarProps {
   onOpenProfile: () => void;
   onStartWizard: () => void;
   onNavigateTab?: (tab: 'home' | 'explore' | 'generate' | 'profile') => void;
+  isGoogleUser?: boolean;
+  googleDisplayName?: string;
+  googleAvatarUrl?: string | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -33,6 +36,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenProfile,
   onStartWizard,
   onNavigateTab,
+  isGoogleUser = false,
+  googleDisplayName,
+  googleAvatarUrl,
 }) => {
   return (
     <>
@@ -247,18 +253,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="w-9 h-9 rounded-full bg-[#e2e3e1] overflow-hidden flex-shrink-0 border border-[#c2c8c0]">
               <img
-                alt="User profile"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXNnnFWAYIvK-IjrPrmqA4slYEoBsg6zqf1K5nTuZ8q20rn-cRmPnDqbr-Ymy-XFH0kTYj3zMTBU9nLX0Mre-91Pcj5Y5yEV-tnbkIk6K2ia3rZU7A_zF2ImAfF00PMY5DJ7Gjwx_sdxb36ZFnV2teWraVcPVdE2gW8zqoyGDMMCTs71XsIeyQg6bX8coXtNYhhU5q4XWTKKciNAyMcs5zgpf40PZlVIoOdKxiIDsVUf4Wv1PlcjaNGw"
+                alt={isGoogleUser ? (googleDisplayName || 'User') : 'User profile'}
+                src={isGoogleUser && googleAvatarUrl ? googleAvatarUrl : "https://lh3.googleusercontent.com/aida-public/AB6AXuDXNnnFWAYIvK-IjrPrmqA4slYEoBsg6zqf1K5nTuZ8q20rn-cRmPnDqbr-Ymy-XFH0kTYj3zMTBU9nLX0Mre-91Pcj5Y5yEV-tnbkIk6K2ia3rZU7A_zF2ImAfF00PMY5DJ7Gjwx_sdxb36ZFnV2teWraVcPVdE2gW8zqoyGDMMCTs71XsIeyQg6bX8coXtNYhhU5q4XWTKKciNAyMcs5zgpf40PZlVIoOdKxiIDsVUf4Wv1PlcjaNGw"}
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="min-w-0 flex-1">
               <span className="font-semibold text-xs text-[#163422] block truncate">
-                Shafna T. R.
+                {isGoogleUser ? (googleDisplayName || 'User') : 'Shafna T. R.'}
               </span>
               <span className="text-[10px] text-[#727972] block truncate">
-                Sorghum Enthusiast
+                {isGoogleUser ? 'Google Account' : 'Sorghum Enthusiast'}
               </span>
             </div>
             <Settings className="w-4 h-4 text-[#727972] flex-shrink-0" />
