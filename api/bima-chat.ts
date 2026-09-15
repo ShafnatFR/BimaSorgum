@@ -10,7 +10,7 @@ export const config = { maxDuration: 60 };
 
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
 const UPSTREAM_TIMEOUT_MS = 55_000;
-const STREAM_CHUNK_TIMEOUT_MS = 30_000; // reset setiap kali data diterima
+const STREAM_CHUNK_TIMEOUT_MS = 45_000; // reset setiap kali data diterima
 const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key'];
 
 export default async function handler(req: any, res: any) {
