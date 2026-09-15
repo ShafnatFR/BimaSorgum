@@ -527,12 +527,26 @@ export default function App() {
                     replyText = replyText.replace(/\n*Skor kelayakan[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Draf perlu disusun[\s\S]*$/i, '').trim();
 
-                    // 🔧 Extract inspirasi dari >>> lines, hapus dari teks
-                    const inspirasiLines = replyText.match(/^>>>\s*(.+)$/gm);
-                    if (inspirasiLines && inspirasiLines.length >= 2) {
-                      const prompts = inspirasiLines.map((l: string) => l.replace(/^>>>\s*/, '').trim()).filter((l: string) => l.length > 2);
-                      if (prompts.length >= 2) setDynamicPrompts(prompts.slice(0, 4));
-                      replyText = replyText.replace(/\n*^>>>\s*.+$/gm, '').trim();
+                    // 🔧 Extract inspirasi dari >>> atau > lines di AKHIR respons
+                    const allLines = replyText.split('\n');
+                    const trailingQuotes: string[] = [];
+                    for (let i = allLines.length - 1; i >= 0; i--) {
+                      const stripped = allLines[i].trim();
+                      if (/^>{1,3}\s+/.test(stripped)) {
+                        trailingQuotes.unshift(stripped.replace(/^>*\s*/, '').trim());
+                      } else if (stripped === '') {
+                        continue; // skip blank lines between quotes
+                      } else {
+                        break; // stop at first non-quote, non-blank line
+                      }
+                    }
+                    if (trailingQuotes.length >= 2) {
+                      const prompts = trailingQuotes.filter((l) => l.length > 2 && l.length < 50);
+                      if (prompts.length >= 2) {
+                        setDynamicPrompts(prompts.slice(0, 4));
+                        // Strip trailing quote block — take only lines before the quotes
+                        replyText = allLines.slice(0, allLines.length - trailingQuotes.length).join('\n').trim();
+                      }
                     }
 
                     // 🔁 Auto-continue: hanya jika respons SANGAT pendek (< 80 chars) dan tidak diakhiri tanda baca
