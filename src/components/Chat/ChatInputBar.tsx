@@ -4,21 +4,25 @@ import { Mic, MicOff, Send, Sparkles } from 'lucide-react';
 interface ChatInputBarProps {
   onSendMessage: (text: string) => void;
   isLoading?: boolean;
+  dynamicPrompts?: string[];
 }
 
 export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   onSendMessage,
   isLoading = false,
+  dynamicPrompts,
 }) => {
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
 
-  const quickPrompts = [
+  const fallbackPrompts = [
     'Bekal anak SD budget Rp 10.000',
     'Pancake tepung sorgum tanpa gluten',
     'Menu lansia rendah gula darah (Low GI)',
     'Camilan sorgum renyah modal 8 ribu',
   ];
+
+  const quickPrompts = (dynamicPrompts && dynamicPrompts.length >= 2) ? dynamicPrompts : fallbackPrompts;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

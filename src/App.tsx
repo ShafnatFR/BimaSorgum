@@ -154,6 +154,7 @@ export default function App() {
   
   // Initial messages — start clean; the hero/empty-state shows when empty.
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [dynamicPrompts, setDynamicPrompts] = useState<string[]>([]);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -437,6 +438,26 @@ export default function App() {
     }, 1800);
   };
 
+  // Generate dynamic inspiration prompts based on last AI response
+  const refreshInspirations = async (lastAiResponse: string) => {
+    try {
+      const context = lastAiResponse.slice(-400);
+      const res = await bimaChat(
+        `Konteks percakapan terakhir:\n"${context}"\n\nHasilkan 4 pertanyaan singkat (masing-masing maksimal 6 kata, tanpa nomor, tanpa kutip) yang relevan tentang sorgum berdasarkan konteks di atas. Satu per baris.`,
+        [],
+        { useRag: false, stream: false }
+      );
+      if (res?.response) {
+        const prompts = res.response
+          .split('\n')
+          .map((l: string) => l.replace(/^[\d.\-*]+\s*/, '').trim())
+          .filter((l: string) => l.length > 3 && l.length < 50)
+          .slice(0, 4);
+        if (prompts.length >= 2) setDynamicPrompts(prompts);
+      }
+    } catch { /* silent — keep existing prompts */ }
+  };
+
   // Chat Handlers
   const handleSendMessage = async (text: string) => {
       const trimmed = text.trim();
@@ -515,6 +536,7 @@ export default function App() {
             )
           );
           persistChatExchange(trimmed, newRecipe.title, newRecipe);
+          refreshInspirations(newRecipe.title);
         }
       } else {
                     // General chat flow: free-form AI answer, no recipe card.
@@ -568,6 +590,7 @@ export default function App() {
               );
               // Persist the FULL reply so history playback is never truncated.
               persistChatExchange(trimmed, replyText, null);
+              refreshInspirations(replyText);
             }
 } catch (e) {
       console.error('chat error:', e);
@@ -1184,6 +1207,7 @@ export default function App() {
                       <ChatInputBar
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
+                        dynamicPrompts={dynamicPrompts}
                       />
                     </div>
                   </div>
