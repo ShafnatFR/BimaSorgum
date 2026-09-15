@@ -9,7 +9,8 @@
 export const config = { maxDuration: 60 };
 
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
-const UPSTREAM_TIMEOUT_MS = 50_000;
+const UPSTREAM_TIMEOUT_MS = 55_000;
+const STREAM_CHUNK_TIMEOUT_MS = 30_000; // reset setiap kali data diterima
 const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key'];
 
 export default async function handler(req: any, res: any) {
@@ -35,7 +36,7 @@ export default async function handler(req: any, res: any) {
   if (wantStream) headers['X-Stream'] = 'true';
 
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), UPSTREAM_TIMEOUT_MS);
+    let timer = setTimeout(() => ctl.abort(), UPSTREAM_TIMEOUT_MS);
 
   try {
     const upstream = await fetch(upstreamUrl, { method: 'POST', headers, body, signal: ctl.signal });
@@ -68,8 +69,12 @@ export default async function handler(req: any, res: any) {
         buffer = lines.pop() || '';
 
         for (const line of lines) {
-          res.write(line + '\n');
-        }
+                  res.write(line + '\n');
+                }
+
+                // 🔧 Reset timer setiap chunk diterima — streaming keepalive
+                clearTimeout(timer);
+                timer = setTimeout(() => ctl.abort(), STREAM_CHUNK_TIMEOUT_MS);
 
         // Flush every 500ms or when we have data pending.
         if (Date.now() - lastFlush > 500) {
