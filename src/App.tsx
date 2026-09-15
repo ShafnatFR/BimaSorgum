@@ -569,14 +569,14 @@ export default function App() {
               // Persist the FULL reply so history playback is never truncated.
               persistChatExchange(trimmed, replyText, null);
             }
-    } catch (e) {
+} catch (e) {
       console.error('chat error:', e);
       setChatMessages((prev) =>
-        prev.map((m) =>
-          m.id === aiPlaceholderId
-            ? { ...m, text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.', isTypingStep: false }
-            : m
-        )
+        prev.map((m) => {
+          if (m.id !== aiPlaceholderId) return m;
+          if (m.text && m.text.length > 100 && !m.isTypingStep) return m;
+          return { ...m, text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.', isTypingStep: false };
+        })
       );
     } finally {
       setIsGenerating(false);
