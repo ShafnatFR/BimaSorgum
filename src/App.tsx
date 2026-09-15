@@ -132,12 +132,7 @@ export default function App() {
       if (!sessions.length) return;
       const mapped = sessions.map((s) => ({ id: s.id, title: s.title, created_at: s.created_at }));
       setChatSessions(mapped);
-      setSessionIdBoth(sessions[0].id);
-      setActiveChatId(sessions[0].id);
-      // Auto-open the most recent session so the chat shows its real history.
-      const rows = await fetchChatSessionMessages(sessions[0].id);
-      if (!alive || !rows.length) return;
-      setChatMessages(rowsToChatMessages(rows));
+      // 🔧 Jangan auto-open session lama — start fresh on every refresh
     });
     return () => { alive = false; };
   }, [ready]);
