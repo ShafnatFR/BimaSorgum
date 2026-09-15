@@ -900,6 +900,9 @@ export default function App() {
           }}
           onOpenSearch={handleOpenSearch}
           onNavigateTab={handleSelectTab}
+          isGoogleUser={isGoogleUser}
+          googleDisplayName={googleDisplayName}
+          googleAvatarUrl={googleAvatarUrl}
         />
       ) : (
         <>

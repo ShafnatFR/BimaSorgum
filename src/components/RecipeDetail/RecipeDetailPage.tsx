@@ -559,6 +559,15 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       </button>
                     </div>
                   </section>
+
+        {/* Comments Section */}
+        <CommentSection
+          recipeId={recipe.id}
+          isGoogleUser={isGoogleUser}
+          displayName={googleDisplayName || 'Guest'}
+          avatarUrl={googleAvatarUrl || null}
+        />
+
                 </main>
               </div>
             );
