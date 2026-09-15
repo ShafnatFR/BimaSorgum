@@ -24,6 +24,12 @@ interface ProfilePageProps {
   onSaveProfile?: (name: string, role: string) => void;
   onLogout?: () => void;
   onRemoveSaved?: (recipe: Recipe) => void;
+  // Google Auth
+  isGoogleUser?: boolean;
+  googleDisplayName?: string;
+  googleAvatarUrl?: string | null;
+  onSignInWithGoogle?: () => Promise<void>;
+  onGoogleSignOut?: () => Promise<void>;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -35,7 +41,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onSaveProfile,
   onLogout,
   onRemoveSaved,
+  isGoogleUser = false,
+  googleDisplayName,
+  googleAvatarUrl,
+  onSignInWithGoogle,
+  onGoogleSignOut,
 }) => {
+  const [googleSigningIn, setGoogleSigningIn] = useState(false);
   // State for interactive features
   const [userName, setUserName] = useState(userNameProp);
   const [userRole, setUserRole] = useState(userRoleProp);

@@ -372,6 +372,15 @@ export default function App() {
   };
 
   const handleGenerateFromWizard = async () => {
+    // 🔧 PREFLIGHT: cek konflik bahan dari wizard sebelum generate
+    const wizardIngredients = wizardData.selectedIngredientIds.concat(wizardData.customIngredients).join(', ');
+    const wizardPseudoPrompt = `buatkan resep ${wizardData.dishCategory} dengan bahan ${wizardIngredients} budget ${wizardData.budgetPerPortion}`;
+    const pf = preflightPrompt(wizardPseudoPrompt);
+    if (!pf.ok) {
+      setPreflight({ result: pf, prompt: wizardPseudoPrompt });
+      return; // tampilkan modal, jangan generate dulu
+    }
+
     setIsGenerating(true);
     setTypingStatusText('Sedang menganalisis kandungan nutrisi sorgum...');
     
