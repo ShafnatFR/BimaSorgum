@@ -155,7 +155,6 @@ export default function App() {
   // Initial messages — start clean; the hero/empty-state shows when empty.
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [dynamicPrompts, setDynamicPrompts] = useState<string[]>([]);
-  const [isLoadingPrompts, setIsLoadingPrompts] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -439,33 +438,10 @@ export default function App() {
     }, 1800);
   };
 
-  // Generate dynamic inspiration prompts based on last AI response
-  const refreshInspirations = async (lastAiResponse: string) => {
-    setIsLoadingPrompts(true);
-    try {
-      const context = lastAiResponse.slice(-400);
-      const res = await bimaChat(
-        `Konteks percakapan terakhir:\n"${context}"\n\nHasilkan 4 pertanyaan singkat (masing-masing maksimal 6 kata, tanpa nomor, tanpa kutip) yang relevan tentang sorgum berdasarkan konteks di atas. Satu per baris.`,
-        [],
-        { useRag: false, stream: false }
-      );
-      if (res?.response) {
-        const prompts = res.response
-          .split('\n')
-          .map((l: string) => l.replace(/^[\d.\-*]+\s*/, '').trim())
-          .filter((l: string) => l.length > 3 && l.length < 50)
-          .slice(0, 4);
-        if (prompts.length >= 2) setDynamicPrompts(prompts);
-      }
-    } catch { /* silent */ }
-    finally { setIsLoadingPrompts(false); }
-  };
-
   // Chat Handlers
   const handleSendMessage = async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed) return;
-      setIsLoadingPrompts(true); // 🔧 loading inspirasi segera saat user kirim
 
       // 🔧 PREFLIGHT DINONAKTIFKAN — semua input langsung ke AI tanpa filter
       // const pf = preflightPrompt(trimmed);
@@ -540,18 +516,25 @@ export default function App() {
             )
           );
           persistChatExchange(trimmed, newRecipe.title, newRecipe);
-          refreshInspirations(newRecipe.title);
         }
       } else {
                     // General chat flow: free-form AI answer, no recipe card.
                     // Only add system instructions for longer messages (not "halo", "hi", dll)
                     const isShortGreeting = trimmed.length < 15 || /^(halo|hi|hey|hai|hello|selamat|apa kabar|test)/i.test(trimmed);
                     const systemInstructions = isShortGreeting
-                      ? ''
-                      : `\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas, atau kamu tidak yakin apa yang diminta, JANGAN menebak — tanyakan balik dengan sopan untuk klarifikasi.]\n\n[Jawab dalam bahasa Indonesia yang natural. Jangan lanjutkan topik yang tidak ditanya — jawab HANYA apa yang ditanya.]`;
+                      ? `\n\n[Di akhir jawaban, tulis 4 pertanyaan lanjutan singkat (masing-masing maks 6 kata) yang relevan. Format: mulai baris dengan ">>>" tanpa nomor, satu per baris. Contoh:\n>>> Resep sorgum lainnya\n>>> Menu tinggi protein]`
+                      : `\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas, atau kamu tidak yakin apa yang diminta, JANGAN menebak — tanyakan balik dengan sopan untuk klarifikasi.]\n\n[Jawab dalam bahasa Indonesia yang natural. Jangan lanjutkan topik yang tidak ditanya — jawab HANYA apa yang ditanya.]\n\n[Di akhir jawaban, tulis 4 pertanyaan lanjutan singkat (masing-masing maks 6 kata) yang relevan dengan topik. Format: mulai baris dengan ">>>" tanpa nomor, satu per baris. Contoh:\n>>> Resep sorgum lainnya\n>>> Menu tinggi protein]`;
                     const chatPrompt = `${trimmed}${systemInstructions}`;
                     let answer = await bimaChat(chatPrompt, history, { useRag: true });
                     let replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
+
+                    // 🔧 Extract inspirasi dari >>> lines, hapus dari teks
+                    const inspirasiLines = replyText.match(/^>>>\s*(.+)$/gm);
+                    if (inspirasiLines && inspirasiLines.length >= 2) {
+                      const prompts = inspirasiLines.map((l: string) => l.replace(/^>>>\s*/, '').trim()).filter((l: string) => l.length > 2);
+                      if (prompts.length >= 2) setDynamicPrompts(prompts.slice(0, 4));
+                      replyText = replyText.replace(/\n*^>>>\s*.+$/gm, '').trim();
+                    }
 
                     // 🔁 Auto-continue: hanya jika respons SANGAT pendek (< 80 chars) dan tidak diakhiri tanda baca
                     const TERMINAL_END = /[.!?"'»\u201D\u2019\u2033\u270E\u2705\u2714\u2713\u2764\u2605\u2B50\u2728\u274C\u274E\u203C\u2049\u2048\u2611\u2610\u2716\u2795\u2796\u2797\u2702\u2709\u270F\u2708\u2693\u26A0\u26A1\u2622\u2623\u2640\u2642\u2695\u2696\u267B\u262E\u262F\u267E\u267F\u269B\u269C\u2708\u2709\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753\u2754\u2755\u2757\u2763\u2764\u2765\u2766\u2767\u2795\u2796\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05\u2B06\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]$/u;
@@ -594,7 +577,6 @@ export default function App() {
               );
               // Persist the FULL reply so history playback is never truncated.
               persistChatExchange(trimmed, replyText, null);
-              refreshInspirations(replyText);
             }
 } catch (e) {
       console.error('chat error:', e);
@@ -1233,7 +1215,6 @@ export default function App() {
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
                         dynamicPrompts={dynamicPrompts}
-                        isLoadingPrompts={isLoadingPrompts}
                       />
                     </div>
                   </div>
