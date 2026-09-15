@@ -526,6 +526,9 @@ export default function App() {
                     replyText = replyText.replace(/\n*Catatan Verifikasi[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Skor kelayakan[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Draf perlu disusun[\s\S]*$/i, '').trim();
+                    // 🔧 Hapus artefak markdown di akhir (###, ---, ***, >, dll)
+                    replyText = replyText.replace(/\n*(?:^#{1,6}\s*$|^---+\s*$|^\*\*\*+\s*$|^>\s*$|^_{3,}\s*$)+$/gm, '').trim();
+                    replyText = replyText.replace(/\n*#+\s*$/, '').trim();
 
                     // 🔧 Extract inspirasi dari >>> atau > lines di AKHIR respons
                     const allLines = replyText.split('\n');
@@ -551,8 +554,9 @@ export default function App() {
 
                     // 🔁 Auto-continue: hanya jika respons SANGAT pendek (< 80 chars) dan tidak diakhiri tanda baca
                     const TERMINAL_END = /[.!?"'»\u201D\u2019\u2033\u270E\u2705\u2714\u2713\u2764\u2605\u2B50\u2728\u274C\u274E\u203C\u2049\u2048\u2611\u2610\u2716\u2795\u2796\u2797\u2702\u2709\u270F\u2708\u2693\u26A0\u26A1\u2622\u2623\u2640\u2642\u2695\u2696\u267B\u262E\u262F\u267E\u267F\u269B\u269C\u2708\u2709\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753\u2754\u2755\u2757\u2763\u2764\u2765\u2766\u2767\u2795\u2796\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05\u2B06\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]$/u;
-                    // Also match if last non-space char is any punctuation or symbol
-                    const lastChar = replyText.trimEnd().slice(-1);
+                    // Strip trailing markdown artifacts before checking completion
+                    const cleanedForCheck = replyText.replace(/\n*#+\s*$/g, '').replace(/\n*(?:---+|\*\*\*+|_{3,})\s*$/g, '').trim();
+                    const lastChar = cleanedForCheck.slice(-1);
                     const looksComplete = /[.!?"'\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(lastChar);
                     const isShortEnough = replyText.length < 80;
 
