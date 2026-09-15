@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { MessageCircle, Reply, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
-import { RecipeComment, fetchComments, postComment, deleteComment } from '../../lib/supabase';
+import { RecipeComment, fetchComments, postComment, deleteComment, supabase } from '../../lib/supabase';
 
 interface CommentSectionProps {
   recipeId: string;
+  recipeSlug?: string;
   isGoogleUser?: boolean;
   displayName?: string;
   avatarUrl?: string | null;
@@ -132,6 +133,7 @@ const CommentItem: React.FC<{
 /* ---- Main section ---- */
 export const CommentSection: React.FC<CommentSectionProps> = ({
   recipeId,
+  recipeSlug,
   isGoogleUser = false,
   displayName = 'Guest',
   avatarUrl,
@@ -143,12 +145,42 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const [sending, setSending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
+  // Resolved Supabase UUID (may differ from client-side recipeId for mock recipes)
+  const [resolvedId, setResolvedId] = useState<string>(recipeId);
+
+  useEffect(() => {
+    // If recipeId looks like a UUID (contains hyphens and is 36 chars), use it directly.
+    // Otherwise, try to resolve from Supabase by slug.
+    const looksLikeUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(recipeId);
+    if (looksLikeUuid) {
+      setResolvedId(recipeId);
+      return;
+    }
+    if (!recipeSlug) {
+      setResolvedId(recipeId);
+      return;
+    }
+    // Resolve UUID from slug
+    supabase
+      .from('recipes')
+      .select('id')
+      .eq('slug', recipeSlug)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.id) {
+          setResolvedId(data.id);
+        } else {
+          setResolvedId(recipeId);
+        }
+      });
+  }, [recipeId, recipeSlug]);
 
   const loadComments = useCallback(async () => {
-    const data = await fetchComments(recipeId);
+    if (!resolvedId) return;
+    const data = await fetchComments(resolvedId);
     setComments(data);
     setLoading(false);
-  }, [recipeId]);
+  }, [resolvedId]);
 
   useEffect(() => {
     loadComments();
@@ -163,7 +195,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
     if (!text || sending) return;
     setSending(true);
     const result = await postComment(
-      recipeId,
+      resolvedId,
       text,
       isGoogleUser ? displayName : 'Guest',
       isGoogleUser ? avatarUrl : null,

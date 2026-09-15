@@ -563,6 +563,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
         {/* Comments Section */}
         <CommentSection
           recipeId={recipe.id}
+          recipeSlug={recipe.slug}
           isGoogleUser={isGoogleUser}
           displayName={googleDisplayName || 'Guest'}
           avatarUrl={googleAvatarUrl || null}
