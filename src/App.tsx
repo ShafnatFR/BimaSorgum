@@ -873,10 +873,10 @@ export default function App() {
           )}
 
           {currentTab === 'generate' && (
-                      <div className="flex-1 flex flex-row min-h-screen w-full relative">
-                        {/* Sidebar (left) — hidden completely when toggled off */}
-                        {generatorMode === 'chat' && isSidebarOpen && (
-                          <Sidebar
+                                <div className="flex-1 flex flex-row h-screen w-full relative overflow-hidden">
+                                  {/* Sidebar (left) — hidden completely when toggled off */}
+                                  {generatorMode === 'chat' && isSidebarOpen && (
+                                    <Sidebar
                             isOpen={isSidebarOpen}
                             onClose={() => setIsSidebarOpen(false)}
                   onNewRecipeChat={() => {
@@ -922,7 +922,7 @@ export default function App() {
               )}
 
               {/* Generator Workspace: Wizard or Chat */}
-              <div className="flex-1 flex flex-col min-h-screen w-full relative pb-6">
+                            <div className="flex-1 flex flex-col h-full w-full relative pb-6 overflow-y-auto">
                 {generatorMode === 'wizard' ? (
                   /* Wizard Flow (4-Step) */
                   <main className="flex-1 flex flex-col justify-between py-3 sm:py-6">
