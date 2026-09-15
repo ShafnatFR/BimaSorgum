@@ -580,7 +580,16 @@ export default function App() {
                         ];
                         const cont = await bimaChat('Kalimat terakhir terpotong. Selesaikan HANYA kalimat/paragraf yang terpotong. JANGAN tambahkan topik atau section baru. Tulis sesedikit mungkin.', contHistory, { useRag: false });
                         if (!cont.response?.trim()) break;
-                        replyText += '\n\n' + cont.response.trim();
+                        // 🔧 Hapus duplikat: jika continuation mengulang kalimat terakhir dari respons sebelumnya
+                        const contText = cont.response.trim();
+                        const lastLines = replyText.split('\n').filter((l: string) => l.trim()).slice(-3);
+                        let cleanCont = contText;
+                        for (const ll of lastLines) {
+                          if (cleanCont.startsWith(ll.trim())) {
+                            cleanCont = cleanCont.slice(ll.trim().length).trim();
+                          }
+                        }
+                        if (cleanCont) replyText += '\n\n' + cleanCont;
                         continueCount++;
                       }
                     }
