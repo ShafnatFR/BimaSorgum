@@ -382,15 +382,6 @@ export default function App() {
   };
 
   const handleGenerateFromWizard = async () => {
-    // 🔧 PREFLIGHT: cek konflik bahan dari wizard sebelum generate
-    const wizardIngredients = wizardData.selectedIngredientIds.concat(wizardData.customIngredients).join(', ');
-    const wizardPseudoPrompt = `buatkan resep ${wizardData.dishCategory} dengan bahan ${wizardIngredients} budget ${wizardData.budgetPerPortion}`;
-    const pf = preflightPrompt(wizardPseudoPrompt);
-    if (!pf.ok) {
-      setPreflight({ result: pf, prompt: wizardPseudoPrompt });
-      return; // tampilkan modal, jangan generate dulu
-    }
-
     setIsGenerating(true);
     setTypingStatusText('Sedang menganalisis kandungan nutrisi sorgum...');
     
@@ -402,13 +393,24 @@ export default function App() {
 
     const newRecipe = await generateRecipeFromWizardAsync(wizardData);
 
-        // 🔧 POST-GENERATION CHECK: cek konflik dari bahan yang dihasilkan AI
+        // 🔧 POST-GENERATION CHECK: kalau ada konflik, tanya AI via chat
         const generatedIngs = (newRecipe.ingredients || []).map((i: any) => i.name || '').join(', ');
         const postPf = preflightPrompt(`buatkan resep dengan bahan ${generatedIngs}`);
         if (!postPf.ok) {
+          const conflictNames = postPf.issues.filter((i) => i.kind === 'conflict').map((i) => i.name);
+          const conflictDesc = postPf.conflicts.join(', ');
+          // Tanya AI untuk penjelasan + alternatif
+          const askPrompt = `Saya ingin membuat resep ${wizardData.dishCategory.replace('_',' ')} dengan bahan: ${generatedIngs}. Tapi ada kombinasi yang tidak lazim: ${conflictDesc}. Jelaskan mengapa kombinasi ini bermasalah, lalu sarankan bahan pengganti yang lebih cocok. Berikan 2-3 alternatif resep yang bisa dibuat dengan bahan yang sudah dipilih (tanpa ${', '.join(conflictNames)}).`;
+          const aiExpl = await bimaChat(askPrompt, [], { useRag: false });
+          const explainText = aiExpl?.response?.trim() || `Kombinasi ${conflictDesc} tidak lazim untuk dimasak bersama. Silakan ganti salah satu bahan.`;
+          const userMsg = { id: `msg-user-${Date.now()}`, sender: 'user' as const, text: userPromptText, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+          const aiMsg = { id: `msg-ai-${Date.now()}`, sender: 'ai' as const, text: explainText, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+          setChatMessages([userMsg, aiMsg]);
+          setGeneratorMode('chat');
+          setCurrentTab('generate');
+          navigateToSlug(RouteSlugs.generate());
           setIsGenerating(false);
-          setPreflight({ result: postPf, prompt: wizardPseudoPrompt });
-          return; // tampilkan modal konflik, jangan tampilkan resep
+          return;
         }
 
         setDynamicRecipes((prev) => [newRecipe, ...prev]);
