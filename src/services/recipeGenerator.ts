@@ -60,55 +60,25 @@ const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
 
 /** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
 async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
-  let result = await bimaChat(prompt, [], { useRag: true });
+  const result = await bimaChat(prompt, [], { useRag: false }); // 🔧 RAG dimatikan: hemat token output
   if (!result || !result.response) return null;
-  let responseText = result.response;
+  const responseText = result.response;
 
-  // 🔁 Auto-continue truncated JSON: if response starts with { but can't parse,
-  // send "lanjutkan" up to 2× to get the rest of the JSON object.
-  const MAX_JSON_CONTINUE = 2;
-  for (let i = 0; i < MAX_JSON_CONTINUE; i++) {
-    const parsed = extractJsonFromLlm(responseText);
-    if (parsed) {
-      const status = String((parsed as any).status || '').toLowerCase();
-      if (status === 'ditolak' || status === 'rejected' || status === 'refused') {
-        const msg = (parsed as any).message || (parsed as any).subtitle || '';
-        if (msg) return { __refusal: true, message: msg };
-      }
-      return parsed;
-    }
-    // If response looks like truncated JSON, try to continue
-    if (/^\s*\{/.test(responseText.trim()) && !responseText.trim().endsWith('}')) {
-      const contHistory = [
-        { role: 'user' as const, content: prompt },
-        { role: 'assistant' as const, content: responseText },
-      ];
-      const cont = await bimaChat('lanjutkan dari karakter terakhir, jangan ulangi dari awal. keluarkan HANYA sisa JSON-nya saja tanpa penjelasan.', contHistory, { useRag: false });
-      if (cont?.response?.trim()) {
-        responseText += cont.response.trim();
-        continue; // try parsing again
-      }
-    }
-    break; // not truncated JSON, don't retry
-  }
-
-  // Final parse attempt after continuation
-  const finalParsed = extractJsonFromLlm(responseText);
-  if (finalParsed) {
-    const status = String((finalParsed as any).status || '').toLowerCase();
+  const parsed = extractJsonFromLlm(responseText); // 🔧 sekarang ada auto-repair truncated JSON
+  if (parsed) {
+    const status = String((parsed as any).status || '').toLowerCase();
     if (status === 'ditolak' || status === 'rejected' || status === 'refused') {
-      const msg = (finalParsed as any).message || (finalParsed as any).subtitle || '';
+      const msg = (parsed as any).message || (parsed as any).subtitle || '';
       if (msg) return { __refusal: true, message: msg };
     }
-    return finalParsed;
+    return parsed;
   }
 
   // LLM declined with a prose explanation instead of JSON — surface it.
   const msg = responseText.trim();
   if (msg) {
-    // If it looks like raw/broken JSON (leaked schema tokens), do NOT show it as prose.
     const looksLikeJson = /^\s*[\{[]/.test(msg) || /```json|"estimatedPrice"|"ingredients"|"metadata"/.test(msg);
-    if (looksLikeJson) return null; // let retry / fallback handle it cleanly
+    if (looksLikeJson) return null;
     return { __refusal: true, message: msg };
   }
   return null;

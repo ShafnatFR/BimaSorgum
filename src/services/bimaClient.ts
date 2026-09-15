@@ -130,6 +130,42 @@ export async function bimaChat(
   return { response, sources, model: modelUsed };
 }
 
+/** Attempt to repair a truncated JSON string by closing open brackets/braces/strings. */
+function repairTruncatedJson(s: string): string | null {
+  // Close any open string value
+  let text = s;
+  // Count unmatched quotes (simple: count non-escaped quotes, odd = open string)
+  const quotes = text.match(/(?<!\\)"/g);
+  if (quotes && quotes.length % 2 !== 0) {
+    // Last quote is unclosed — close the string
+    text += '"';
+  }
+
+  // Track open { and [ (ignoring those inside strings — simplified: count all)
+  const stack: string[] = [];
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"' && (i === 0 || text[i - 1] !== '\\')) {
+      inString = !inString;
+    }
+    if (inString) continue;
+    if (ch === '{') stack.push('}');
+    else if (ch === '[') stack.push(']');
+    else if (ch === '}' || ch === ']') stack.pop();
+  }
+
+  // Also close any trailing comma before closing
+  text = text.replace(/,\s*$/, '');
+
+  // Append closing brackets in reverse order
+  while (stack.length > 0) {
+    text += stack.pop();
+  }
+
+  return text;
+}
+
 /** Parse a recipe JSON from LLM text (tolerant of markdown fences, prose & minor JSON defects). */
 export function extractJsonFromLlm(text: string): Record<string, any> | null {
   if (!text) return null;
@@ -165,6 +201,16 @@ export function extractJsonFromLlm(text: string): Record<string, any> | null {
     const repaired = raw.replace(/(?<=[,{]\s*)"([^"]+)"\s*,/g, '"$1": null,');
     const fixed = tryParse(repaired);
     if (fixed) return fixed;
+  }
+
+  // 🔧 NEW: try to repair truncated JSON by auto-closing brackets/braces
+  const firstCandidate = candidates[0];
+  if (firstCandidate && /^\s*\{/.test(firstCandidate)) {
+    const repaired = repairTruncatedJson(firstCandidate);
+    if (repaired) {
+      const parsed = tryParse(repaired);
+      if (parsed) return parsed;
+    }
   }
 
   return null;
