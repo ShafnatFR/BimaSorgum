@@ -566,7 +566,7 @@ export default function App() {
                         setChatMessages((prev) =>
                           prev.map((m) =>
                             m.id === aiPlaceholderId
-                              ? { ...m, text: replyText + '\n\n_⏳ melanjutkan..._', isTypingStep: false }
+                              ? { ...m, text: replyText, isTypingStep: true, typingText: 'Melanjutkan...' }
                               : m
                           )
                         );
@@ -1176,14 +1176,35 @@ export default function App() {
                                   <div key={msg.id} className="flex flex-col items-start w-full">
                                     <div className="bg-white text-[#1A1C1B] p-4 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[75%] shadow-sm border border-[#e2e3e1]">
                                       {msg.isTypingStep ? (
-                                        <div className="flex items-center gap-2 text-[#727972]">
-                                          <span className="flex gap-1">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '0ms' }} />
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '150ms' }} />
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '300ms' }} />
-                                          </span>
-                                          <span className="text-xs">{msg.typingText || 'Mengetik...'}</span>
-                                        </div>
+                                        msg.text ? (
+                                          // Continuing state: show existing text + skeleton animation
+                                          <div>
+                                            <MarkdownText text={msg.text} />
+                                            <div className="mt-3 space-y-2 animate-pulse">
+                                              <div className="h-3 bg-[#e2e3e1] rounded-full w-[85%]" />
+                                              <div className="h-3 bg-[#e2e3e1] rounded-full w-[65%]" />
+                                              <div className="h-3 bg-[#e2e3e1] rounded-full w-[75%]" />
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-3 text-[#727972]">
+                                              <span className="flex gap-1">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '300ms' }} />
+                                              </span>
+                                              <span className="text-xs">{msg.typingText || 'Melanjutkan...'}</span>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          // Initial typing state: dots only
+                                          <div className="flex items-center gap-2 text-[#727972]">
+                                            <span className="flex gap-1">
+                                              <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '0ms' }} />
+                                              <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '150ms' }} />
+                                              <span className="w-1.5 h-1.5 rounded-full bg-[#163422] animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            </span>
+                                            <span className="text-xs">{msg.typingText || 'Mengetik...'}</span>
+                                          </div>
+                                        )
                                       ) : (
                                         <MarkdownText text={msg.text} />
                                       )}
