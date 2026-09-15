@@ -544,7 +544,7 @@ export default function App() {
                     const isShortEnough = replyText.length < 80;
 
                     if (!looksComplete && !isShortEnough) {
-                      const MAX_CONTINUE = 2;
+                      const MAX_CONTINUE = 5;
                       let continueCount = 0;
                       while (replyText && continueCount < MAX_CONTINUE) {
                         const contLast = replyText.trimEnd().slice(-1);
@@ -559,9 +559,9 @@ export default function App() {
                         );
                         const contHistory: BimaChatMessage[] = [
                           { role: 'user', content: trimmed },
-                          { role: 'assistant', content: replyText },
+                          { role: 'assistant', content: replyText.slice(-600) },
                         ];
-                        const cont = await bimaChat('lanjutkan dari kalimat terakhir, jangan ulangi', contHistory, { useRag: false });
+                        const cont = await bimaChat('lanjutkan persis dari kalimat terakhir. jangan ulangi. tulis sisa jawabannya saja.', contHistory, { useRag: false });
                         if (!cont.response?.trim()) break;
                         replyText += '\n\n' + cont.response.trim();
                         continueCount++;
