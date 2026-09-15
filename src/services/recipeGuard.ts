@@ -67,6 +67,12 @@ const CONFLICTING_PAIRS: Array<{ a: RegExp; b: RegExp; reason: string }> = [
   { a: /madu/i, b: /kopi|bubuk\s*kopi/i, reason: 'madu + kopi' },
   { a: /durian/i, b: /terasi|petis|ikan\s*asin/i, reason: 'durian + terasi/petis' },
   { a: /saus\s*sambal|sambal/i, b: /dessert|puding|es\s*krim|manis/i, reason: 'pedas + dessert' },
+  { a: /cokelat|cocoa/i, b: /terasi|petis|belacan/i, reason: 'cokelat + terasi/petis' },
+  { a: /cokelat|cocoa/i, b: /sambal|cabai\s*rawit/i, reason: 'cokelat + cabai rawit' },
+  { a: /susu|keju/i, b: /terasi|petis|ikan\s*asin/i, reason: 'susu/keju + terasi/ikan asin' },
+  { a: /es\s*krim|ice\s*cream/i, b: /kecap|sambal|terasi/i, reason: 'es krim + kecap/sambal/terasi' },
+  { a: /nutella|selai\s*cokelat/i, b: /terasi|petis|sarden|ikan/i, reason: 'nutella + terasi/ikan' },
+  { a: /sprite|fanta|cola|soda/i, b: /cabai|sambal|terasi/i, reason: 'soda + cabai/terasi' },
 ];
 
 export function detectIngredientConflicts(ingredientNames: string[]): string[] {

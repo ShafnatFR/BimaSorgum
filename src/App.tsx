@@ -438,12 +438,12 @@ export default function App() {
       const trimmed = text.trim();
       if (!trimmed) return;
 
-      // 🔧 PREFLIGHT DINONAKTIFKAN — semua input langsung ke AI tanpa filter
-      // const pf = preflightPrompt(trimmed);
-      // if (!pf.ok && /(buatkan?|berikan?|carikan?|resep|masak|menu|hidangan|makanan)/i.test(trimmed)) {
-      //   setPreflight({ result: pf, prompt: trimmed });
-      //   return;
-      // }
+      // 🔧 PREFLIGHT AKTIF — deteksi bahan konflik sebelum kirim ke AI
+      const pf = preflightPrompt(trimmed);
+      if (!pf.ok && /(buatkan?|berikan?|carikan?|resep|masak|menu|hidangan|makanan)/i.test(trimmed)) {
+        setPreflight({ result: pf, prompt: trimmed });
+        return;
+      }
 
     // 1) Optimistic user message — render immediately, no waiting on the LLM.
     const userMsg: ChatMessage = {
