@@ -73,7 +73,7 @@ function stripQuotePrefix(line: string): string {
 function MarkdownText({ text }: { text: string }) {
   const lines = text.split('\n');
   const blocks: React.ReactNode[] = [];
-  let listBuffer: { type: 'ul' | 'ol'; items: string[] } | null = null;
+  let listBuffer: { type: 'ul' | 'ol'; items: string[]; startNum?: number } | null = null;
   let paragraphBuffer: string[] = [];
   // Table buffer: raw "| ... |" rows until flushed
   let tableBuffer: string[] | null = null;
@@ -97,17 +97,19 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushTable = () => {
-      if (!tableBuffer || tableBuffer.length === 0) {
-        tableBuffer = null;
-        return;
-      }
-      // Header = first row; second row (separator) is skipped if present.
-      const header = parseTableRow(tableBuffer[0]);
-      let startIdx = 1;
-      if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
-        startIdx = 2;
-      }
-      const body = tableBuffer.slice(startIdx).map(parseTableRow);
+        if (!tableBuffer || tableBuffer.length === 0) {
+          tableBuffer = null;
+          return;
+        }
+        // Header = first row; second row (separator) is skipped if present.
+        const header = parseTableRow(tableBuffer[0]);
+        let startIdx = 1;
+        if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
+          startIdx = 2;
+        }
+        const body = tableBuffer.slice(startIdx)
+          .map(parseTableRow)
+          .filter((row) => row.length >= 2 && row.some((c) => c.trim().length > 0)); // 🔧 skip malformed/truncated rows
 
       blocks.push(
         <div key={`t${key++}`} className="my-2 overflow-x-auto">
@@ -198,16 +200,16 @@ function MarkdownText({ text }: { text: string }) {
         </ul>
       );
     } else {
-      blocks.push(
-        <ol key={`l${key++}`} className="list-decimal pl-5 space-y-1 my-1.5">
-          {listBuffer.items.map((item, idx) => (
-            <li key={idx} className="text-sm sm:text-base leading-relaxed">
-              {renderInline(item, `ol${idx}`)}
-            </li>
-          ))}
-        </ol>
-      );
-    }
+          blocks.push(
+            <ol key={`l${key++}`} start={listBuffer.startNum || 1} className="list-decimal pl-5 space-y-1 my-1.5">
+              {listBuffer.items.map((item, idx) => (
+                <li key={idx} className="text-sm sm:text-base leading-relaxed">
+                  {renderInline(item, `ol${idx}`)}
+                </li>
+              ))}
+            </ol>
+          );
+        }
     listBuffer = null;
   };
 
@@ -236,9 +238,14 @@ function MarkdownText({ text }: { text: string }) {
 
     // Blank line: flush everything
         if (line.trim() === '') {
-          flushAll();
-          continue;
-        }
+                  // 🔧 Don't flush lists on blank lines — OL items separated by blank lines
+                  // should stay in the same list to preserve numbering
+                  flushTable();
+                  flushCode();
+                  flushQuote();
+                  flushParagraph();
+                  continue;
+                }
 
         // Fenced code block (```)
         if (/^\s*```/.test(line)) {
@@ -323,16 +330,16 @@ function MarkdownText({ text }: { text: string }) {
     }
 
     // Ordered list item
-    const olMatch = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
-    if (olMatch) {
-      flushParagraph();
-      if (!listBuffer || listBuffer.type !== 'ol') {
-        flushList();
-        listBuffer = { type: 'ol', items: [] };
-      }
-      listBuffer.items.push(olMatch[2]);
-      continue;
-    }
+        const olMatch = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
+        if (olMatch) {
+          flushParagraph();
+          if (!listBuffer || listBuffer.type !== 'ol') {
+            flushList();
+            listBuffer = { type: 'ol', items: [], startNum: parseInt(olMatch[1], 10) };
+          }
+          listBuffer.items.push(olMatch[2]);
+          continue;
+        }
 
     // Horizontal rule
     if (/^\s*(---+|\*\*\*+|___+)\s*$/.test(line)) {
