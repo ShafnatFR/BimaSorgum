@@ -169,7 +169,7 @@ function MarkdownText({ text }: { text: string }) {
       blocks.push(
         <blockquote
           key={`bq${key++}`}
-          className="border-l-[3px] border-[#fdc65c] bg-[#fef9ed]/60 pl-4 pr-3 py-2 my-2 rounded-r-lg italic text-sm sm:text-base leading-relaxed text-[#424843]"
+          className="border-l-[3px] border-[#fdc65c] bg-[#fef9ed]/60 pl-4 pr-3 py-2 my-2 rounded-r-lg italic text-sm sm:text-base leading-relaxed text-justify text-[#424843]"
         >
           {lines.map((ln, idx) => (
             <p key={idx} className={idx > 0 ? 'mt-1' : ''}>
@@ -200,7 +200,7 @@ function MarkdownText({ text }: { text: string }) {
       blocks.push(
         <ul key={`l${key++}`} className="list-disc pl-5 space-y-1 my-1.5">
           {listBuffer.items.map((item, idx) => (
-            <li key={idx} className="text-sm sm:text-base leading-relaxed">
+            <li key={idx} className="text-sm sm:text-base leading-relaxed text-justify">
               {renderInline(item, `ul${idx}`)}
             </li>
           ))}
@@ -210,7 +210,7 @@ function MarkdownText({ text }: { text: string }) {
           blocks.push(
             <ol key={`l${key++}`} start={listBuffer.startNum || 1} className="list-decimal pl-5 space-y-1 my-1.5">
               {listBuffer.items.map((item, idx) => (
-                <li key={idx} className="text-sm sm:text-base leading-relaxed">
+                <li key={idx} className="text-sm sm:text-base leading-relaxed text-justify">
                   {renderInline(item, `ol${idx}`)}
                 </li>
               ))}
@@ -224,7 +224,7 @@ function MarkdownText({ text }: { text: string }) {
     if (paragraphBuffer.length > 0) {
       const joined = paragraphBuffer.join(' ');
       blocks.push(
-        <p key={`p${key++}`} className="text-sm sm:text-base leading-relaxed">
+        <p key={`p${key++}`} className="text-sm sm:text-base leading-relaxed text-justify">
           {renderInline(joined, `p${key}`)}
         </p>
       );
