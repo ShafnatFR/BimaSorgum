@@ -401,7 +401,17 @@ export default function App() {
     }`;
 
     const newRecipe = await generateRecipeFromWizardAsync(wizardData);
-    setDynamicRecipes((prev) => [newRecipe, ...prev]);
+
+        // 🔧 POST-GENERATION CHECK: cek konflik dari bahan yang dihasilkan AI
+        const generatedIngs = (newRecipe.ingredients || []).map((i: any) => i.name || '').join(', ');
+        const postPf = preflightPrompt(`buatkan resep dengan bahan ${generatedIngs}`);
+        if (!postPf.ok) {
+          setIsGenerating(false);
+          setPreflight({ result: postPf, prompt: wizardPseudoPrompt });
+          return; // tampilkan modal konflik, jangan tampilkan resep
+        }
+
+        setDynamicRecipes((prev) => [newRecipe, ...prev]);
     // Persist generated recipe to Supabase (user recipe, RLS owner-scoped)
     generateAndSave(newRecipe).then((stored) => {
       if (stored && stored.slug) {
