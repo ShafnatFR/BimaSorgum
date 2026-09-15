@@ -561,7 +561,7 @@ export default function App() {
                           { role: 'user', content: trimmed },
                           { role: 'assistant', content: replyText.slice(-600) },
                         ];
-                        const cont = await bimaChat('lanjutkan persis dari kalimat terakhir. jangan ulangi. tulis sisa jawabannya saja.', contHistory, { useRag: false });
+                        const cont = await bimaChat('Kalimat terakhir terpotong. Selesaikan HANYA kalimat/paragraf yang terpotong. JANGAN tambahkan topik atau section baru. Tulis sesedikit mungkin.', contHistory, { useRag: false });
                         if (!cont.response?.trim()) break;
                         replyText += '\n\n' + cont.response.trim();
                         continueCount++;
