@@ -155,6 +155,7 @@ export default function App() {
   // Initial messages — start clean; the hero/empty-state shows when empty.
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [dynamicPrompts, setDynamicPrompts] = useState<string[]>([]);
+  const [isLoadingPrompts, setIsLoadingPrompts] = useState(false);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -440,6 +441,7 @@ export default function App() {
 
   // Generate dynamic inspiration prompts based on last AI response
   const refreshInspirations = async (lastAiResponse: string) => {
+    setIsLoadingPrompts(true);
     try {
       const context = lastAiResponse.slice(-400);
       const res = await bimaChat(
@@ -455,13 +457,15 @@ export default function App() {
           .slice(0, 4);
         if (prompts.length >= 2) setDynamicPrompts(prompts);
       }
-    } catch { /* silent — keep existing prompts */ }
+    } catch { /* silent */ }
+    finally { setIsLoadingPrompts(false); }
   };
 
   // Chat Handlers
   const handleSendMessage = async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed) return;
+      setIsLoadingPrompts(true); // 🔧 loading inspirasi segera saat user kirim
 
       // 🔧 PREFLIGHT DINONAKTIFKAN — semua input langsung ke AI tanpa filter
       // const pf = preflightPrompt(trimmed);
@@ -1229,6 +1233,7 @@ export default function App() {
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
                         dynamicPrompts={dynamicPrompts}
+                        isLoadingPrompts={isLoadingPrompts}
                       />
                     </div>
                   </div>

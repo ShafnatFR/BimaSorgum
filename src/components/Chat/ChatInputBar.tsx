@@ -5,12 +5,14 @@ interface ChatInputBarProps {
   onSendMessage: (text: string) => void;
   isLoading?: boolean;
   dynamicPrompts?: string[];
+  isLoadingPrompts?: boolean;
 }
 
 export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   onSendMessage,
   isLoading = false,
   dynamicPrompts,
+  isLoadingPrompts = false,
 }) => {
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -75,22 +77,35 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
     <div className="w-full bg-gradient-to-t from-[#F9F9F7] via-[#F9F9F7]/95 to-transparent pt-1.5 pb-2 sm:pt-2 sm:pb-2.5 px-3 sm:px-6">
       <div className="max-w-2xl mx-auto space-y-1.5">
         {/* Quick prompt recommendations */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
-          <span className="flex items-center gap-1 text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
-            <Sparkles className="w-3 h-3 text-[#7c5800]" />
-            Inspirasi:
-          </span>
-          {quickPrompts.map((prompt, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => onSendMessage(prompt)}
-              className="px-2.5 py-0.5 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs font-medium shadow-xs active:scale-95"
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs">
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-[#7c5800] bg-[#fdc65c]/25 px-2 py-0.5 rounded-full flex-shrink-0">
+                    <Sparkles className="w-3 h-3 text-[#7c5800]" />
+                    Inspirasi:
+                  </span>
+                  {isLoadingPrompts ? (
+                    // Skeleton placeholders while generating
+                    <>
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          className="h-6 bg-[#e2e3e1] rounded-full animate-pulse flex-shrink-0"
+                          style={{ width: `${60 + i * 16}px` }}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    quickPrompts.map((prompt, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => onSendMessage(prompt)}
+                        className="px-2.5 py-0.5 bg-white hover:bg-[#163422]/5 border border-[#c2c8c0]/70 hover:border-[#163422] text-[#424843] hover:text-[#163422] rounded-full whitespace-nowrap transition-all text-[11px] sm:text-xs font-medium shadow-xs active:scale-95"
+                      >
+                        {prompt}
+                      </button>
+                    ))
+                  )}
+                </div>
 
         {/* Conversational Input Area container */}
         <form
