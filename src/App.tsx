@@ -49,6 +49,7 @@ import { RecipeDetailPage } from './components/RecipeDetail/RecipeDetailPage';
 import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
+import { useAuth } from './lib/AuthProvider';
 import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat } from './services/bimaClient';
@@ -75,6 +76,15 @@ export default function App() {
     getRecipeById: dbGetRecipeById,
     recipesByCategory: dbRecipesByCategory,
   } = useData();
+
+  // Google Auth state
+  const {
+    isGoogleUser,
+    displayName: googleDisplayName,
+    avatarUrl: googleAvatarUrl,
+    signInWithGoogle,
+    signOut: googleSignOut,
+  } = useAuth();
 
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
@@ -926,6 +936,11 @@ export default function App() {
                 // Persist display name to profile (role kept locally)
                 import('./lib/supabase').then((m) => m.updateProfileName(name));
               }}
+              isGoogleUser={isGoogleUser}
+              googleDisplayName={googleDisplayName}
+              googleAvatarUrl={googleAvatarUrl}
+              onSignInWithGoogle={signInWithGoogle}
+              onGoogleSignOut={googleSignOut}
             />
           )}
 
@@ -975,6 +990,9 @@ export default function App() {
                     handleSetWizardStep(1);
                   }}
                   onNavigateTab={handleSelectTab}
+                  isGoogleUser={isGoogleUser}
+                  googleDisplayName={googleDisplayName}
+                  googleAvatarUrl={googleAvatarUrl}
                 />
               )}
 
