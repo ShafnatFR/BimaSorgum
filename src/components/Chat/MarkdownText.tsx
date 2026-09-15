@@ -71,7 +71,14 @@ function stripQuotePrefix(line: string): string {
 }
 
 function MarkdownText({ text }: { text: string }) {
-  const lines = text.split('\n');
+  // 🔧 Pre-process: split lines with multiple emoji bullets into separate lines
+  const EMOJI_BULLETS = /[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]/g;
+  const preprocessed = text.replace(/^(\s*)(\S+\s+)((?:[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+.{3,}(?=\s+[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]|$))+)/gm, (match) => {
+    const parts = match.split(/(?=\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+)/).filter(Boolean);
+    if (parts.length > 1) return parts.map((p: string) => p.trim()).join('\n');
+    return match;
+  });
+  const lines = preprocessed.split('\n');
   const blocks: React.ReactNode[] = [];
   let listBuffer: { type: 'ul' | 'ol'; items: string[]; startNum?: number } | null = null;
   let paragraphBuffer: string[] = [];
@@ -317,9 +324,9 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
-    // Unordered list item
-    const ulMatch = line.match(/^\s*[-*+]\s+(.*)$/);
-    if (ulMatch) {
+    // Unordered list item (standard markers or emoji bullets)
+        const ulMatch = line.match(/^\s*[-*+]\s+(.*)$/) || line.match(/^\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧💡📌🎯]\s+(.*)$/);
+        if (ulMatch) {
       flushParagraph();
       if (!listBuffer || listBuffer.type !== 'ul') {
         flushList();
