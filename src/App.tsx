@@ -517,33 +517,47 @@ export default function App() {
           persistChatExchange(trimmed, newRecipe.title, newRecipe);
         }
       } else {
-              // General chat flow: free-form AI answer, no recipe card.
-              const chatPrompt = `${trimmed}\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas maksudnya, atau kamu tidak yakin apa yang diminta, JANGAN menebak atau menjawab dengan asumsi. Tanyakan balik dengan sopan untuk klarifikasi — misalnya "Maaf, bisa diperjelas maksudnya? Apakah Anda ingin..." atau "Boleh saya tahu lebih detail tentang...?"]\n\n[Instruksi: Jawablah dalam bahasa Indonesia yang natural dan ramah, seperti seorang ahli gizi dan pakar sorgum yang sedang mengobrol dengan teman.]`;
-              let answer = await bimaChat(chatPrompt, history, { useRag: true });
-              let replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
+                    // General chat flow: free-form AI answer, no recipe card.
+                    // Only add system instructions for longer messages (not "halo", "hi", dll)
+                    const isShortGreeting = trimmed.length < 15 || /^(halo|hi|hey|hai|hello|selamat|apa kabar|test)/i.test(trimmed);
+                    const systemInstructions = isShortGreeting
+                      ? ''
+                      : `\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas, atau kamu tidak yakin apa yang diminta, JANGAN menebak — tanyakan balik dengan sopan untuk klarifikasi.]\n\n[Jawab dalam bahasa Indonesia yang natural. Jangan lanjutkan topik yang tidak ditanya — jawab HANYA apa yang ditanya.]`;
+                    const chatPrompt = `${trimmed}${systemInstructions}`;
+                    let answer = await bimaChat(chatPrompt, history, { useRag: true });
+                    let replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
 
-              // 🔁 Auto-continue: jika respons terpotong (tidak diakhiri .!?")), lanjutkan sampai 3×
-              const TERMINAL_END = /[.!?"')»\u201D\u2019\u2033]$/;
-              const MAX_CONTINUE = 3;
-              let continueCount = 0;
-              while (replyText && !TERMINAL_END.test(replyText.trimEnd()) && continueCount < MAX_CONTINUE) {
-                // Update placeholder text while continuing
-                setChatMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === aiPlaceholderId
-                      ? { ...m, text: replyText + '\n\n_⏳ melanjutkan..._', isTypingStep: false }
-                      : m
-                  )
-                );
-                const contHistory: BimaChatMessage[] = [
-                  { role: 'user', content: trimmed },
-                  { role: 'assistant', content: replyText },
-                ];
-                const cont = await bimaChat('lanjutkan', contHistory, { useRag: false });
-                if (!cont.response?.trim()) break;
-                replyText += '\n\n' + cont.response.trim();
-                continueCount++;
-              }
+                    // 🔁 Auto-continue: hanya jika respons SANGAT pendek (< 80 chars) dan tidak diakhiri tanda baca
+                    const TERMINAL_END = /[.!?"'»\u201D\u2019\u2033\u270E\u2705\u2714\u2713\u2764\u2605\u2B50\u2728\u274C\u274E\u203C\u2049\u2048\u2611\u2610\u2716\u2795\u2796\u2797\u2702\u2709\u270F\u2708\u2693\u26A0\u26A1\u2622\u2623\u2640\u2642\u2695\u2696\u267B\u262E\u262F\u267E\u267F\u269B\u269C\u2708\u2709\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753\u2754\u2755\u2757\u2763\u2764\u2765\u2766\u2767\u2795\u2796\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05\u2B06\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]$/u;
+                    // Also match if last non-space char is any punctuation or symbol
+                    const lastChar = replyText.trimEnd().slice(-1);
+                    const looksComplete = /[.!?"'\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(lastChar);
+                    const isShortEnough = replyText.length < 80;
+
+                    if (!looksComplete && !isShortEnough) {
+                      const MAX_CONTINUE = 2;
+                      let continueCount = 0;
+                      while (replyText && continueCount < MAX_CONTINUE) {
+                        const contLast = replyText.trimEnd().slice(-1);
+                        const contLooksComplete = /[.!?"'\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(contLast);
+                        if (contLooksComplete) break;
+                        setChatMessages((prev) =>
+                          prev.map((m) =>
+                            m.id === aiPlaceholderId
+                              ? { ...m, text: replyText + '\n\n_⏳ melanjutkan..._', isTypingStep: false }
+                              : m
+                          )
+                        );
+                        const contHistory: BimaChatMessage[] = [
+                          { role: 'user', content: trimmed },
+                          { role: 'assistant', content: replyText },
+                        ];
+                        const cont = await bimaChat('lanjutkan dari kalimat terakhir, jangan ulangi', contHistory, { useRag: false });
+                        if (!cont.response?.trim()) break;
+                        replyText += '\n\n' + cont.response.trim();
+                        continueCount++;
+                      }
+                    }
 
               setChatMessages((prev) =>
                 prev.map((m) =>
