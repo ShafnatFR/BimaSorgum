@@ -916,6 +916,9 @@ export default function App() {
               onStartGenerator={() => {
                 handleSetWizardStep(1);
               }}
+              isGoogleUser={isGoogleUser}
+              googleDisplayName={googleDisplayName}
+              googleAvatarUrl={googleAvatarUrl}
             />
           )}
 

@@ -113,29 +113,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span>New Recipe Chat</span>
             </button>
 
-            {/* Smart Wizard Quick Launch */}
-            <button
-              id="btn-sidebar-smart-generate"
-              onClick={() => {
-                onStartWizard();
-                if (window.innerWidth < 768) onClose();
-              }}
-              className="w-full flex items-center justify-between bg-[#163422] text-white hover:bg-[#2d4b37] rounded-2xl p-3 text-xs font-semibold transition-all shadow-xs cursor-pointer active:scale-[0.98]"
-              title="Mulai Smart Generate"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-[#fdc65c]">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div className="text-left">
-                  <span className="font-bold text-xs block text-white">Smart Generate</span>
-                  <span className="text-[10px] text-white/75 block">Panduan 4 Langkah</span>
-                </div>
-              </div>
-              <span className="material-symbols-outlined text-[18px] text-[#fdc65c]">
-                arrow_forward
-              </span>
-            </button>
           </div>
 
           {/* Recent Sessions */}

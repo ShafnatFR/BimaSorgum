@@ -20,6 +20,7 @@ import {
   Check,
   Link as LinkIcon
 } from 'lucide-react';
+import { CommentSection } from '../Comments/CommentSection';
 
 interface RecipeDetailPageProps {
   recipe: Recipe;
@@ -30,6 +31,10 @@ interface RecipeDetailPageProps {
   onOpenProfile?: () => void;
   onOpenSearch?: () => void;
   onNavigateTab?: (tab: 'home' | 'explore' | 'profile' | 'generate') => void;
+  // Google Auth
+  isGoogleUser?: boolean;
+  googleDisplayName?: string;
+  googleAvatarUrl?: string | null;
 }
 
 export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
@@ -41,6 +46,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   onOpenProfile,
   onOpenSearch,
   onNavigateTab,
+  isGoogleUser = false,
+  googleDisplayName,
+  googleAvatarUrl,
 }) => {
   const [servingsMultiplier, setServingsMultiplier] = useState<number>(1);
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);

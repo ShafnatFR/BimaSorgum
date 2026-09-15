@@ -40,6 +40,10 @@ interface HomePageProps {
   onViewRecipe: (recipe: Recipe) => void;
   onOpenVideoTutorial: (tutorial: VideoTutorialItem) => void;
   onStartGenerator: () => void;
+  // Google Auth
+  isGoogleUser?: boolean;
+  googleDisplayName?: string;
+  googleAvatarUrl?: string | null;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
@@ -49,6 +53,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   onViewRecipe,
   onOpenVideoTutorial,
   onStartGenerator,
+  isGoogleUser = false,
+  googleDisplayName,
+  googleAvatarUrl,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<HomeFavoriteItem[]>(HOME_STUDENT_FAVORITES);
@@ -203,8 +210,8 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#163422]/20 shadow-xs bg-[#e2e3e1]">
             <img
               className="w-full h-full object-cover"
-              alt="Shafna T. Ramadhan"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA66PVYu9Ktl2cw-HRQIcDWEHDWTtqKVG6Lnfm8QhCbLvMk1QVw7EWZkv6IWu1voC_MNhLf9Bxgdjbow2q4OBxEVQrVZmSx1j-Lr6VV5jiN6geDiC9F-3LtAu4aR96kJU_99CBEKwUwEFovYAcUoZr5dKbnTdF9jOFOIxGDTUAcWp77JcEgD0nWPlNSW5taJjRsT4Kq0jCeXnje_pvnJYmfIn1DWyO6ie97CgWEzHF485mwJL_iROuDGQ"
+              alt={isGoogleUser ? (googleDisplayName || 'User') : 'SorghumCare'}
+              src={isGoogleUser && googleAvatarUrl ? googleAvatarUrl : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'}
               referrerPolicy="no-referrer"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
@@ -212,8 +219,12 @@ export const HomePage: React.FC<HomePageProps> = ({
             />
           </div>
           <div className="hidden sm:block">
-            <span className="text-xs font-bold text-[#163422] block leading-none">Shafna</span>
-            <span className="text-[10px] text-[#727972]">Health Explorer</span>
+            <span className="text-xs font-bold text-[#163422] block leading-none">
+              {isGoogleUser ? (googleDisplayName || 'User') : 'Guest'}
+            </span>
+            <span className="text-[10px] text-[#727972]">
+              {isGoogleUser ? 'Health Explorer' : 'Guest Mode'}
+            </span>
           </div>
         </div>
 

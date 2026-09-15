@@ -719,3 +719,68 @@ export async function updateProfileName(fullName: string): Promise<boolean> {
     .upsert({ id: userId, full_name: fullName }, { onConflict: 'id' });
   return !error;
 }
+
+/* ================================================================== *
+ *  COMMENTS — recipe_comments table
+ * ================================================================== */
+
+export interface RecipeComment {
+  id: string;
+  recipe_id: string;
+  user_id: string;
+  display_name: string;
+  avatar_url: string | null;
+  content: string;
+  parent_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Fetch all comments for a recipe, flat list. */
+export async function fetchComments(recipeId: string): Promise<RecipeComment[]> {
+  const { data, error } = await supabase
+    .from('recipe_comments')
+    .select('*')
+    .eq('recipe_id', recipeId)
+    .order('created_at', { ascending: true });
+  if (error || !data) return [];
+  return data as RecipeComment[];
+}
+
+/** Post a new comment (or reply if parentId given). */
+export async function postComment(
+  recipeId: string,
+  content: string,
+  displayName: string,
+  avatarUrl: string | null,
+  parentId: string | null = null,
+): Promise<RecipeComment | null> {
+  const userId = await getUserIdAsync();
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from('recipe_comments')
+    .insert({
+      recipe_id: recipeId,
+      user_id: userId,
+      display_name: displayName,
+      avatar_url: avatarUrl,
+      content,
+      parent_id: parentId,
+    })
+    .select()
+    .single();
+  if (error || !data) return null;
+  return data as RecipeComment;
+}
+
+/** Delete own comment. */
+export async function deleteComment(commentId: string): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('recipe_comments')
+    .delete()
+    .eq('id', commentId)
+    .eq('user_id', userId);
+  return !error;
+}
