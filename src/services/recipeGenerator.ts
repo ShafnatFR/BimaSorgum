@@ -107,9 +107,10 @@ export async function generateRecipeFromWizardAsync(formData: WizardFormData): P
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
-- Bahan Pilihan: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
+- Bahan Pokok: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
 - Target Budget per porsi: Rp ${formData.budgetPerPortion}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
+- ATURAN BAHAN: HANYA gunakan bahan pokok di atas DITAMBAH bahan dapur umum (air, garam, merica, minyak goreng, bawang). JANGAN menambahkan bahan lain yang tidak diminta (mis. madu, keju, saus tiram, kecap manis, dll) kecuali bahan pokok sudah mencakup bahan tersebut.
 
 ${PROMPT_RULES}
 
