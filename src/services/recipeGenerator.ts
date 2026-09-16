@@ -445,7 +445,10 @@ export async function generateRecipeFromWizardAsync(formData: WizardFormData): P
     }, formData);
   }
 
-  const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
+  let result: Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null;
+
+  try {
+    const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
@@ -459,7 +462,14 @@ ${PROMPT_RULES}
 Respon HARUS berupa JSON murni tanpa markdown triple backs dengan struktur:
 ${RECIPE_JSON_SCHEMA}`;
 
-  const result = await generateWithRetry(prompt);
+  result = await generateWithRetry(prompt);
+  } catch (err) {
+    console.warn('AI call failed, returning local suggestions:', err);
+    return buildRefusalResponse({
+      message: 'AI tidak dapat merespons saat ini (timeout atau gangguan jaringan). Berikut alternatif resep yang bisa Anda pilih:',
+      flaggedIngredients: [],
+    }, formData);
+  }
 
   // Case 1: AI returned a structured unpayload/refusal
   if (result && '__refusal' in result) {
