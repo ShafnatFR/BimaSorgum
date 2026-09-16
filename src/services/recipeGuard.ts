@@ -63,6 +63,7 @@ const CONFLICTING_PAIRS: Array<{ a: RegExp; b: RegExp; reason: string }> = [
   { a: /madu/i, b: /terasi|petis|belacan/i, reason: 'madu + terasi/petis' },
   { a: /madu/i, b: /cuka|asam/i, reason: 'madu + cuka' },
   { a: /madu/i, b: /kecap\s*asin|asin/i, reason: 'madu + kecap asin' },
+  { a: /madu/i, b: /kecap\s*manis/i, reason: 'madu + kecap manis' },
   { a: /madu/i, b: /jengkol/i, reason: 'madu + jengkol' },
   { a: /madu/i, b: /kopi|bubuk\s*kopi/i, reason: 'madu + kopi' },
   { a: /durian/i, b: /terasi|petis|ikan\s*asin/i, reason: 'durian + terasi/petis' },

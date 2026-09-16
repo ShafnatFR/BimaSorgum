@@ -490,6 +490,17 @@ ${RECIPE_JSON_SCHEMA}`;
     const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
     const errorIssues = issues.filter(i => i.level === 'error');
     const conflictIssues = issues.filter(i => i.message.includes('tidak lazim') || i.message.includes('Kombinasi'));
+
+    // 🔧 ALSO check conflicts directly on AI-generated ingredient names
+    // (the AI might add conflicting ingredients not in the user's input)
+    const aiIngredientNames = ingredients.map((i: any) => (i.name || '').toString());
+    const aiConflicts = detectIngredientConflicts(aiIngredientNames);
+    for (const c of aiConflicts) {
+      if (!conflictIssues.some(ci => ci.message.includes(c))) {
+        conflictIssues.push({ level: 'warning' as const, message: `Kombinasi bahan tidak lazim (${c}) — resep ini tidak layak.` });
+      }
+    }
+
     const shouldRefuse = errorIssues.length > 0 || conflictIssues.length > 0;
 
     // If guard found critical errors (price fraud, budget overrun) OR
