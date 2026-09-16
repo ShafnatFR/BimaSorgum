@@ -5,6 +5,105 @@ import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
 import { validateRecipe } from './recipeGuard';
 
+/** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
+ *  Guarantees consistency: what the user sees in the card = what they get. */
+export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData: WizardFormData): Recipe {
+  const title = suggestion.title;
+  const categoryMap: Record<string, string> = {
+    makanan_berat: 'Makanan Berat',
+    camilan_sehat: 'Camilan Sehat',
+    minuman_nutrisi: 'Minuman Nutrisi',
+    dessert_rendah_gi: 'Dessert Rendah GI',
+  };
+  const dishCategory = categoryMap[formData.dishCategory] || 'Makanan Sehat';
+  const targetLabel = formData.targetConsumers.includes('anak_sekolah')
+    ? 'Anak Sekolah (6-12 thn)'
+    : formData.targetConsumers.includes('balita')
+    ? 'Balita (1-5 thn)'
+    : formData.targetConsumers.includes('lansia')
+    ? 'Lansia'
+    : 'Remaja & Dewasa';
+
+  // Parse ingredientPrices into RecipeIngredient[] with matching names + prices
+  const ingredients: RecipeIngredient[] = suggestion.ingredients.map((ing) => {
+    let price = 0;
+    const priceEntry = suggestion.ingredientPrices?.find(ip =>
+      ip.toLowerCase().includes(ing.toLowerCase().split(' ')[0])
+    );
+    if (priceEntry) {
+      const m = priceEntry.match(/rp\s*([\d.]+)/i);
+      if (m) price = parseInt(m[1].replace(/\./g, ''), 10) || 0;
+    }
+    return { name: ing, amount: '', estimatedPrice: price || Math.round(suggestion.estimatedCost / suggestion.ingredients.length) };
+  });
+
+  // Reconcile total cost
+  const ingredientSum = ingredients.reduce((s, i) => s + i.estimatedPrice, 0);
+  const estimatedCost = ingredientSum > 0 ? ingredientSum : suggestion.estimatedCost;
+
+  // Generate basic cooking steps based on category
+  const steps: RecipeStep[] = generateSuggestionSteps(title, formData.dishCategory, ingredients);
+
+  // Nutrition based on category
+  const nutritionMap: Record<string, { title: string; description: string; fiberGrams: number; proteinGrams: number; glycemicIndex: 'Rendah (Low GI)' | 'Sedang' | 'Sangat Rendah'; caloriesEstimate: number }> = {
+    makanan_berat: { title: 'Nutrisi Lengkap', description: 'Kaya serat dan protein nabati, cocok untuk anak sekolah dan lansia.', fiberGrams: 8, proteinGrams: 10, glycemicIndex: 'Rendah (Low GI)', caloriesEstimate: 280 },
+    camilan_sehat: { title: 'Camilan Bergizi', description: 'Rendah gula, tinggi serat, cocok untuk camilan sehat.', fiberGrams: 6, proteinGrams: 5, glycemicIndex: 'Rendah (Low GI)', caloriesEstimate: 180 },
+    minuman_nutrisi: { title: 'Minuman Sehat', description: 'Kaya mineral dan vitamin, menyegarkan tanpa gula berlebih.', fiberGrams: 4, proteinGrams: 4, glycemicIndex: 'Rendah (Low GI)', caloriesEstimate: 150 },
+    dessert_rendah_gi: { title: 'Dessert Rendah GI', description: 'Manis alami dengan indeks glikemik rendah, aman untuk gula darah.', fiberGrams: 5, proteinGrams: 4, glycemicIndex: 'Rendah (Low GI)', caloriesEstimate: 160 },
+  };
+  const nutrition = nutritionMap[formData.dishCategory] || nutritionMap.makanan_berat;
+
+  return {
+    id: `recipe-suggestion-${Date.now()}`,
+    slug: slugify(title),
+    title,
+    subtitle: suggestion.description || `Resep ${dishCategory} berbasis sorgum yang sehat dan lezat.`,
+    targetAge: targetLabel,
+    dishCategory,
+    targetBudget: formData.budgetPerPortion,
+    estimatedCost,
+    prepTimeMinutes: Math.round((suggestion.estimatedTimeMinutes || 20) * 0.4),
+    cookTimeMinutes: Math.round((suggestion.estimatedTimeMinutes || 20) * 0.6),
+    servings: 1,
+    ingredients,
+    nutritionHighlight: nutrition,
+    steps,
+    imageUrl: getRecipeImage(title, formData.dishCategory),
+    tags: ['Bebas Gluten', 'Sorgum Sehat', dishCategory],
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/** Generate basic cooking steps for a suggestion-based recipe. */
+function generateSuggestionSteps(_title: string, category: string, ingredients: RecipeIngredient[]): RecipeStep[] {
+  const mainIng = ingredients.map(i => i.name).join(', ');
+  const minutes = category === 'minuman_nutrisi' ? 5 : category === 'camilan_sehat' ? 20 : 25;
+
+  if (category === 'minuman_nutrisi') {
+    return [
+      { stepNumber: 1, title: 'Siapkan Bahan', instruction: `Siapkan ${mainIng}.`, timerMinutes: 2 },
+      { stepNumber: 2, title: 'Blender / Aduk', instruction: 'Campurkan semua bahan ke dalam blender atau gelas. Aduk/blender hingga rata dan halus.', timerMinutes: 2 },
+      { stepNumber: 3, title: 'Sajikan', instruction: 'Tuang ke gelas, tambahkan es batu jika dinginkan. Sajikan segera.', timerMinutes: 1 },
+    ];
+  }
+
+  if (category === 'dessert_rendah_gi') {
+    return [
+      { stepNumber: 1, title: 'Siapkan Bahan', instruction: `Siapkan ${mainIng}. Larutkan tepung sorgum dengan sedikit air jika menggunakan tepung.`, timerMinutes: 5 },
+      { stepNumber: 2, title: 'Masak Adonan', instruction: 'Masak bahan utama dengan api kecil sambil diaduk terus hingga mengental dan matang merata.', timerMinutes: Math.round(minutes * 0.5) },
+      { stepNumber: 3, title: 'Dinginkan & Sajikan', instruction: 'Tuang ke cetakan atau mangkuk. Dinginkan di kulkas sebelum disajikan.', timerMinutes: Math.round(minutes * 0.2) },
+    ];
+  }
+
+  // Default: makanan_berat / camilan_sehat
+  return [
+    { stepNumber: 1, title: 'Siapkan Bahan', instruction: `Siapkan ${mainIng}. Cuci bersih dan potong sesuai kebutuhan.`, timerMinutes: 5 },
+    { stepNumber: 2, title: 'Tumis Bumbu', instruction: 'Panaskan minyak, tumis bawang hingga harum.', timerMinutes: 3 },
+    { stepNumber: 3, title: 'Masak Bahan Utama', instruction: 'Masukkan bahan utama, aduk rata. Tambahkan sedikit air jika perlu, masak hingga matang.', timerMinutes: Math.round(minutes * 0.5) },
+    { stepNumber: 4, title: 'Bumbui & Sajikan', instruction: 'Tambahkan garam dan bumbu sesuai selera. Aduk rata, koreksi rasa. Sajikan hangat.', timerMinutes: 2 },
+  ];
+}
+
 /** Build a Recipe object from a parsed LLM JSON, tolerating missing fields. */
 function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, fallbackCategory: string): Recipe {
   const title = parsed.title || 'Resep Sorgum Spesial';

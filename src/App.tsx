@@ -15,7 +15,7 @@ import {
   RECENT_CHAT_TOPICS 
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
-import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync } from './services/recipeGenerator';
+import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync, buildRecipeFromSuggestion } from './services/recipeGenerator';
 import { 
   getCurrentPath, 
   parseRoute, 
@@ -505,12 +505,10 @@ export default function App() {
     }
   };
 
-  /** Handle when user clicks a recipe suggestion button after AI refusal. */
-  const handleSelectSuggestion = async (suggestion: RecipeSuggestion) => {
-    setIsGenerating(true);
-    setTypingStatusText(`Membuat resep "${suggestion.title}"...`);
-
-    const suggestionPrompt = `Buatkan resep "${suggestion.title}" dengan bahan: ${suggestion.ingredients.join(', ')}. Target budget: Rp ${suggestion.estimatedCost.toLocaleString('id-ID')}. Kategori: ${wizardData.dishCategory}. Target konsumen: ${wizardData.targetConsumers.join(', ')}.`;
+  /** Handle when user clicks a recipe suggestion button after AI refusal.
+   *  Builds the recipe directly from suggestion data — no AI call, guaranteed consistency. */
+  const handleSelectSuggestion = (suggestion: RecipeSuggestion) => {
+    const newRecipe = buildRecipeFromSuggestion(suggestion, wizardData);
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
@@ -518,79 +516,33 @@ export default function App() {
       text: `Pilih: ${suggestion.title}`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
-    const aiPlaceholderId = `msg-ai-${Date.now()}`;
-    const aiPlaceholder: ChatMessage = {
-      id: aiPlaceholderId,
+
+    const aiMsg: ChatMessage = {
+      id: `msg-ai-${Date.now()}`,
       sender: 'ai',
-      text: '',
+      recipe: newRecipe,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isTypingStep: true,
-      typingText: `Membuat resep "${suggestion.title}"...`,
+      isTypingStep: false,
     };
-    setChatMessages((prev) => [...prev, userMsg, aiPlaceholder]);
 
-    try {
-      // 🔧 CRITICAL: use ONLY suggestion ingredients — clear original wizard bahan
-      // otherwise the original nonsensical ingredients (sayuran hijau, protein_ayam_telur)
-      // get mixed in and the AI rejects again
-      const result = await generateRecipeFromWizardAsync({
-        ...wizardData,
-        selectedIngredientIds: [], // clear original selections
-        customIngredients: suggestion.ingredients, // only use suggestion ingredients
-        budgetPerPortion: Math.max(suggestion.estimatedCost, wizardData.budgetPerPortion),
-      });
-
-      const isRefusal = 'type' in result && (result as AiRefusalResponse).type === 'refusal';
-
-      if (isRefusal) {
-        const refusal = result as AiRefusalResponse;
-        setChatMessages((prev) =>
-          prev.map((m) =>
-            m.id === aiPlaceholderId
-              ? { ...m, text: refusal.message, refusalSuggestions: refusal.suggestions, refusalNoSuggestions: refusal.suggestions.length === 0, isTypingStep: false }
-              : m
-          )
+    setDynamicRecipes((prev) => [newRecipe, ...prev]);
+    generateAndSave(newRecipe).then((stored) => {
+      if (stored && stored.slug) {
+        setDynamicRecipes((prev) =>
+          prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
         );
-      } else {
-        const newRecipe = result as Recipe;
-        setDynamicRecipes((prev) => [newRecipe, ...prev]);
-        generateAndSave(newRecipe).then((stored) => {
-          if (stored && stored.slug) {
-            setDynamicRecipes((prev) =>
-              prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
-            );
-          }
-        });
-        setChatMessages((prev) =>
-          prev.map((m) =>
-            m.id === aiPlaceholderId
-              ? { ...m, recipe: newRecipe, text: undefined, isTypingStep: false }
-              : m
-          )
-        );
-        persistChatExchange(suggestionPrompt, newRecipe.title, newRecipe);
-
-        setTimeout(() => {
-          confetti({
-            particleCount: 70,
-            spread: 70,
-            origin: { y: 0.7 },
-            colors: ['#163422', '#f4be55', '#7c5800', '#afcfa9'],
-          });
-        }, 300);
       }
-    } catch (err) {
-      console.error('Suggestion generate error:', err);
-      setChatMessages((prev) =>
-        prev.map((m) =>
-          m.id === aiPlaceholderId
-            ? { ...m, text: 'Gagal membuat resep dari pilihan ini. Coba pilih yang lain atau ubah bahan manual.', isTypingStep: false }
-            : m
-        )
-      );
-    } finally {
-      setIsGenerating(false);
-    }
+    });
+
+    setChatMessages((prev) => [...prev, userMsg, aiMsg]);
+    persistChatExchange(`Pilih: ${suggestion.title}`, newRecipe.title, newRecipe);
+
+    confetti({
+      particleCount: 70,
+      spread: 70,
+      origin: { y: 0.7 },
+      colors: ['#163422', '#f4be55', '#7c5800', '#afcfa9'],
+    });
   };
 
   // Chat Handlers
