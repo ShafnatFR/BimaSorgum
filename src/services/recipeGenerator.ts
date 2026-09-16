@@ -3,7 +3,7 @@ import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
-import { validateRecipe, detectIngredientConflicts } from './recipeGuard';
+import { validateRecipe } from './recipeGuard';
 
 /** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
  *  Guarantees consistency: what the user sees in the card = what they get. */
@@ -432,23 +432,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
  * NO MORE offline fallback — if AI fails entirely, throws an error.
  */
 export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe | AiRefusalResponse> {
-  // 🔧 PRE-GENERATION CHECK: detect ingredient conflicts BEFORE calling AI.
-  // If the user's ingredients are nonsensical (madu+terasi, etc.), refuse immediately
-  // with local suggestions instead of wasting time on an AI call that will be ignored.
-  const allInputIngredients = formData.selectedIngredientIds.concat(formData.customIngredients);
-  const inputConflicts = detectIngredientConflicts(allInputIngredients);
-  if (inputConflicts.length > 0) {
-    const conflictDetail = inputConflicts.map(c => `- **${c}**: kombinasi ini tidak lazim dan tidak cocok untuk dimasak bersama.`).join('\n');
-    return buildRefusalResponse({
-      message: `**Bahan tidak dapat dicampur**\n\n${conflictDetail}\n\nBahan-bahan ini memiliki profil rasa yang bertabrakan dan tidak akan menghasilkan hidangan yang enak. Silakan pilih salah satu alternatif di bawah:`,
-      flaggedIngredients: allInputIngredients.filter(i => /madu|terasi|petis|durian|sambal|kecap/i.test(i)),
-    }, formData);
-  }
-
-  let result: Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null;
-
-  try {
-    const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
+  const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
@@ -462,14 +446,7 @@ ${PROMPT_RULES}
 Respon HARUS berupa JSON murni tanpa markdown triple backs dengan struktur:
 ${RECIPE_JSON_SCHEMA}`;
 
-  result = await generateWithRetry(prompt);
-  } catch (err) {
-    console.warn('AI call failed, returning local suggestions:', err);
-    return buildRefusalResponse({
-      message: 'AI tidak dapat merespons saat ini (timeout atau gangguan jaringan). Berikut alternatif resep yang bisa Anda pilih:',
-      flaggedIngredients: [],
-    }, formData);
-  }
+  const result = await generateWithRetry(prompt);
 
   // Case 1: AI returned a structured unpayload/refusal
   if (result && '__refusal' in result) {
@@ -489,26 +466,12 @@ ${RECIPE_JSON_SCHEMA}`;
     }
     const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
     const errorIssues = issues.filter(i => i.level === 'error');
-    const conflictIssues = issues.filter(i => i.message.includes('tidak lazim') || i.message.includes('Kombinasi'));
 
-    // 🔧 ALSO check conflicts directly on AI-generated ingredient names
-    // (the AI might add conflicting ingredients not in the user's input)
-    const aiIngredientNames = ingredients.map((i: any) => (i.name || '').toString());
-    const aiConflicts = detectIngredientConflicts(aiIngredientNames);
-    for (const c of aiConflicts) {
-      if (!conflictIssues.some(ci => ci.message.includes(c))) {
-        conflictIssues.push({ level: 'warning' as const, message: `Kombinasi bahan tidak lazim (${c}) — resep ini tidak layak.` });
-      }
-    }
-
-    const shouldRefuse = errorIssues.length > 0 || conflictIssues.length > 0;
-
-    // If guard found critical errors (price fraud, budget overrun) OR
-    // ingredient conflicts (madu+terasi, etc.), refuse the recipe entirely.
-    if (shouldRefuse) {
-      const allIssues = [...errorIssues, ...conflictIssues];
+    // If guard found critical errors (price fraud, budget overrun), refuse the recipe entirely.
+    // Don't show a broken recipe card with red badges — show a chat bubble instead.
+    if (errorIssues.length > 0) {
       const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
-      const errorDetail = allIssues.map(i => `- ${i.message}`).join('\n');
+      const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
 
       // Build detailed price table from the AI's ingredients
       const priceTable = ingredients
@@ -520,7 +483,7 @@ ${RECIPE_JSON_SCHEMA}`;
         : '';
 
       return buildRefusalResponse({
-        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah:`,
+        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan:`,
         flaggedIngredients: ingredientNames.slice(0, 5),
       }, formData);
     }
