@@ -784,3 +784,77 @@ export async function deleteComment(commentId: string): Promise<boolean> {
     .eq('user_id', userId);
   return !error;
 }
+
+/* ================================================================== *
+ *  COMMENT LIKES — comment_likes table
+ * ================================================================== */
+
+export interface CommentLike {
+  id: string;
+  comment_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+/** Fetch like counts + current user's liked comment IDs for a set of comments. */
+export async function fetchLikesForComments(
+  commentIds: string[],
+  userId: string | null,
+): Promise<{ counts: Record<string, number>; likedByUser: Set<string> }> {
+  const counts: Record<string, number> = {};
+  const likedByUser = new Set<string>();
+  if (commentIds.length === 0) return { counts, likedByUser };
+
+  // Fetch all likes for these comments
+  const { data, error } = await supabase
+    .from('comment_likes')
+    .select('comment_id, user_id')
+    .in('comment_id', commentIds);
+  if (error || !data) return { counts, likedByUser };
+
+  for (const row of data) {
+    counts[row.comment_id] = (counts[row.comment_id] || 0) + 1;
+    if (userId && row.user_id === userId) {
+      likedByUser.add(row.comment_id);
+    }
+  }
+  return { counts, likedByUser };
+}
+
+/** Toggle like on a comment. Returns true if now liked, false if unliked. */
+export async function toggleCommentLike(
+  commentId: string,
+): Promise<{ liked: boolean; count: number } | null> {
+  const userId = await getUserIdAsync();
+  if (!userId) return null;
+
+  // Check if already liked
+  const { data: existing } = await supabase
+    .from('comment_likes')
+    .select('id')
+    .eq('comment_id', commentId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existing) {
+    // Unlike
+    await supabase.from('comment_likes').delete().eq('id', existing.id);
+    // Get new count
+    const { count } = await supabase
+      .from('comment_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('comment_id', commentId);
+    return { liked: false, count: count || 0 };
+  } else {
+    // Like
+    await supabase.from('comment_likes').insert({
+      comment_id: commentId,
+      user_id: userId,
+    });
+    const { count } = await supabase
+      .from('comment_likes')
+      .select('*', { count: 'exact', head: true })
+      .eq('comment_id', commentId);
+    return { liked: true, count: count || 0 };
+  }
+}

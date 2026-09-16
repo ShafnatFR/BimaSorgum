@@ -119,14 +119,56 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
   return null;
 }
 
-/** Helper: build an AiRefusalResponse from a refusal result. */
-function buildRefusalResponse(result: { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] }): AiRefusalResponse {
+/** Helper: build an AiRefusalResponse from a refusal result. 
+ *  When the AI provides no suggestions, falls back to local recipe suggestions. */
+function buildRefusalResponse(
+  result: { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] },
+  formData?: { dishCategory: string; budgetPerPortion: number }
+): AiRefusalResponse {
+  const filtered = (result.suggestions || []).filter(s => s.title && s.ingredients.length > 0);
+  // If AI gave no suggestions and we have form context, use local fallback
+  const suggestions = filtered.length > 0
+    ? filtered
+    : formData ? buildLocalSuggestions(formData.dishCategory, formData.budgetPerPortion) : [];
   return {
     type: 'refusal',
     message: result.message,
     flaggedIngredients: result.flaggedIngredients || [],
-    suggestions: (result.suggestions || []).filter(s => s.title && s.ingredients.length > 0),
+    suggestions,
   };
+}
+
+/**
+ * Generate sensible local recipe suggestions when the AI's recipe is rejected by the guard.
+ * These are realistic recipes that actually fit the budget, based on the dish category.
+ */
+function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSuggestion[] {
+  const pool: Record<string, RecipeSuggestion[]> = {
+    makanan_berat: [
+      { title: 'Bubur Sorgum Sayur Bayam', ingredients: ['Biji sorgum', 'Bayam', 'Bawang merah', 'Garam', 'Minyak kelapa'], estimatedCost: 4500, description: 'Bubur hangat kaya serat dengan sayuran segar, cocok untuk semua umur.' },
+      { title: 'Nasi Sorgum Tahu Tempe', ingredients: ['Beras sorgum', 'Tahu', 'Tempe', 'Bawang putih', 'Kecap'], estimatedCost: 4800, description: 'Nasi sorgum gurih lauk tahu tempe goreng — protein nabati lengkap.' },
+      { title: 'Sorgum Bihun Goreng', ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam'], estimatedCost: 4200, description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.' },
+    ],
+    camilan_sehat: [
+      { title: 'Cookies Sorgum Cokelat', ingredients: ['Tepung sorgum', 'Gula kelapa', 'Minyak kelapa', 'Bubuk kakao'], estimatedCost: 4000, description: 'Kudapan renyah tanpa terigu, manis alami dari gula kelapa.' },
+      { title: 'Lempeng Sorgum Original', ingredients: ['Tepung sorgum', 'Garam', 'Air', 'Minyak goreng'], estimatedCost: 2500, description: 'Kerupuk sorgum renyah klasik, camilan sehat tanpa MSG.' },
+      { title: 'Bola-Bola Sorgum Keju', ingredients: ['Tepung sorgum', 'Keju parut', 'Telur', 'Garam'], estimatedCost: 4500, description: 'Camilan gurih keju yang renyah di luar, lembut di dalam.' },
+    ],
+    minuman_nutrisi: [
+      { title: 'Susu Sorgum Kurma', ingredients: ['Tepung sorgum sangrai', 'Kurma', 'Air hangat'], estimatedCost: 3500, description: 'Minuman hangat kaya magnesium dan serat, pemanis alami dari kurma.' },
+      { title: 'Sorgum Milkshake Vanila', ingredients: ['Tepung sorgum', 'Susu UHT', 'Gula kelapa', 'Vanili'], estimatedCost: 4000, description: 'Minuman creamy segar dengan aroma vanila, tinggi kalsium.' },
+      { title: 'Jus Sorgum Jeruk Nipis', ingredients: ['Air sorgum fermentasi', 'Jeruk nipis', 'Madu sedikit'], estimatedCost: 3000, description: 'Minuman segar probiotik alami dengan vitamin C dari jeruk nipis.' },
+    ],
+    dessert_rendah_gi: [
+      { title: 'Puding Sorgum Pandan', ingredients: ['Tepung sorgum', 'Santan', 'Gula kelapa', 'Daun pandan'], estimatedCost: 3500, description: 'Puding lembut pewarna alami pandan, rendah gula.' },
+      { title: 'Bubur Ketan Sorgum', ingredients: ['Biji sorgum', 'Santan', 'Gula merah', 'Garam'], estimatedCost: 3000, description: 'Dessert tradisional dengan tekstur ketan dari sorgum.' },
+      { title: 'Sorgum Flan Karamel', ingredients: ['Tepung sorgum', 'Susu', 'Gula pasir', 'Telur'], estimatedCost: 4500, description: 'Flan sutra karamel yang elegan, rendah indeks glikemik.' },
+    ],
+  };
+
+  const suggestions = pool[dishCategory] || pool.makanan_berat;
+  // Filter to suggestions that fit the budget
+  return suggestions.filter(s => s.estimatedCost <= budget * 1.1); // allow 10% overshoot
 }
 
 /**
@@ -153,7 +195,7 @@ ${RECIPE_JSON_SCHEMA}`;
 
   // Case 1: AI returned a structured unpayload/refusal
   if (result && '__refusal' in result) {
-    return buildRefusalResponse(result as { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] });
+    return buildRefusalResponse(result as { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] }, formData);
   }
 
   // Case 2: Valid JSON recipe (result is Record<string, any> here)
@@ -161,12 +203,11 @@ ${RECIPE_JSON_SCHEMA}`;
   if (parsed && parsed.title) {
     const ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
     if (ingredients.length === 0) {
-      // Valid JSON but empty ingredients — treat as refusal
+      // Valid JSON but empty ingredients — treat as refusal with local suggestions
       return buildRefusalResponse({
         message: parsed.subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.',
-        suggestions: [],
         flaggedIngredients: [],
-      });
+      }, formData);
     }
     const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
     const errorIssues = issues.filter(i => i.level === 'error');
@@ -179,8 +220,7 @@ ${RECIPE_JSON_SCHEMA}`;
       return buildRefusalResponse({
         message: `Resep ini tidak bisa dibuat dengan kriteria yang diberikan.\n\n${errorMsg}\n\nSilakan pilih salah satu alternatif di bawah atau naikkan budget Anda.`,
         flaggedIngredients: ingredientNames.slice(0, 5),
-        suggestions: [], // No suggestions from guard — UI will show a generic retry message
-      });
+      }, formData);
     }
 
     const { repaired } = validateRecipe(parsed, formData.budgetPerPortion);
