@@ -535,7 +535,7 @@ export default function App() {
         setChatMessages((prev) =>
           prev.map((m) =>
             m.id === aiPlaceholderId
-              ? { ...m, text: refusal.message, refusalSuggestions: refusal.suggestions, isTypingStep: false }
+              ? { ...m, text: refusal.message, refusalSuggestions: refusal.suggestions, refusalNoSuggestions: refusal.suggestions.length === 0, isTypingStep: false }
               : m
           )
         );
