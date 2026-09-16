@@ -269,7 +269,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       },
       {
         title: 'Sorgum Bihun Goreng Sayur',
-        ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam'],
+        ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam', 'Minyak goreng'],
         estimatedCost: 6000,
         description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.',
         ingredientPrices: ['Biji sorgum: Rp2.000', 'Wortel: Rp1.500', 'Kol: Rp1.000', 'Bawang merah: Rp500', 'Garam: Rp200', 'Minyak goreng: Rp800'],
@@ -347,7 +347,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       },
       {
         title: 'Bubur Ketan Sorgum',
-        ingredients: ['Biji sorgum (100g)', 'Santan kental', 'Gula merah', 'Garam'],
+        ingredients: ['Biji sorgum (100g)', 'Santan kental', 'Gula merah', 'Garam', 'Daun pandan'],
         estimatedCost: 6500,
         description: 'Dessert tradisional dengan tekstur ketan dari sorgum.',
         ingredientPrices: ['Biji sorgum 100g: Rp2.000', 'Santan kental: Rp3.000', 'Gula merah: Rp1.000', 'Garam: Rp200', 'Daun pandan: Rp300'],
