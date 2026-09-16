@@ -810,7 +810,11 @@ export async function fetchLikesForComments(
     .from('comment_likes')
     .select('comment_id, user_id')
     .in('comment_id', commentIds);
-  if (error || !data) return { counts, likedByUser };
+  if (error) {
+    console.error('[likes] fetchLikesForComments error:', error);
+    return { counts, likedByUser };
+  }
+  if (!data) return { counts, likedByUser };
 
   for (const row of data) {
     counts[row.comment_id] = (counts[row.comment_id] || 0) + 1;

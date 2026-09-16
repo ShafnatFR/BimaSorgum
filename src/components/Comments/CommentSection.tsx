@@ -209,9 +209,11 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
 
     // Load likes for all comments
     const ids = data.map((c) => c.id);
+    console.log('[comments] loadComments:', { resolvedId, currentUserId, commentCount: data.length, ids: ids.slice(0, 3) });
     if (ids.length > 0) {
       const userId = currentUserId;
       const likes = await fetchLikesForComments(ids, userId);
+      console.log('[comments] likes loaded:', { counts: likes.counts, likedByUser: Array.from(likes.likedByUser) });
       setLikeCounts(likes.counts);
       setLikedByUser(likes.likedByUser);
     }
