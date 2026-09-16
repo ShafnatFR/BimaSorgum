@@ -98,7 +98,7 @@ export default async function handler(req: any, res: any) {
     const aborted = err?.name === 'AbortError';
     res.status(aborted ? 504 : 502).json({
       detail: aborted
-        ? 'Backend AI tidak merespons dalam batas waktu proxy (115 detik).'
+        ? 'Backend AI tidak merespons dalam batas waktu proxy (175 detik).'
         : `Gagal menghubungi backend AI: ${err?.message || String(err)}`,
     });
   } finally {
