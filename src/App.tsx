@@ -5,7 +5,9 @@ import {
   WizardFormData, 
   ChatMessage, 
   Recipe, 
-  SavedRecipe 
+  SavedRecipe,
+  AiRefusalResponse,
+  RecipeSuggestion
 } from './types';
 import { 
   INITIAL_FEATURED_RECIPE, 
@@ -42,6 +44,7 @@ import { WizardStep4 } from './components/Wizard/WizardStep4';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { RecipeCardView } from './components/Chat/RecipeCardView';
 import { ChatInputBar } from './components/Chat/ChatInputBar';
+import { RecipeSuggestionButtons } from './components/Chat/RecipeSuggestionButtons';
 import MarkdownText from './components/Chat/MarkdownText';
 
 import { CookModeModal } from './components/Modals/CookModeModal';
@@ -52,7 +55,7 @@ import { useData } from './lib/dataContext';
 import { useAuth } from './lib/AuthProvider';
 import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
-import { bimaChat } from './services/bimaClient';
+import { bimaChat, type BimaChatMessage } from './services/bimaClient';
 import { preflightPrompt, type PreflightResult } from './services/preflight';
 import { PreflightWarningModal } from './components/Modals/PreflightWarningModal';
 
@@ -391,77 +394,190 @@ export default function App() {
       wizardData.prepTimeLimit ? ` dan waktu persiapan ${wizardData.prepTimeLimit.toLowerCase()}` : ''
     }`;
 
-    const newRecipe = await generateRecipeFromWizardAsync(wizardData);
+    try {
+      const result = await generateRecipeFromWizardAsync(wizardData);
 
-        // 🔧 POST-GENERATION CHECK: kalau ada konflik, tanya AI via chat
-        const generatedIngs = (newRecipe.ingredients || []).map((i: any) => i.name || '').join(', ');
-        const postPf = preflightPrompt(`buatkan resep dengan bahan ${generatedIngs}`);
-        if (!postPf.ok) {
-          const conflictNames = postPf.issues.filter((i) => i.kind === 'conflict').map((i) => i.name);
-          const conflictDesc = postPf.conflicts.join(', ');
-          // Tanya AI untuk penjelasan + alternatif
-          const askPrompt = `Saya ingin membuat resep ${wizardData.dishCategory.replace('_',' ')} dengan bahan: ${generatedIngs}. Tapi ada kombinasi yang tidak lazim: ${conflictDesc}. Jelaskan mengapa kombinasi ini bermasalah, lalu sarankan bahan pengganti yang lebih cocok. Berikan 2-3 alternatif resep yang bisa dibuat dengan bahan yang sudah dipilih (tanpa ${', '.join(conflictNames)}).`;
-          const aiExpl = await bimaChat(askPrompt, [], { useRag: false });
-          const explainText = aiExpl?.response?.trim() || `Kombinasi ${conflictDesc} tidak lazim untuk dimasak bersama. Silakan ganti salah satu bahan.`;
-          const userMsg = { id: `msg-user-${Date.now()}`, sender: 'user' as const, text: userPromptText, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-          const aiMsg = { id: `msg-ai-${Date.now()}`, sender: 'ai' as const, text: explainText, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-          setChatMessages([userMsg, aiMsg]);
-          setGeneratorMode('chat');
-          setCurrentTab('generate');
-          navigateToSlug(RouteSlugs.generate());
-          setIsGenerating(false);
-          return;
-        }
+      // Check if AI returned a refusal (unpayload)
+      const isRefusal = 'type' in result && (result as AiRefusalResponse).type === 'refusal';
 
-        setDynamicRecipes((prev) => [newRecipe, ...prev]);
-    // Persist generated recipe to Supabase (user recipe, RLS owner-scoped)
-    generateAndSave(newRecipe).then((stored) => {
-      if (stored && stored.slug) {
-        setDynamicRecipes((prev) =>
-          prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
-        );
+      if (isRefusal) {
+        // AI refused — show explanation text + suggestion buttons
+        const refusal = result as AiRefusalResponse;
+        const userMsg: ChatMessage = {
+          id: `msg-user-${Date.now()}`,
+          sender: 'user',
+          text: userPromptText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        const aiMsg: ChatMessage = {
+          id: `msg-ai-${Date.now()}`,
+          sender: 'ai',
+          text: refusal.message,
+          refusalSuggestions: refusal.suggestions.length > 0 ? refusal.suggestions : undefined,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setChatMessages([userMsg, aiMsg]);
+        setGeneratorMode('chat');
+        setCurrentTab('generate');
+        navigateToSlug(RouteSlugs.generate());
+        persistChatExchange(userPromptText, refusal.message, null);
+        setIsGenerating(false);
+        return;
       }
-    });
+
+      // Normal recipe flow
+      const newRecipe = result as Recipe;
+      setDynamicRecipes((prev) => [newRecipe, ...prev]);
+      generateAndSave(newRecipe).then((stored) => {
+        if (stored && stored.slug) {
+          setDynamicRecipes((prev) =>
+            prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
+          );
+        }
+      });
+
+      const userMsg: ChatMessage = {
+        id: `msg-user-${Date.now()}`,
+        sender: 'user',
+        text: userPromptText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      const aiMsg: ChatMessage = {
+        id: `msg-ai-${Date.now()}`,
+        sender: 'ai',
+        recipe: newRecipe,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isTypingStep: true,
+        typingText: 'Sedang menulis langkah memasak...',
+      };
+
+      setChatMessages([userMsg, aiMsg]);
+      setGeneratorMode('chat');
+      setCurrentTab('generate');
+      navigateToSlug(RouteSlugs.generate());
+      persistChatExchange(userPromptText, newRecipe.title, newRecipe);
+
+      setTimeout(() => {
+        setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
+      }, 900);
+
+      setTimeout(() => {
+        setIsGenerating(false);
+        setChatMessages((prev) =>
+          prev.map((m) => (m.id === aiMsg.id ? { ...m, isTypingStep: false } : m))
+        );
+        confetti({
+          particleCount: 70,
+          spread: 70,
+          origin: { y: 0.7 },
+          colors: ['#163422', '#f4be55', '#7c5800', '#afcfa9'],
+        });
+      }, 1800);
+    } catch (err) {
+      console.error('Generate recipe error:', err);
+      const errorMsg: ChatMessage = {
+        id: `msg-user-${Date.now()}`,
+        sender: 'user',
+        text: userPromptText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      const aiErrorMsg: ChatMessage = {
+        id: `msg-ai-${Date.now()}`,
+        sender: 'ai',
+        text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setChatMessages([errorMsg, aiErrorMsg]);
+      setGeneratorMode('chat');
+      setCurrentTab('generate');
+      navigateToSlug(RouteSlugs.generate());
+      setIsGenerating(false);
+    }
+  };
+
+  /** Handle when user clicks a recipe suggestion button after AI refusal. */
+  const handleSelectSuggestion = async (suggestion: RecipeSuggestion) => {
+    setIsGenerating(true);
+    setTypingStatusText(`Membuat resep "${suggestion.title}"...`);
+
+    const suggestionPrompt = `Buatkan resep "${suggestion.title}" dengan bahan: ${suggestion.ingredients.join(', ')}. Target budget: Rp ${suggestion.estimatedCost.toLocaleString('id-ID')}. Kategori: ${wizardData.dishCategory}. Target konsumen: ${wizardData.targetConsumers.join(', ')}.`;
 
     const userMsg: ChatMessage = {
       id: `msg-user-${Date.now()}`,
       sender: 'user',
-      text: userPromptText,
+      text: `Pilih: ${suggestion.title}`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
-
-    const aiMsg: ChatMessage = {
-      id: `msg-ai-${Date.now()}`,
+    const aiPlaceholderId = `msg-ai-${Date.now()}`;
+    const aiPlaceholder: ChatMessage = {
+      id: aiPlaceholderId,
       sender: 'ai',
-      recipe: newRecipe,
+      text: '',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isTypingStep: true,
-      typingText: 'Sedang menulis langkah memasak...',
+      typingText: `Membuat resep "${suggestion.title}"...`,
     };
+    setChatMessages((prev) => [...prev, userMsg, aiPlaceholder]);
 
-    setChatMessages([userMsg, aiMsg]);
-    setGeneratorMode('chat');
-    setCurrentTab('generate');
-    navigateToSlug(RouteSlugs.generate());
-    // Persist the wizard conversation as a new chat session (title = recipe name).
-    persistChatExchange(userPromptText, newRecipe.title, newRecipe);
-
-    setTimeout(() => {
-      setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
-    }, 900);
-
-    setTimeout(() => {
-      setIsGenerating(false);
-      setChatMessages((prev) =>
-        prev.map((m) => (m.id === aiMsg.id ? { ...m, isTypingStep: false } : m))
-      );
-      confetti({
-        particleCount: 70,
-        spread: 70,
-        origin: { y: 0.7 },
-        colors: ['#163422', '#f4be55', '#7c5800', '#afcfa9'],
+    try {
+      const result = await generateRecipeFromWizardAsync({
+        ...wizardData,
+        customIngredients: suggestion.ingredients,
+        budgetPerPortion: suggestion.estimatedCost || wizardData.budgetPerPortion,
       });
-    }, 1800);
+
+      const isRefusal = 'type' in result && (result as AiRefusalResponse).type === 'refusal';
+
+      if (isRefusal) {
+        const refusal = result as AiRefusalResponse;
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiPlaceholderId
+              ? { ...m, text: refusal.message, refusalSuggestions: refusal.suggestions, isTypingStep: false }
+              : m
+          )
+        );
+      } else {
+        const newRecipe = result as Recipe;
+        setDynamicRecipes((prev) => [newRecipe, ...prev]);
+        generateAndSave(newRecipe).then((stored) => {
+          if (stored && stored.slug) {
+            setDynamicRecipes((prev) =>
+              prev.map((r) => (r.id === newRecipe.id ? { ...r, id: stored.id, slug: stored.slug } : r))
+            );
+          }
+        });
+        setChatMessages((prev) =>
+          prev.map((m) =>
+            m.id === aiPlaceholderId
+              ? { ...m, recipe: newRecipe, text: undefined, isTypingStep: false }
+              : m
+          )
+        );
+        persistChatExchange(suggestionPrompt, newRecipe.title, newRecipe);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 70,
+            spread: 70,
+            origin: { y: 0.7 },
+            colors: ['#163422', '#f4be55', '#7c5800', '#afcfa9'],
+          });
+        }, 300);
+      }
+    } catch (err) {
+      console.error('Suggestion generate error:', err);
+      setChatMessages((prev) =>
+        prev.map((m) =>
+          m.id === aiPlaceholderId
+            ? { ...m, text: 'Gagal membuat resep dari pilihan ini. Coba pilih yang lain atau ubah bahan manual.', isTypingStep: false }
+            : m
+        )
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // Chat Handlers
@@ -1265,6 +1381,14 @@ export default function App() {
                                         <MarkdownText text={msg.text} />
                                       )}
                                     </div>
+                                    {/* Suggestion buttons below AI refusal bubble */}
+                                    {msg.refusalSuggestions && msg.refusalSuggestions.length > 0 && !msg.isTypingStep && (
+                                      <RecipeSuggestionButtons
+                                        suggestions={msg.refusalSuggestions}
+                                        onSelect={handleSelectSuggestion}
+                                        disabled={isGenerating}
+                                      />
+                                    )}
                                     <span className="text-[10px] text-[#727972] mt-1 px-2">
                                       {msg.timestamp}
                                     </span>

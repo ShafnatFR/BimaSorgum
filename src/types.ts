@@ -85,11 +85,29 @@ export interface Recipe {
   aiRefusalText?: string;
 }
 
+/** AI's recipe suggestion when it refuses nonsensical input. */
+export interface RecipeSuggestion {
+  title: string;
+  ingredients: string[];
+  estimatedCost: number;
+  description: string;
+}
+
+/** Structured refusal from the AI (un-payload). */
+export interface AiRefusalResponse {
+  type: 'refusal';
+  message: string;
+  flaggedIngredients: string[];
+  suggestions: RecipeSuggestion[];
+}
+
 export interface ChatMessage {
   id: string;
   sender: 'user' | 'ai' | 'system';
   text?: string;
   recipe?: Recipe;
+  /** When the AI refused (nonsensical ingredients), show suggestions as buttons. */
+  refusalSuggestions?: RecipeSuggestion[];
   timestamp: string;
   isTypingStep?: boolean;
   typingText?: string;

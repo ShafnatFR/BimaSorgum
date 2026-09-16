@@ -1,4 +1,4 @@
-import { WizardFormData, Recipe, RecipeIngredient, RecipeStep } from '../types';
+import { WizardFormData, Recipe, RecipeIngredient, RecipeStep, AiRefusalResponse, RecipeSuggestion } from '../types';
 import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
@@ -51,15 +51,25 @@ const RECIPE_JSON_SCHEMA = `{
 // Rules injected into every generate prompt to harden against illogical
 // ingredient combos and unrealistic pricing (see recipeGuard.ts).
 const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
-1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis), JANGAN paksa membuat resep — tolak dengan kalimat sopan saja (bukan JSON) dan jelaskan alasannya.
-2. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
-3. Jika total harga bahan melebihi budget, jangan paksa — tolak dengan kalimat sopan dan sarankan menaikkan budget atau mengurangi bahan.
+1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis, atau bahan yang benar-benar tidak bisa dimasak bersama), JANGAN paksa membuat resep. Sebaliknya, keluarkan JSON dengan format UNPAYLOAD berikut:
+{
+  "status": "unpayload",
+  "message": "Penjelasan mengapa bahan ini tidak bisa di-mix. Sebutkan semua bahan bermasalah secara spesifik. Lalu berikan saran alternatif yang masuk akal.",
+  "flaggedIngredients": ["bahan1", "bahan2"],
+  "suggestions": [
+    {"title": "Judul Resep Alternatif 1", "ingredients": ["bahan A", "bahan B", "bahan C"], "estimatedCost": 8500, "description": "Deskripsi singkat kenapa resep ini enak"},
+    {"title": "Judul Resep Alternatif 2", "ingredients": ["bahan X", "bahan Y"], "estimatedCost": 7000, "description": "Deskripsi singkat"},
+    {"title": "Judul Resep Alternatif 3", "ingredients": ["bahan P", "bahan Q", "bahan R"], "estimatedCost": 9000, "description": "Deskripsi singkat"}
+  ]
+}
+2. Jika budget terlalu rendah untuk bahan premium (mis. budget Rp 5.000 tapi minta salmon + wagyu), gunakan format UNPAYLOAD yang sama — jelaskan bahan mana yang terlalu mahal dan sarankan alternatif yang muat di budget.
+3. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
 4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
 5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).
-6. HANYA keluarkan JSON dengan struktur di atas. JANGAN menambahkan field lain seperti "metadata", "resep", "tips", atau "status". JANGAN gunakan markdown triple backticks.`;
+6. HANYA keluarkan JSON dengan struktur di atas (resep ATAU unpayload). JANGAN menambahkan field lain. JANGAN gunakan markdown triple backticks.`;
 
 /** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
-async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
+async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
   const result = await bimaChat(prompt, [], { useRag: false }); // 🔧 RAG dimatikan: hemat token output
   if (!result || !result.response) return null;
   const responseText = result.response;
@@ -67,9 +77,21 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
   const parsed = extractJsonFromLlm(responseText); // 🔧 sekarang ada auto-repair truncated JSON
   if (parsed) {
     const status = String((parsed as any).status || '').toLowerCase();
-    if (status === 'ditolak' || status === 'rejected' || status === 'refused') {
+    // 🔧 Detect structured unpayload response from the new prompt format
+    if (status === 'unpayload' || status === 'ditolak' || status === 'rejected' || status === 'refused') {
       const msg = (parsed as any).message || (parsed as any).subtitle || '';
-      if (msg) return { __refusal: true, message: msg };
+      const suggestions = Array.isArray((parsed as any).suggestions)
+        ? (parsed as any).suggestions.map((s: any) => ({
+            title: s.title || '',
+            ingredients: Array.isArray(s.ingredients) ? s.ingredients : [],
+            estimatedCost: Number(s.estimatedCost) || 0,
+            description: s.description || '',
+          }))
+        : [];
+      const flaggedIngredients = Array.isArray((parsed as any).flaggedIngredients)
+        ? (parsed as any).flaggedIngredients
+        : [];
+      if (msg) return { __refusal: true, message: msg, suggestions, flaggedIngredients };
     }
     return parsed;
   }
@@ -77,7 +99,7 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
   // LLM declined with a prose explanation instead of JSON — surface it.
   const msg = responseText.trim();
   if (msg) {
-    const looksLikeJson = /^\s*[\{[]/.test(msg) || /```json|"estimatedPrice"|"ingredients"|"metadata"/.test(msg);
+    const looksLikeJson = /^\s*[\[{]/.test(msg) || /```json|"estimatedPrice"|"ingredients"|"metadata"/.test(msg);
     if (looksLikeJson) return null;
     return { __refusal: true, message: msg };
   }
@@ -85,7 +107,7 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
 }
 
 /** Call the LLM up to 2 times; retries once on empty/bad JSON. */
-async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string } | null> {
+async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const parsed = await tryGenerate(prompt);
@@ -97,13 +119,23 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
   return null;
 }
 
+/** Helper: build an AiRefusalResponse from a refusal result. */
+function buildRefusalResponse(result: { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] }): AiRefusalResponse {
+  return {
+    type: 'refusal',
+    message: result.message,
+    flaggedIngredients: result.flaggedIngredients || [],
+    suggestions: (result.suggestions || []).filter(s => s.title && s.ingredients.length > 0),
+  };
+}
+
 /**
  * Generate a recipe from Wizard data using the BIMA AI LLM (Living Labs).
- * Falls back to the offline smart generator if the call fails.
+ * Returns either a valid Recipe or an AiRefusalResponse when ingredients are nonsensical.
+ * NO MORE offline fallback — if AI fails entirely, throws an error.
  */
-export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe> {
-  try {
-    const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
+export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe | AiRefusalResponse> {
+  const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
 Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
@@ -114,48 +146,36 @@ Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria ber
 
 ${PROMPT_RULES}
 
-Respon HARUS berupa JSON murni tanpa markdown triple backticks dengan struktur:
+Respon HARUS berupa JSON murni tanpa markdown triple backs dengan struktur:
 ${RECIPE_JSON_SCHEMA}`;
 
-    const result = await generateWithRetry(prompt);
-    if (result && !('__refusal' in result) && result.title) {
-      const ingredients = Array.isArray(result.ingredients) ? result.ingredients : [];
-      if (ingredients.length === 0) {
-        // Valid JSON but empty ingredients — the LLM declined via an empty recipe.
-        const refusalRecipe = recipeFromLlmJson(
-          { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
-          formData.budgetPerPortion,
-          formData.dishCategory
-        );
-        (refusalRecipe as any).aiRefusalText =
-          (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
-        return refusalRecipe;
-      }
-      const { issues, repaired } = validateRecipe(result, formData.budgetPerPortion);
-      const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
-      // Surface validation issues on the recipe object so the UI can warn the user.
-      (recipe as any).aiWarnings = issues;
-      return recipe;
-    }
-    if (result && '__refusal' in result) {
-      const refusalRecipe = recipeFromLlmJson(
-        { title: 'Permintaan tidak dapat dibuat', ingredients: [], steps: [] },
-        formData.budgetPerPortion,
-        formData.dishCategory
-      );
-      (refusalRecipe as any).aiRefusalText = result.message;
-      return refusalRecipe;
-    }
-    console.warn('BIMA AI returned non-JSON, falling back to offline generator.');
-  } catch (err) {
-    console.warn('BIMA AI call failed, using offline fallback generator:', err);
+  const result = await generateWithRetry(prompt);
+
+  // Case 1: AI returned a structured unpayload/refusal
+  if (result && '__refusal' in result) {
+    return buildRefusalResponse(result as { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] });
   }
 
-  const fallback = generateRecipeFromWizard(formData);
-  (fallback as any).aiWarnings = [
-    { level: 'error', message: 'AI tidak menghasilkan resep valid; ini resep cadangan (bukan hasil AI).' },
-  ];
-  return fallback;
+  // Case 2: Valid JSON recipe (result is Record<string, any> here)
+  const parsed = result as Record<string, any> | null;
+  if (parsed && parsed.title) {
+    const ingredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
+    if (ingredients.length === 0) {
+      // Valid JSON but empty ingredients — treat as refusal
+      return buildRefusalResponse({
+        message: parsed.subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.',
+        suggestions: [],
+        flaggedIngredients: [],
+      });
+    }
+    const { issues, repaired } = validateRecipe(parsed, formData.budgetPerPortion);
+    const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
+    (recipe as any).aiWarnings = issues;
+    return recipe;
+  }
+
+  // Case 3: AI returned nothing usable — no more dummy fallback
+  throw new Error('AI tidak memberikan respons yang valid. Silakan coba lagi.');
 }
 
 export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
