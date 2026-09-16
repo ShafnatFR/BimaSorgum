@@ -440,8 +440,11 @@ ${RECIPE_JSON_SCHEMA}`;
     return recipe;
   }
 
-  // Case 3: AI returned nothing usable — no more dummy fallback
-  throw new Error('AI tidak memberikan respons yang valid. Silakan coba lagi.');
+  // Case 3: AI returned nothing usable — return local suggestions as refusal (not a crash)
+  return buildRefusalResponse({
+    message: 'AI tidak memberikan respons yang valid. Berikut alternatif resep yang bisa Anda pilih:',
+    flaggedIngredients: [],
+  }, formData);
 }
 
 export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
