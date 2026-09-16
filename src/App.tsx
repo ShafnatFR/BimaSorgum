@@ -1276,13 +1276,13 @@ export default function App() {
                             {chatMessages.map((msg) => {
                               if (msg.sender === 'user') {
                                 return (
-                                  <div key={msg.id} className="flex flex-col items-end">
-                                    <div className="bg-[#163422] text-white p-4 rounded-2xl rounded-tr-none max-w-[85%] sm:max-w-[75%] shadow-sm">
+                                  <div key={msg.id} className="flex flex-col w-full">
+                                    <div className="bg-[#163422] text-white p-4 rounded-2xl shadow-sm">
                                       <p className="text-sm sm:text-base font-normal leading-relaxed">
                                         {msg.text}
                                       </p>
                                     </div>
-                                    <span className="text-[10px] text-[#727972] mt-1 px-2">
+                                    <span className="text-[10px] text-[#727972] mt-1 px-2 text-right">
                                       {msg.timestamp}
                                     </span>
                                   </div>
@@ -1313,8 +1313,8 @@ export default function App() {
                               // AI text message (general chat, no recipe card)
                               if (msg.sender === 'ai' && msg.text) {
                                 return (
-                                  <div key={msg.id} className="flex flex-col items-start w-full">
-                                    <div className="bg-white text-[#1A1C1B] p-4 rounded-2xl rounded-tl-none max-w-[85%] sm:max-w-[75%] shadow-sm border border-[#e2e3e1]">
+                                  <div key={msg.id} className="flex flex-col w-full">
+                                    <div className="bg-[#f4f4f2] text-[#1A1C1B] p-4 rounded-2xl shadow-sm border border-[#e2e3e1]">
                                       {msg.isTypingStep ? (
                                         msg.text ? (
                                           // Continuing state: show existing text + skeleton animation
