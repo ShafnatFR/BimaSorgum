@@ -774,27 +774,34 @@ export async function fetchUserStats(): Promise<UserStats> {
   // Sort dates descending and count consecutive days from today
   const sorted = Array.from(allDates).sort().reverse();
   let dayStreak = 0;
+
+  // Use local date (YYYY-MM-DD) to avoid UTC offset issues
+  const fmtLocal = (d: Date) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dd}`;
+  };
+
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
 
   for (let i = 0; i < sorted.length; i++) {
     const expected = new Date(today);
     expected.setDate(expected.getDate() - i);
-    const expectedStr = expected.toISOString().substring(0, 10);
+    const expectedStr = fmtLocal(expected);
     if (sorted[i] === expectedStr) {
       dayStreak++;
     } else if (i === 0) {
       // Today has no activity, check if yesterday does
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().substring(0, 10);
+      const yesterdayStr = fmtLocal(yesterday);
       if (sorted[i] === yesterdayStr) {
         dayStreak++;
-        // Adjust: count from yesterday
         for (let j = 1; j < sorted.length; j++) {
           const exp = new Date(yesterday);
           exp.setDate(exp.getDate() - (j - 1));
-          if (sorted[j] === exp.toISOString().substring(0, 10)) {
+          if (sorted[j] === fmtLocal(exp)) {
             dayStreak++;
           } else break;
         }
