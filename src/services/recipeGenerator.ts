@@ -367,8 +367,10 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
   };
 
   const suggestions = pool[dishCategory] || pool.makanan_berat;
-  // Filter to suggestions that fit the budget (allow 20% overshoot — budget is a target, not hard limit)
-  return suggestions.filter(s => s.estimatedCost <= budget * 1.2);
+  // 🔧 Show ALL suggestions regardless of budget — prices are displayed
+  // so users learn realistic costs and can raise their budget accordingly.
+  // The refusal message already explains the budget issue.
+  return suggestions;
 }
 
 /**
@@ -417,8 +419,6 @@ ${RECIPE_JSON_SCHEMA}`;
     if (errorIssues.length > 0) {
       const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
       const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
-      const localSuggestions = buildLocalSuggestions(formData.dishCategory, formData.budgetPerPortion);
-      const hasSuggestions = localSuggestions.length > 0;
 
       // Build detailed price table from the AI's ingredients
       const priceTable = ingredients
@@ -429,12 +429,8 @@ ${RECIPE_JSON_SCHEMA}`;
         ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${ingredients.reduce((s: number, i: any) => s + (Number(i.estimatedPrice) || 0), 0).toLocaleString('id-ID')}** |\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |`
         : '';
 
-      const suggestionText = hasSuggestions
-        ? '\n\nSilakan pilih salah satu alternatif di bawah yang sudah disesuaikan dengan budget Anda:'
-        : `\n\n> Budget Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} terlalu rendah untuk kategori **${formData.dishCategory.replace(/_/g, ' ')}**. Resep ini umumnya butuh minimal Rp 6.000-8.000 per porsi. Silakan naikkan budget atau kembali ke wizard.`;
-
       return buildRefusalResponse({
-        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}${suggestionText}`,
+        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan:`,
         flaggedIngredients: ingredientNames.slice(0, 5),
       }, formData);
     }
