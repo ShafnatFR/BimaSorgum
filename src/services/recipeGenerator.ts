@@ -168,9 +168,23 @@ ${RECIPE_JSON_SCHEMA}`;
         flaggedIngredients: [],
       });
     }
-    const { issues, repaired } = validateRecipe(parsed, formData.budgetPerPortion);
+    const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
+    const errorIssues = issues.filter(i => i.level === 'error');
+
+    // If guard found critical errors (price fraud, budget overrun), refuse the recipe entirely.
+    // Don't show a broken recipe card with red badges — show a chat bubble instead.
+    if (errorIssues.length > 0) {
+      const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
+      const errorMsg = errorIssues.map(i => i.message).join(' ');
+      return buildRefusalResponse({
+        message: `Resep ini tidak bisa dibuat dengan kriteria yang diberikan.\n\n${errorMsg}\n\nSilakan pilih salah satu alternatif di bawah atau naikkan budget Anda.`,
+        flaggedIngredients: ingredientNames.slice(0, 5),
+        suggestions: [], // No suggestions from guard — UI will show a generic retry message
+      });
+    }
+
+    const { repaired } = validateRecipe(parsed, formData.budgetPerPortion);
     const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
-    (recipe as any).aiWarnings = issues;
     return recipe;
   }
 

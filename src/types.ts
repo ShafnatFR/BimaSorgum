@@ -108,6 +108,8 @@ export interface ChatMessage {
   recipe?: Recipe;
   /** When the AI refused (nonsensical ingredients), show suggestions as buttons. */
   refusalSuggestions?: RecipeSuggestion[];
+  /** True when the AI refused but provided no actionable suggestions — show retry. */
+  refusalNoSuggestions?: boolean;
   timestamp: string;
   isTypingStep?: boolean;
   typingText?: string;

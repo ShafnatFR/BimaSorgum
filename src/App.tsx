@@ -414,6 +414,7 @@ export default function App() {
           sender: 'ai',
           text: refusal.message,
           refusalSuggestions: refusal.suggestions.length > 0 ? refusal.suggestions : undefined,
+          refusalNoSuggestions: refusal.suggestions.length === 0,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
         setChatMessages([userMsg, aiMsg]);
@@ -1388,6 +1389,17 @@ export default function App() {
                                         onSelect={handleSelectSuggestion}
                                         disabled={isGenerating}
                                       />
+                                    )}
+                                    {/* Retry button when AI refused but gave no suggestions */}
+                                    {msg.refusalNoSuggestions && !msg.refusalSuggestions && !msg.isTypingStep && (
+                                      <div className="flex gap-2 mt-2">
+                                        <button
+                                          onClick={() => handleSetWizardStep(1)}
+                                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs active:scale-[0.98]"
+                                        >
+                                          Kembali ke Wizard
+                                        </button>
+                                      </div>
                                     )}
                                     <span className="text-[10px] text-[#727972] mt-1 px-2">
                                       {msg.timestamp}
