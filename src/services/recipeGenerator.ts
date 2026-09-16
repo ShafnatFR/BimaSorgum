@@ -24,22 +24,75 @@ export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData
     ? 'Lansia'
     : 'Remaja & Dewasa';
 
-  // Parse ingredientPrices into RecipeIngredient[] with matching names + prices
-  const ingredients: RecipeIngredient[] = suggestion.ingredients.map((ing) => {
+  // Parse ingredientPrices into RecipeIngredient[] with matching names + prices.
+  // Handle composite entries like "Bumbu Lain: Rp500" — that's a TOTAL for multiple items.
+  const ingredients: RecipeIngredient[] = [];
+  let matchedTotal = 0;
+  const unmatchedIndices: number[] = [];
+
+  // Detect composite/catch-all price entries (e.g. "Bumbu Lain", "Bumbu lainnya")
+  const compositePatterns = /^(bumbu\s*lain|bumbu\s*lainnya|lainnya|lain|bumbu\s*campur)/i;
+
+  // First pass: match ingredients to specific price entries only
+  for (let idx = 0; idx < suggestion.ingredients.length; idx++) {
+    const ing = suggestion.ingredients[idx];
     let price = 0;
-    const priceEntry = suggestion.ingredientPrices?.find(ip =>
-      ip.toLowerCase().includes(ing.toLowerCase().split(' ')[0])
-    );
+    const firstWord = ing.toLowerCase().split(' ')[0].split('(')[0];
+
+    // Try to find a matching price entry that is NOT a composite/catch-all
+    const priceEntry = suggestion.ingredientPrices?.find(ip => {
+      const entryName = ip.split(':')[0].trim().toLowerCase();
+      // Skip composite entries in first pass
+      if (compositePatterns.test(entryName)) return false;
+      return entryName.startsWith(firstWord) || firstWord.startsWith(entryName.split(' ')[0]);
+    });
+
     if (priceEntry) {
       const m = priceEntry.match(/rp\s*([\d.]+)/i);
       if (m) price = parseInt(m[1].replace(/\./g, ''), 10) || 0;
     }
-    return { name: ing, amount: '', estimatedPrice: price || Math.round(suggestion.estimatedCost / suggestion.ingredients.length) };
-  });
 
-  // Reconcile total cost
+    if (price > 0) {
+      matchedTotal += price;
+      ingredients.push({ name: ing, amount: '', estimatedPrice: price });
+    } else {
+      ingredients.push({ name: ing, amount: '', estimatedPrice: 0 });
+      unmatchedIndices.push(idx);
+    }
+  }
+
+  // Second pass: distribute remaining budget evenly among unmatched ingredients
+  const remainingBudget = Math.max(0, suggestion.estimatedCost - matchedTotal);
+  if (unmatchedIndices.length > 0 && remainingBudget > 0) {
+    const perUnmatched = Math.round(remainingBudget / unmatchedIndices.length);
+    for (const idx of unmatchedIndices) {
+      ingredients[idx].estimatedPrice = perUnmatched;
+    }
+  } else if (unmatchedIndices.length > 0) {
+    // No remaining budget — assign minimal price
+    for (const idx of unmatchedIndices) {
+      ingredients[idx].estimatedPrice = 100;
+    }
+  }
+
+  // Reconcile total cost — if individual prices exceed the suggestion total,
+  // scale proportionally to match the stated estimatedCost
   const ingredientSum = ingredients.reduce((s, i) => s + i.estimatedPrice, 0);
-  const estimatedCost = ingredientSum > 0 ? ingredientSum : suggestion.estimatedCost;
+  let estimatedCost = ingredientSum > 0 ? ingredientSum : suggestion.estimatedCost;
+  if (ingredientSum > suggestion.estimatedCost && suggestion.estimatedCost > 0) {
+    const scale = suggestion.estimatedCost / ingredientSum;
+    for (const ing of ingredients) {
+      ing.estimatedPrice = Math.round(ing.estimatedPrice * scale / 100) * 100; // round to nearest 100
+    }
+    // Fix rounding drift: adjust the most expensive ingredient to hit exact total
+    const newSum = ingredients.reduce((s, i) => s + i.estimatedPrice, 0);
+    const drift = newSum - suggestion.estimatedCost;
+    if (drift !== 0) {
+      const mostExpensive = ingredients.reduce((max, i) => i.estimatedPrice > max.estimatedPrice ? i : max, ingredients[0]);
+      mostExpensive.estimatedPrice = Math.max(100, mostExpensive.estimatedPrice - drift);
+    }
+    estimatedCost = ingredients.reduce((s, i) => s + i.estimatedPrice, 0);
+  }
 
   // Generate basic cooking steps based on category
   const steps: RecipeStep[] = generateSuggestionSteps(title, formData.dishCategory, ingredients);
