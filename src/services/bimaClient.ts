@@ -94,11 +94,22 @@ export async function bimaChat(
       const payload: Record<string, unknown> = { message, max_tokens: MAX_OUTPUT_TOKENS };
   if (history && history.length) payload.history = history;
 
-  const res = await fetch(BIMA_CHAT_PATH, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(payload),
-  });
+  // 🔧 Client-side timeout: 120s (matches Vercel proxy maxDuration)
+  const CLIENT_TIMEOUT_MS = 120_000;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), CLIENT_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(BIMA_CHAT_PATH, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+      signal: ctl.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');

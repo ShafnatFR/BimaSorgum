@@ -6,11 +6,11 @@
  * the 60s timeout because data flows continuously.
  */
 
-export const config = { maxDuration: 60 };
+export const config = { maxDuration: 120 };
 
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
-const UPSTREAM_TIMEOUT_MS = 55_000;
-const STREAM_CHUNK_TIMEOUT_MS = 45_000; // reset setiap kali data diterima
+const UPSTREAM_TIMEOUT_MS = 115_000; // +60s from original 55s
+const STREAM_CHUNK_TIMEOUT_MS = 105_000; // +60s from original 45s
 const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key'];
 
 export default async function handler(req: any, res: any) {
@@ -98,7 +98,7 @@ export default async function handler(req: any, res: any) {
     const aborted = err?.name === 'AbortError';
     res.status(aborted ? 504 : 502).json({
       detail: aborted
-        ? 'Backend AI tidak merespons dalam batas waktu proxy (50 detik).'
+        ? 'Backend AI tidak merespons dalam batas waktu proxy (115 detik).'
         : `Gagal menghubungi backend AI: ${err?.message || String(err)}`,
     });
   } finally {
