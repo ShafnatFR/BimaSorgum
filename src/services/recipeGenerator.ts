@@ -217,8 +217,13 @@ ${RECIPE_JSON_SCHEMA}`;
     if (errorIssues.length > 0) {
       const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
       const errorMsg = errorIssues.map(i => i.message).join(' ');
+      const localSuggestions = buildLocalSuggestions(formData.dishCategory, formData.budgetPerPortion);
+      const hasSuggestions = localSuggestions.length > 0;
+      const suggestionText = hasSuggestions
+        ? 'Silakan pilih salah satu alternatif di bawah atau naikkan budget Anda.'
+        : `Budget Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} terlalu rendah untuk kategori ini. Resep ${formData.dishCategory.replace(/_/g, ' ')} umumnya butuh minimal Rp 6.000-8.000 per porsi. Silakan naikkan budget atau kembali ke wizard.`;
       return buildRefusalResponse({
-        message: `Resep ini tidak bisa dibuat dengan kriteria yang diberikan.\n\n${errorMsg}\n\nSilakan pilih salah satu alternatif di bawah atau naikkan budget Anda.`,
+        message: `Resep ini tidak bisa dibuat dengan kriteria yang diberikan.\n\n${errorMsg}\n\n${suggestionText}`,
         flaggedIngredients: ingredientNames.slice(0, 5),
       }, formData);
     }
