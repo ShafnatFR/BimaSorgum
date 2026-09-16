@@ -92,10 +92,11 @@ export default function App() {
   // Dynamic user stats (Sorghum Impact & Day Streak)
   const [userStats, setUserStats] = useState({ sorghumImpact: 0, dayStreak: 0 });
   useEffect(() => {
+    if (!ready) return;
     import('./lib/supabase').then((m) => {
       m.fetchUserStats().then(setUserStats);
     });
-  }, [isGoogleUser]); // refetch when auth state changes
+  }, [isGoogleUser, ready]); // refetch when auth state or data ready changes
 
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');

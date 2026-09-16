@@ -94,8 +94,8 @@ export async function bimaChat(
       const payload: Record<string, unknown> = { message, max_tokens: MAX_OUTPUT_TOKENS };
   if (history && history.length) payload.history = history;
 
-  // 🔧 Client-side timeout: 120s (matches Vercel proxy maxDuration)
-  const CLIENT_TIMEOUT_MS = 120_000;
+  // 🔧 Client-side timeout: 180s (matches Vercel proxy maxDuration)
+  const CLIENT_TIMEOUT_MS = 180_000;
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), CLIENT_TIMEOUT_MS);
 

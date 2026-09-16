@@ -6,11 +6,11 @@
  * the 60s timeout because data flows continuously.
  */
 
-export const config = { maxDuration: 120 };
+export const config = { maxDuration: 180 };
 
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
-const UPSTREAM_TIMEOUT_MS = 115_000; // +60s from original 55s
-const STREAM_CHUNK_TIMEOUT_MS = 105_000; // +60s from original 45s
+const UPSTREAM_TIMEOUT_MS = 175_000; // +60s from previous 115s
+const STREAM_CHUNK_TIMEOUT_MS = 165_000; // +60s from previous 105s
 const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key'];
 
 export default async function handler(req: any, res: any) {
