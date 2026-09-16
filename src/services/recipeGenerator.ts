@@ -145,30 +145,30 @@ function buildRefusalResponse(
 function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSuggestion[] {
   const pool: Record<string, RecipeSuggestion[]> = {
     makanan_berat: [
-      { title: 'Bubur Sorgum Sayur Bayam', ingredients: ['Biji sorgum', 'Bayam', 'Bawang merah', 'Garam', 'Minyak kelapa'], estimatedCost: 4500, description: 'Bubur hangat kaya serat dengan sayuran segar, cocok untuk semua umur.' },
-      { title: 'Nasi Sorgum Tahu Tempe', ingredients: ['Beras sorgum', 'Tahu', 'Tempe', 'Bawang putih', 'Kecap'], estimatedCost: 4800, description: 'Nasi sorgum gurih lauk tahu tempe goreng — protein nabati lengkap.' },
-      { title: 'Sorgum Bihun Goreng', ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam'], estimatedCost: 4200, description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.' },
+      { title: 'Bubur Sorgum Sayur Bayam', ingredients: ['Biji sorgum (100g)', 'Bayam segar', 'Bawang merah & putih', 'Garam', 'Minyak kelapa'], estimatedCost: 6500, description: 'Bubur hangat kaya serat dengan sayuran segar, cocok untuk semua umur.' },
+      { title: 'Nasi Sorgum Tahu Tempe', ingredients: ['Beras sorgum (150g)', 'Tahu goreng', 'Tempe goreng', 'Bawang putih', 'Kecap'], estimatedCost: 8000, description: 'Nasi sorgum gurih lauk tahu tempe — protein nabati lengkap.' },
+      { title: 'Sorgum Bihun Goreng Sayur', ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam'], estimatedCost: 6000, description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.' },
     ],
     camilan_sehat: [
-      { title: 'Cookies Sorgum Cokelat', ingredients: ['Tepung sorgum', 'Gula kelapa', 'Minyak kelapa', 'Bubuk kakao'], estimatedCost: 4000, description: 'Kudapan renyah tanpa terigu, manis alami dari gula kelapa.' },
-      { title: 'Lempeng Sorgum Original', ingredients: ['Tepung sorgum', 'Garam', 'Air', 'Minyak goreng'], estimatedCost: 2500, description: 'Kerupuk sorgum renyah klasik, camilan sehat tanpa MSG.' },
-      { title: 'Bola-Bola Sorgum Keju', ingredients: ['Tepung sorgum', 'Keju parut', 'Telur', 'Garam'], estimatedCost: 4500, description: 'Camilan gurih keju yang renyah di luar, lembut di dalam.' },
+      { title: 'Cookies Sorgum Cokelat', ingredients: ['Tepung sorgum (120g)', 'Gula kelapa', 'Minyak kelapa', 'Bubuk kakao'], estimatedCost: 7500, description: 'Kudapan renyah tanpa terigu, manis alami dari gula kelapa.' },
+      { title: 'Lempeng Sorgum Original', ingredients: ['Tepung sorgum (100g)', 'Garam', 'Air', 'Minyak goreng'], estimatedCost: 4500, description: 'Kerupuk sorgum renyah klasik, camilan sehat tanpa MSG.' },
+      { title: 'Roti Sorgum Panggang', ingredients: ['Tepung sorgum (150g)', 'Ragi', 'Gula pasir', 'Garam', 'Minyak kelapa'], estimatedCost: 7000, description: 'Roti lembut tanpa gluten, cocok untuk sarapan sehat.' },
     ],
     minuman_nutrisi: [
-      { title: 'Susu Sorgum Kurma', ingredients: ['Tepung sorgum sangrai', 'Kurma', 'Air hangat'], estimatedCost: 3500, description: 'Minuman hangat kaya magnesium dan serat, pemanis alami dari kurma.' },
-      { title: 'Sorgum Milkshake Vanila', ingredients: ['Tepung sorgum', 'Susu UHT', 'Gula kelapa', 'Vanili'], estimatedCost: 4000, description: 'Minuman creamy segar dengan aroma vanila, tinggi kalsium.' },
-      { title: 'Jus Sorgum Jeruk Nipis', ingredients: ['Air sorgum fermentasi', 'Jeruk nipis', 'Madu sedikit'], estimatedCost: 3000, description: 'Minuman segar probiotik alami dengan vitamin C dari jeruk nipis.' },
+      { title: 'Susu Sorgum Kurma', ingredients: ['Tepung sorgum sangrai (30g)', 'Kurma (3 butir)', 'Air hangat'], estimatedCost: 5500, description: 'Minuman hangat kaya magnesium dan serat, pemanis alami dari kurma.' },
+      { title: 'Sorgum Milkshake Vanila', ingredients: ['Tepung sorgum (30g)', 'Susu UHT (200ml)', 'Gula kelapa', 'Vanili'], estimatedCost: 7500, description: 'Minuman creamy segar dengan aroma vanila, tinggi kalsium.' },
+      { title: 'Es Sorgum Jeruk Nipis', ingredients: ['Air sorgum (200ml)', 'Jeruk nipis', 'Gula pasir', 'Es batu'], estimatedCost: 5000, description: 'Minuman segar dengan vitamin C, cocok untuk cuaca panas.' },
     ],
     dessert_rendah_gi: [
-      { title: 'Puding Sorgum Pandan', ingredients: ['Tepung sorgum', 'Santan', 'Gula kelapa', 'Daun pandan'], estimatedCost: 3500, description: 'Puding lembut pewarna alami pandan, rendah gula.' },
-      { title: 'Bubur Ketan Sorgum', ingredients: ['Biji sorgum', 'Santan', 'Gula merah', 'Garam'], estimatedCost: 3000, description: 'Dessert tradisional dengan tekstur ketan dari sorgum.' },
-      { title: 'Sorgum Flan Karamel', ingredients: ['Tepung sorgum', 'Susu', 'Gula pasir', 'Telur'], estimatedCost: 4500, description: 'Flan sutra karamel yang elegan, rendah indeks glikemik.' },
+      { title: 'Puding Sorgum Pandan', ingredients: ['Tepung sorgum (50g)', 'Santan (200ml)', 'Gula kelapa', 'Daun pandan'], estimatedCost: 7000, description: 'Puding lembut pewarna alami pandan, rendah gula.' },
+      { title: 'Bubur Ketan Sorgum', ingredients: ['Biji sorgum (100g)', 'Santan kental', 'Gula merah', 'Garam'], estimatedCost: 6500, description: 'Dessert tradisional dengan tekstur ketan dari sorgum.' },
+      { title: 'Sorgum Flan Karamel', ingredients: ['Tepung sorgum (40g)', 'Susu (200ml)', 'Gula pasir', 'Telur (1 butir)'], estimatedCost: 8500, description: 'Flan sutra karamel yang elegan, rendah indeks glikemik.' },
     ],
   };
 
   const suggestions = pool[dishCategory] || pool.makanan_berat;
-  // Filter to suggestions that fit the budget
-  return suggestions.filter(s => s.estimatedCost <= budget * 1.1); // allow 10% overshoot
+  // Filter to suggestions that fit the budget (allow 20% overshoot — budget is a target, not hard limit)
+  return suggestions.filter(s => s.estimatedCost <= budget * 1.2);
 }
 
 /**
