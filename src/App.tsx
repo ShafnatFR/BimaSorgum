@@ -522,10 +522,14 @@ export default function App() {
     setChatMessages((prev) => [...prev, userMsg, aiPlaceholder]);
 
     try {
+      // 🔧 CRITICAL: use ONLY suggestion ingredients — clear original wizard bahan
+      // otherwise the original nonsensical ingredients (sayuran hijau, protein_ayam_telur)
+      // get mixed in and the AI rejects again
       const result = await generateRecipeFromWizardAsync({
         ...wizardData,
-        customIngredients: suggestion.ingredients,
-        budgetPerPortion: suggestion.estimatedCost || wizardData.budgetPerPortion,
+        selectedIngredientIds: [], // clear original selections
+        customIngredients: suggestion.ingredients, // only use suggestion ingredients
+        budgetPerPortion: Math.max(suggestion.estimatedCost, wizardData.budgetPerPortion),
       });
 
       const isRefusal = 'type' in result && (result as AiRefusalResponse).type === 'refusal';

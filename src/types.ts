@@ -91,6 +91,12 @@ export interface RecipeSuggestion {
   ingredients: string[];
   estimatedCost: number;
   description: string;
+  /** Individual ingredient prices, e.g. ["Tepung sorgum: Rp2.500", "Susu: Rp3.000"] */
+  ingredientPrices?: string[];
+  /** Estimated total cooking time in minutes */
+  estimatedTimeMinutes?: number;
+  /** Which ingredients from the original request were removed/changed */
+  removedIngredients?: string[];
 }
 
 /** Structured refusal from the AI (un-payload). */

@@ -54,14 +54,16 @@ const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
 1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis, atau bahan yang benar-benar tidak bisa dimasak bersama), JANGAN paksa membuat resep. Sebaliknya, keluarkan JSON dengan format UNPAYLOAD berikut:
 {
   "status": "unpayload",
-  "message": "Penjelasan mengapa bahan ini tidak bisa di-mix. Sebutkan semua bahan bermasalah secara spesifik. Lalu berikan saran alternatif yang masuk akal.",
+  "message": "Penjelasan DETAIL mengapa bahan ini tidak bisa di-mix. Sebutkan SEMUA bahan bermasalah secara spesifik, jelaskan mengapa setiap kombinasi bermasalah (rasa, tekstur, kesesuaian kategori), dan sertakan harga pasar wajar per bahan.",
   "flaggedIngredients": ["bahan1", "bahan2"],
   "suggestions": [
-    {"title": "Judul Resep Alternatif 1", "ingredients": ["bahan A", "bahan B", "bahan C"], "estimatedCost": 8500, "description": "Deskripsi singkat kenapa resep ini enak"},
-    {"title": "Judul Resep Alternatif 2", "ingredients": ["bahan X", "bahan Y"], "estimatedCost": 7000, "description": "Deskripsi singkat"},
-    {"title": "Judul Resep Alternatif 3", "ingredients": ["bahan P", "bahan Q", "bahan R"], "estimatedCost": 9000, "description": "Deskripsi singkat"}
+    {"title": "Judul Resep Alternatif 1", "ingredients": ["bahan A", "bahan B", "bahan C"], "estimatedCost": 8500, "description": "Deskripsi singkat kenapa resep ini enak", "ingredientPrices": ["Bahan A: Rp2.500", "Bahan B: Rp3.000", "Bahan C: Rp3.000"], "estimatedTimeMinutes": 25, "removedIngredients": ["bahan X yang dihapus dari input asli", "bahan Y yang diganti"]},
+    {"title": "Judul Resep Alternatif 2", "ingredients": ["bahan X", "bahan Y"], "estimatedCost": 7000, "description": "Deskripsi singkat", "ingredientPrices": ["Bahan X: Rp3.000", "Bahan Y: Rp4.000"], "estimatedTimeMinutes": 15, "removedIngredients": ["bahan Z"]},
+    {"title": "Judul Resep Alternatif 3", "ingredients": ["bahan P", "bahan Q", "bahan R"], "estimatedCost": 9000, "description": "Deskripsi singkat", "ingredientPrices": ["Bahan P: Rp2.000", "Bahan Q: Rp4.000", "Bahan R: Rp3.000"], "estimatedTimeMinutes": 30, "removedIngredients": ["bahan W"]}
   ]
 }
+PENTING untuk message: Gunakan format markdown yang kaya — tabel untuk perbandingan harga bahan bermasalah vs bahan alternatif, listing untuk alasan ketidakcocokan, dan quote untuk tips.
+PENTING untuk suggestions: HARUS sertakan ingredientPrices (harga per bahan), estimatedTimeMinutes (total waktu masak), dan removedIngredients (bahan asli yang dihilangkan/diganti).
 2. Jika budget terlalu rendah untuk bahan premium (mis. budget Rp 5.000 tapi minta salmon + wagyu), gunakan format UNPAYLOAD yang sama — jelaskan bahan mana yang terlalu mahal dan sarankan alternatif yang muat di budget.
 3. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
 4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
@@ -86,6 +88,9 @@ async function tryGenerate(prompt: string): Promise<Record<string, any> | { __re
             ingredients: Array.isArray(s.ingredients) ? s.ingredients : [],
             estimatedCost: Number(s.estimatedCost) || 0,
             description: s.description || '',
+            ingredientPrices: Array.isArray(s.ingredientPrices) ? s.ingredientPrices : undefined,
+            estimatedTimeMinutes: Number(s.estimatedTimeMinutes) || undefined,
+            removedIngredients: Array.isArray(s.removedIngredients) ? s.removedIngredients : undefined,
           }))
         : [];
       const flaggedIngredients = Array.isArray((parsed as any).flaggedIngredients)
