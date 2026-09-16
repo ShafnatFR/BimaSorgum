@@ -30,6 +30,9 @@ interface ProfilePageProps {
   googleAvatarUrl?: string | null;
   onSignInWithGoogle?: () => Promise<void>;
   onGoogleSignOut?: () => Promise<void>;
+  // Dynamic stats
+  sorghumImpact?: number;
+  dayStreak?: number;
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -46,8 +49,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   googleAvatarUrl,
   onSignInWithGoogle,
   onGoogleSignOut,
+  sorghumImpact = 0,
+  dayStreak = 0,
 }) => {
   const [googleSigningIn, setGoogleSigningIn] = useState(false);
+
+  /** Format number: 1200 → 1.2k, 1500000 → 1.5M */
+  const formatImpact = (n: number): string => {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
+    return String(n);
+  };
+
   // State for interactive features
   const [userName, setUserName] = useState(userNameProp);
   const [userRole, setUserRole] = useState(userRoleProp);
@@ -205,12 +218,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               <span className="material-symbols-outlined text-[22px] text-[#fdc65c]" style={{ fontVariationSettings: "'FILL' 1" }}>
                 eco
               </span>
-              1.2k
+              {formatImpact(sorghumImpact)}
             </span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Sorghum Impact</span>
           </div>
           <div className="flex flex-col items-center p-2 text-center">
-            <span className="text-2xl font-bold text-[#163422]">14</span>
+            <span className="text-2xl font-bold text-[#163422]">{dayStreak}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Day Streak</span>
           </div>
         </section>

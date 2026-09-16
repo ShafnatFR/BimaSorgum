@@ -721,8 +721,90 @@ export async function updateProfileName(fullName: string): Promise<boolean> {
 }
 
 /* ================================================================== *
- *  COMMENTS — recipe_comments table
+ *  USER STATS — Sorghum Impact & Day Streak
  * ================================================================== */
+
+export interface UserStats {
+  sorghumImpact: number;
+  dayStreak: number;
+}
+
+/** Calculate user engagement stats from Supabase activity tables. */
+export async function fetchUserStats(): Promise<UserStats> {
+  const userId = await getUserIdAsync();
+  if (!userId) return { sorghumImpact: 0, dayStreak: 0 };
+
+  // Fetch activity timestamps in parallel
+  const [savedRes, sessionsRes, commentsRes] = await Promise.all([
+    supabase
+      .from('saved_recipes')
+      .select('created_at')
+      .eq('user_id', userId),
+    supabase
+      .from('chat_sessions')
+      .select('created_at, updated_at')
+      .eq('user_id', userId),
+    supabase
+      .from('recipe_comments')
+      .select('created_at')
+      .eq('user_id', userId),
+  ]);
+
+  const savedCount = (savedRes.data?.length || 0);
+  const sessionCount = (sessionsRes.data?.length || 0);
+  const commentCount = (commentsRes.data?.length || 0);
+
+  // Sorghum Impact: engagement score
+  // saved=10, generated recipe session=50, comment=20
+  const sorghumImpact = savedCount * 10 + sessionCount * 50 + commentCount * 20;
+
+  // Day Streak: consecutive days with any activity
+  const allDates = new Set<string>();
+  const addDate = (ts: string | undefined) => {
+    if (ts) allDates.add(ts.substring(0, 10)); // YYYY-MM-DD
+  };
+
+  for (const row of savedRes.data || []) addDate(row.created_at);
+  for (const row of sessionsRes.data || []) {
+    addDate(row.created_at);
+    addDate(row.updated_at);
+  }
+  for (const row of commentsRes.data || []) addDate(row.created_at);
+
+  // Sort dates descending and count consecutive days from today
+  const sorted = Array.from(allDates).sort().reverse();
+  let dayStreak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < sorted.length; i++) {
+    const expected = new Date(today);
+    expected.setDate(expected.getDate() - i);
+    const expectedStr = expected.toISOString().substring(0, 10);
+    if (sorted[i] === expectedStr) {
+      dayStreak++;
+    } else if (i === 0) {
+      // Today has no activity, check if yesterday does
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().substring(0, 10);
+      if (sorted[i] === yesterdayStr) {
+        dayStreak++;
+        // Adjust: count from yesterday
+        for (let j = 1; j < sorted.length; j++) {
+          const exp = new Date(yesterday);
+          exp.setDate(exp.getDate() - (j - 1));
+          if (sorted[j] === exp.toISOString().substring(0, 10)) {
+            dayStreak++;
+          } else break;
+        }
+      }
+      break;
+    } else break;
+  }
+
+  return { sorghumImpact, dayStreak };
+}
 
 export interface RecipeComment {
   id: string;

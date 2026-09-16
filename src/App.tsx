@@ -89,6 +89,14 @@ export default function App() {
     signOut: googleSignOut,
   } = useAuth();
 
+  // Dynamic user stats (Sorghum Impact & Day Streak)
+  const [userStats, setUserStats] = useState({ sorghumImpact: 0, dayStreak: 0 });
+  useEffect(() => {
+    import('./lib/supabase').then((m) => {
+      m.fetchUserStats().then(setUserStats);
+    });
+  }, [isGoogleUser]); // refetch when auth state changes
+
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
@@ -1080,6 +1088,8 @@ export default function App() {
               googleAvatarUrl={googleAvatarUrl}
               onSignInWithGoogle={signInWithGoogle}
               onGoogleSignOut={googleSignOut}
+              sorghumImpact={userStats.sorghumImpact}
+              dayStreak={userStats.dayStreak}
             />
           )}
 
