@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { MessageCircle, Reply, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
-import { RecipeComment, fetchComments, postComment, deleteComment, supabase } from '../../lib/supabase';
+import { MessageCircle, Reply, Trash2, Send, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import {
+  RecipeComment,
+  fetchComments,
+  postComment,
+  deleteComment,
+  fetchLikesForComments,
+  toggleCommentLike,
+  supabase,
+} from '../../lib/supabase';
 
 interface CommentSectionProps {
   recipeId: string;
@@ -44,10 +52,6 @@ function timeAgo(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 }
 
-const PLACEHOLDER_AVATARS = [
-  'https://api.dicebear.com/7.x/initials/svg?seed=',
-];
-
 function getAvatar(c: RecipeComment): string {
   if (c.avatar_url) return c.avatar_url;
   return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.display_name)}&backgroundColor=cbebc3&textColor=163422`;
@@ -60,8 +64,11 @@ const CommentItem: React.FC<{
   currentUserId: string | null;
   onReply: (parentId: string) => void;
   onDelete: (id: string) => void;
-}> = ({ node, depth, currentUserId, onReply, onDelete }) => {
-  const [showReplies, setShowReplies] = useState(depth < 2); // auto-expand first 2 levels
+  likeCounts: Record<string, number>;
+  likedByUser: Set<string>;
+  onToggleLike: (commentId: string) => void;
+}> = ({ node, depth, currentUserId, onReply, onDelete, likeCounts, likedByUser, onToggleLike }) => {
+  const [showReplies, setShowReplies] = useState(depth < 2);
   const isOwn = currentUserId === node.user_id;
   const maxDepth = 4;
 
@@ -84,6 +91,23 @@ const CommentItem: React.FC<{
           </div>
           <p className="text-xs sm:text-sm text-[#1a1c1b] mt-0.5 leading-relaxed whitespace-pre-wrap break-words">{node.content}</p>
           <div className="flex items-center gap-3 mt-1">
+            {/* Like button */}
+            <button
+              onClick={() => onToggleLike(node.id)}
+              className={`flex items-center gap-1 text-[10px] font-bold transition-colors cursor-pointer ${
+                likedByUser.has(node.id)
+                  ? 'text-[#ba1a1a]'
+                  : 'text-[#727972] hover:text-[#ba1a1a]'
+              }`}
+              title={likedByUser.has(node.id) ? 'Batal suka' : 'Suka'}
+            >
+              <Heart
+                className="w-3 h-3"
+                fill={likedByUser.has(node.id) ? 'currentColor' : 'none'}
+                strokeWidth={likedByUser.has(node.id) ? 0 : 2}
+              />
+              {(likeCounts[node.id] || 0) > 0 && <span>{likeCounts[node.id]}</span>}
+            </button>
             {depth < maxDepth && (
               <button
                 onClick={() => onReply(node.id)}
@@ -120,6 +144,9 @@ const CommentItem: React.FC<{
                   currentUserId={currentUserId}
                   onReply={onReply}
                   onDelete={onDelete}
+                  likeCounts={likeCounts}
+                  likedByUser={likedByUser}
+                  onToggleLike={onToggleLike}
                 />
               ))}
             </div>
@@ -145,12 +172,12 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const [sending, setSending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
-  // Resolved Supabase UUID (may differ from client-side recipeId for mock recipes)
   const [resolvedId, setResolvedId] = useState<string>(recipeId);
+  // Like state
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const [likedByUser, setLikedByUser] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // If recipeId looks like a UUID (contains hyphens and is 36 chars), use it directly.
-    // Otherwise, try to resolve from Supabase by slug.
     const looksLikeUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(recipeId);
     if (looksLikeUuid) {
       setResolvedId(recipeId);
@@ -160,7 +187,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
       setResolvedId(recipeId);
       return;
     }
-    // Resolve UUID from slug
     supabase
       .from('recipes')
       .select('id')
@@ -180,15 +206,58 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
     const data = await fetchComments(resolvedId);
     setComments(data);
     setLoading(false);
-  }, [resolvedId]);
+
+    // Load likes for all comments
+    const ids = data.map((c) => c.id);
+    if (ids.length > 0) {
+      const userId = currentUserId;
+      const likes = await fetchLikesForComments(ids, userId);
+      setLikeCounts(likes.counts);
+      setLikedByUser(likes.likedByUser);
+    }
+  }, [resolvedId, currentUserId]);
+
+  useEffect(() => {
+    // Get current user id first, then load comments (so likes know who the user is)
+    import('../../lib/supabase').then((m) => {
+      m.getUserIdAsync().then((uid) => {
+        setCurrentUserId(uid);
+      });
+    });
+  }, []);
 
   useEffect(() => {
     loadComments();
-    // Get current user id
-    import('../../lib/supabase').then((m) => {
-      m.getUserIdAsync().then(setCurrentUserId);
-    });
   }, [loadComments]);
+
+  const handleToggleLike = async (commentId: string) => {
+    if (!currentUserId) return;
+    // Optimistic update
+    const wasLiked = likedByUser.has(commentId);
+    const prevCount = likeCounts[commentId] || 0;
+    setLikedByUser((prev) => {
+      const next = new Set(prev);
+      if (wasLiked) next.delete(commentId);
+      else next.add(commentId);
+      return next;
+    });
+    setLikeCounts((prev) => ({
+      ...prev,
+      [commentId]: wasLiked ? Math.max(0, prevCount - 1) : prevCount + 1,
+    }));
+
+    const result = await toggleCommentLike(commentId);
+    if (result) {
+      // Sync with server truth
+      setLikeCounts((prev) => ({ ...prev, [commentId]: result.count }));
+      setLikedByUser((prev) => {
+        const next = new Set(prev);
+        if (result.liked) next.add(commentId);
+        else next.delete(commentId);
+        return next;
+      });
+    }
+  };
 
   const handleSubmit = async () => {
     const text = inputText.trim();
@@ -212,8 +281,6 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   const handleDelete = async (id: string) => {
     const ok = await deleteComment(id);
     if (ok) {
-      setComments((prev) => prev.filter((c) => c.id !== id && c.parent_id !== id));
-      // Also remove descendants (simple approach: refetch)
       loadComments();
     }
   };
@@ -270,11 +337,13 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
                   currentUserId={currentUserId}
                   onReply={(parentId) => {
                     setReplyTo(parentId);
-                    // Focus the input
                     const input = document.getElementById('comment-input');
                     if (input) input.focus();
                   }}
                   onDelete={handleDelete}
+                  likeCounts={likeCounts}
+                  likedByUser={likedByUser}
+                  onToggleLike={handleToggleLike}
                 />
               ))}
             </div>
