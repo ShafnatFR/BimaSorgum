@@ -11,8 +11,9 @@ const isDev = import.meta.env.DEV; // Check if running in Vite dev server
 
 // In Dev mode, use the Vite proxy (/bima-api/chat) to bypass local CORS/HTTPS issues if any.
 // In Production, ALWAYS fetch the backend directly to avoid Vercel Serverless timeouts and Cloudflare 525/522 errors.
-const BIMA_BASE_URL = envBase || (isDev ? '' : DIRECT_BACKEND);
-const BIMA_CHAT_PATH = BIMA_BASE_URL ? `${BIMA_BASE_URL}/api/chat` : '/bima-api/chat';
+// Note: We ignore envBase in production to prevent old Vercel env vars from ruining the direct connection.
+const BIMA_BASE_URL = isDev ? envBase : DIRECT_BACKEND;
+const BIMA_CHAT_PATH = isDev ? '/bima-api/chat' : `${BIMA_BASE_URL}/api/chat`;
 const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';
 const BIMA_API_KEY = import.meta.env.VITE_BIMA_API_KEY || '';
 
