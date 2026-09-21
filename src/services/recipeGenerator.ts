@@ -443,8 +443,11 @@ Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria ber
 
 ${PROMPT_RULES}
 
-Respon HARUS berupa JSON murni tanpa markdown triple backs dengan struktur:
-${RECIPE_JSON_SCHEMA}`;
+Respon HARUS berupa JSON murni tanpa markdown triple backs.
+Jika resep BERHASIL dibuat (aturan terpenuhi), gunakan struktur ini:
+${RECIPE_JSON_SCHEMA}
+
+Jika resep DITOLAK (sesuai Aturan 1 & 2), WAJIB gunakan struktur JSON "unpayload" seperti dicontohkan di atas.`;
 
   const result = await generateWithRetry(prompt);
 
