@@ -89,7 +89,7 @@ export async function bimaChat(
       'X-Stream': stream ? 'true' : 'false',
       'X-Max-Tokens': '8192',
       'X-Api-Key': 'sk-c60b5b633b8ba408-vv4do6-65faf9f2',
-      'X-Model': 'cbcn/glm-5.2',
+      'X-Model': 'qd/gfmodel',
       'X-Server-Url': 'http://43.159.43.50:20128/v1',
     };
   // 🔧 ensure max output tokens — use whatever the backend honours
