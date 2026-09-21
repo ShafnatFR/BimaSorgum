@@ -108,10 +108,7 @@ export async function bimaChat(
     // This forces the backend to use the default LLM settings configured by the Admin in the dashboard.
     // The X-Api-Key header below is strictly for Consumer API Keys (bima_...), not LLM provider keys.
     if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
-  // 🔧 ensure max output tokens — use whatever the backend honours
-      const MAX_OUTPUT_TOKENS = 4096;
-      
-      const payload: Record<string, unknown> = { message, max_tokens: MAX_OUTPUT_TOKENS };
+      const payload: Record<string, unknown> = { message };
   if (history && history.length) payload.history = history;
 
   // 🔧 Client-side timeout: 180s (matches Vercel proxy maxDuration)
