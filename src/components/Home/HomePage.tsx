@@ -1,21 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { 
-  HOME_STUDENT_FAVORITES, 
-  HOME_CATEGORIES, 
-  HOME_VIDEO_TUTORIALS, 
-  HOME_COMMUNITY_RECIPES, 
-  HOME_HOT_RECIPES,
-  HOME_NEW_RECIPES,
+  HOME_CATEGORIES,
+  HOME_VIDEO_TUTORIALS,
   DAILY_TIPS, 
   FALLBACK_FOOD_IMAGE,
-  HomeFavoriteItem,
   CategoryItem,
   VideoTutorialItem,
-  CommunityRecipeItem,
-  ShowcaseRecipeItem
 } from '../../data/homeData';
 import { Recipe } from '../../types';
-import { INITIAL_FEATURED_RECIPE, INITIAL_SAVED_RECIPES } from '../../data/mockData';
+import { useData } from '../../lib/dataContext';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -26,11 +19,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { 
-  CardImageWithSkeleton, 
-  HomeBannerSkeleton, 
-  HomeCarouselSectionSkeleton, 
-  CategoryCardSkeleton,
-  VideoTutorialCardSkeleton 
+  CardImageWithSkeleton,
 } from '../Common/CardSkeleton';
 
 interface HomePageProps {
@@ -46,6 +35,41 @@ interface HomePageProps {
   googleAvatarUrl?: string | null;
 }
 
+/** Shuffle array deterministically from a seed (simple LCG). */
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  const result = [...arr];
+  let s = seed;
+  for (let i = result.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0x7fffffff;
+    const j = s % (i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+/** Derive a category tag from dishCategory string. */
+function categoryTag(cat: string): string {
+  const map: Record<string, string> = {
+    makanan_berat: 'Makanan Berat',
+    camilan_sehat: 'Camilan Sehat',
+    minuman_nutrisi: 'Minuman Nutrisi',
+    dessert_rendah_gi: 'Dessert Rendah GI',
+  };
+  return map[cat] || cat || 'Sorgum';
+}
+
+/** Format total time as "X Min" string. */
+function timeTag(recipe: Recipe): string {
+  const total = (recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0);
+  return total > 0 ? `${total} Min` : '';
+}
+
+/** Get cost display. */
+function costTag(recipe: Recipe): string {
+  const cost = recipe.estimatedCost || recipe.targetBudget || 0;
+  return cost > 0 ? `Rp ${cost.toLocaleString('id-ID')}` : '';
+}
+
 export const HomePage: React.FC<HomePageProps> = ({
   onOpenProfile,
   onOpenSearch,
@@ -57,32 +81,41 @@ export const HomePage: React.FC<HomePageProps> = ({
   googleDisplayName,
   googleAvatarUrl,
 }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [favorites, setFavorites] = useState<HomeFavoriteItem[]>(HOME_STUDENT_FAVORITES);
-  const [communityRecipes, setCommunityRecipes] = useState<CommunityRecipeItem[]>(HOME_COMMUNITY_RECIPES);
+  const { recipes, ready } = useData();
   const [tipIndex, setTipIndex] = useState(0);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
-  const [activeNutriTab, setActiveNutriTab] = useState<'rice' | 'wheat' | 'corn'>('rice');
   const videoCarouselRef = useRef<HTMLDivElement>(null);
   const favoriteCarouselRef = useRef<HTMLDivElement>(null);
   const communityCarouselRef = useRef<HTMLDivElement>(null);
   const hotCarouselRef = useRef<HTMLDivElement>(null);
   const newCarouselRef = useRef<HTMLDivElement>(null);
 
-  // Initial loading simulation to showcase skeleton placeholders smoothly
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 450);
-    return () => clearTimeout(timer);
+  // Derive sections from live Supabase data — no hardcoded recipes
+  const todaySeed = useMemo(() => {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   }, []);
 
-  const triggerReloadSimulation = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 700);
-  };
+  // New Creations = latest 8 (already sorted DESC by created_at)
+  const newRecipes = useMemo(() => recipes.slice(0, 8), [recipes]);
+
+  // Student Favorites = next 8 after the newest
+  const studentFavorites = useMemo(() => recipes.slice(8, 16), [recipes]);
+
+  // Featured Community = different 8 (seeded shuffle picks from rest)
+  const communityRecipes = useMemo(() => {
+    const pool = recipes.slice(16);
+    if (pool.length === 0) return recipes.slice(0, 8);
+    return seededShuffle(pool, todaySeed + 1).slice(0, 8);
+  }, [recipes, todaySeed]);
+
+  // Trending & Hot = seeded shuffle from all recipes (simulates "trending")
+  const hotRecipes = useMemo(() => {
+    if (recipes.length <= 8) return recipes;
+    return seededShuffle(recipes, todaySeed + 2).slice(0, 8);
+  }, [recipes, todaySeed]);
+
+  const isLoading = !ready;
 
   const scrollCarousel = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
     if (ref.current) {
@@ -92,7 +125,6 @@ export const HomePage: React.FC<HomePageProps> = ({
       
       if (direction === 'left') {
         if (container.scrollLeft <= 5) {
-          // Boundary bounce feedback so clicking left never feels dead!
           container.scrollTo({ left: 35, behavior: 'smooth' });
           setTimeout(() => container.scrollTo({ left: 0, behavior: 'smooth' }), 180);
         } else {
@@ -100,7 +132,6 @@ export const HomePage: React.FC<HomePageProps> = ({
         }
       } else {
         if (container.scrollLeft >= maxScroll - 5) {
-          // Boundary bounce feedback at the end
           container.scrollTo({ left: maxScroll - 35, behavior: 'smooth' });
           setTimeout(() => container.scrollTo({ left: maxScroll, behavior: 'smooth' }), 180);
         } else {
@@ -110,93 +141,128 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   };
 
-  const scrollVideoCarousel = (direction: 'left' | 'right') => {
-    scrollCarousel(videoCarouselRef, direction);
-  };
-
-  const toggleFavorite = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites((prev) =>
-      prev.map((fav) => (fav.id === id ? { ...fav, isFavorite: !fav.isFavorite } : fav))
-    );
-  };
-
-  const handleFavoriteClick = (item: HomeFavoriteItem) => {
-    if (item.recipeId === 'nasi-goreng-sorgum-sd') {
-      onViewRecipe(INITIAL_FEATURED_RECIPE);
-    } else if (item.recipeId === 'pancakes-sorghum') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[0].recipe);
-    } else if (item.recipeId === 'healthy-bowl-sorghum') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[2].recipe);
-    } else {
-      onViewRecipe(INITIAL_FEATURED_RECIPE);
-    }
-  };
-
-  const handleCommunityClick = (comm: CommunityRecipeItem) => {
-    if (comm.id === 'comm-1') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[2].recipe);
-    } else if (comm.id === 'comm-3') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[0].recipe);
-    } else if (comm.id === 'comm-4') {
-      onViewRecipe(INITIAL_SAVED_RECIPES[1].recipe);
-    } else {
-      onViewRecipe({
-        ...INITIAL_FEATURED_RECIPE,
-        id: comm.id,
-        title: comm.title,
-        subtitle: comm.description,
-        prepTimeMinutes: 15,
-        cookTimeMinutes: 20,
-        imageUrl: comm.imageUrl,
-        rating: comm.rating,
-        tags: [comm.tag, 'Komunitas', 'Sorgum Sehat'],
-      });
-    }
-  };
-
-  const handleShowcaseClick = (item: ShowcaseRecipeItem) => {
-    onViewRecipe({
-      ...INITIAL_FEATURED_RECIPE,
-      id: item.id,
-      title: item.title,
-      subtitle: item.description,
-      prepTimeMinutes: 15,
-      cookTimeMinutes: 25,
-      imageUrl: item.imageUrl,
-      rating: item.rating,
-      tags: [item.tag, item.difficulty || 'Mudah', 'Sorgum Pilihan'],
-    });
-  };
-
-  const handleLoadMore = () => {
-    setHasLoadedMore(true);
-    const extraRecipes: CommunityRecipeItem[] = [
-      {
-        id: 'comm-5',
-        title: 'Bubur Manado Sorgum Gurih',
-        description: 'Tinutuan khas Manado menggunakan biji sorgum pulen kaya serat dan aneka sayur labu.',
-        tag: 'Tradisional',
-        rating: 4.9,
-        time: '30 Min',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqtQJlJQNulv10PBJ5EZBqA4ix7CqYVr898rmK4iVh1fmk6kDunPVQ-O_BOraJlXmFaNAi8I6qZEFKBzbA8Jclw--PV6g2Yo_XrWhOWzq4xq5Oq1q2P3n9wMJwhFvGcu2Htwhug9fD1QiZF9_zRwLj58iiz1kSocu4hhx-tRaamoVOYcCHK5BQnTj-liHuMusnenv8MTmZd14FSfGZKPdin-FYH3coUA0r5JXR5g-m0OvF-zOZ0-Z6hw',
-      },
-      {
-        id: 'comm-6',
-        title: 'Cookies Cokelat Tepung Sorgum',
-        description: 'Kue kering renyah bebas gluten dengan choco chips dan gula kelapa alami.',
-        tag: 'Camilan Sehat',
-        rating: 5.0,
-        time: '20 Min',
-        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFBzO7aCMwp4FQ4aIPhzH8Krp0uXF-F5SZ7uwoLX9aOQFf2kdYyrsiJsRV79M2zqHeY_QpCFBbBuI52mTIZlj3t7majm9L2iVIA5SO2rAZxyaJvR-Z2qBXr-IAbewlqwExRz7I2o4JrgqTdxnJ87ZuM6lCbzhuny93LciWVmYmpDVjy4OCIc_O_37rl50c3SDeFhlTJtomUEq9qlDopp-lKDEfi-8yrGO2tVuCiLe1znmFFfEsdk8Jug',
-      },
-    ];
-    setCommunityRecipes((prev) => [...prev, ...extraRecipes]);
-  };
-
   const nextTip = () => {
     setTipIndex((prev) => (prev + 1) % DAILY_TIPS.length);
   };
+
+  /** Render a recipe card used by all carousels. */
+  const renderRecipeCard = (recipe: Recipe, idx: number) => (
+    <motion.div
+      key={recipe.id}
+      whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
+      whileHover={{ y: -3 }}
+      transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+      onClick={() => onViewRecipe(recipe)}
+      className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
+    >
+      <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
+        <CardImageWithSkeleton
+          src={recipe.imageUrl || FALLBACK_FOOD_IMAGE}
+          alt={recipe.title}
+          fallbackSrc={FALLBACK_FOOD_IMAGE}
+          containerClassName="w-full h-full relative"
+          imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+        />
+        {timeTag(recipe) && (
+          <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
+            {timeTag(recipe)}
+          </div>
+        )}
+      </div>
+
+      <div className="p-2.5 flex-grow flex flex-col justify-between">
+        <div>
+          <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
+            {recipe.title}
+          </h4>
+          <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
+            {recipe.subtitle || costTag(recipe)}
+          </p>
+        </div>
+
+        <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
+          <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
+            <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
+          </span>
+          <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
+            {categoryTag(recipe.dishCategory)}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  /** Generic carousel section wrapper. */
+  const CarouselSection: React.FC<{
+    title: string;
+    subtitle: string;
+    carouselRef: React.RefObject<HTMLDivElement | null>;
+    recipes: Recipe[];
+    emptyMessage?: string;
+  }> = ({ title, subtitle, carouselRef, recipes: items, emptyMessage }) => (
+    <section className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
+            {title}
+          </h3>
+          <p className="text-xs text-[#727972] font-semibold mt-0.5">
+            {subtitle}
+          </p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.8 }}
+            whileHover={{ scale: 1.12 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+            onClick={() => scrollCarousel(carouselRef, 'left')}
+            className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+            aria-label="Geser ke Kiri"
+            title="Sebelumnya"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </motion.button>
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.8 }}
+            whileHover={{ scale: 1.12 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+            onClick={() => scrollCarousel(carouselRef, 'right')}
+            className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+            aria-label="Geser ke Kanan"
+            title="Berikutnya"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </motion.button>
+        </div>
+      </div>
+
+      <div 
+        ref={carouselRef}
+        className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
+      >
+        {isLoading ? (
+          // Skeleton placeholders while loading
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden shrink-0 snap-start">
+              <div className="h-28 bg-[#e8eae6] animate-pulse" />
+              <div className="p-2.5 space-y-2">
+                <div className="h-3 bg-[#e8eae6] rounded animate-pulse w-3/4" />
+                <div className="h-2.5 bg-[#e8eae6] rounded animate-pulse w-1/2" />
+              </div>
+            </div>
+          ))
+        ) : items.length > 0 ? (
+          items.map((r, i) => renderRecipeCard(r, i))
+        ) : (
+          <div className="text-sm text-[#727972] py-6 px-4">
+            {emptyMessage || 'Belum ada resep. Mulai buat resep pertama Anda!'}
+          </div>
+        )}
+      </div>
+    </section>
+  );
 
   return (
     <div className="min-h-screen bg-[#F9F9F7] text-[#1A1C1B] font-['Manrope',sans-serif] pt-[72px] pb-[100px]">
@@ -288,98 +354,23 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* 2. Featured Recipes (Student Favorites Carousel) */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-                Student Favorites
-              </h3>
-              <p className="text-xs text-[#727972] font-semibold mt-0.5">
-                8 Pilihan Favorit Mahasiswa & Pelajar
-              </p>
-            </div>
+        {/* 2. New Creations (newest from DB) */}
+        <CarouselSection
+          title="New Creations & Fresh Arrivals"
+          subtitle={`${Math.min(newRecipes.length, 8)} Resep Terbaru dari Database`}
+          carouselRef={newCarouselRef}
+          recipes={newRecipes}
+        />
 
-            {/* Carousel Arrow Controls */}
-            <div className="flex items-center gap-1.5">
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(favoriteCarouselRef, 'left')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser ke Kiri"
-                title="Sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </motion.button>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(favoriteCarouselRef, 'right')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser ke Kanan"
-                title="Berikutnya"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </motion.button>
-            </div>
-          </div>
+        {/* 3. Student Favorites (next batch from DB) */}
+        <CarouselSection
+          title="Student Favorites"
+          subtitle={`${Math.min(studentFavorites.length, 8)} Pilihan Favorit Mahasiswa & Pelajar`}
+          carouselRef={favoriteCarouselRef}
+          recipes={studentFavorites}
+        />
 
-          <div 
-            ref={favoriteCarouselRef}
-            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
-          >
-            {favorites.map((item) => (
-              <motion.div
-                key={item.id}
-                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
-                whileHover={{ y: -3 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => handleFavoriteClick(item)}
-                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
-              >
-                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
-                  <CardImageWithSkeleton
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fallbackSrc={FALLBACK_FOOD_IMAGE}
-                    containerClassName="w-full h-full relative"
-                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                  />
-                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
-                    {item.timeTag}
-                  </div>
-                </div>
-
-                <div className="p-2.5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
-                      Olahan sorgum praktis &amp; bergizi.
-                    </p>
-                  </div>
-
-                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
-                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
-                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
-                    </span>
-                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
-                      {item.categoryTag}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* 3. Browse by Category matching HTML */}
+        {/* 4. Browse by Category matching HTML */}
         <section className="space-y-3">
           <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
             Browse by Category
@@ -415,7 +406,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* 4. Cooking Basics with Sorghum (Interactive Video Tutorials Carousel) matching HTML */}
+        {/* 5. Cooking Basics with Sorghum (Video Tutorials Carousel) — stays static */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -434,7 +425,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 whileTap={{ scale: 0.8 }}
                 whileHover={{ scale: 1.12 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollVideoCarousel('left')}
+                onClick={() => scrollCarousel(videoCarouselRef, 'left')}
                 className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
                 aria-label="Geser ke Kiri"
                 title="Sebelumnya"
@@ -446,7 +437,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 whileTap={{ scale: 0.8 }}
                 whileHover={{ scale: 1.12 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollVideoCarousel('right')}
+                onClick={() => scrollCarousel(videoCarouselRef, 'right')}
                 className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
                 aria-label="Geser ke Kanan"
                 title="Berikutnya"
@@ -511,280 +502,23 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* 5. Featured Community Recipes (Interactive Carousel) */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-                Featured Community Recipes
-              </h3>
-              <p className="text-xs text-[#727972] font-semibold mt-0.5">
-                8 Resep Kreasi Komunitas & Chef Lokal
-              </p>
-            </div>
+        {/* 6. Featured Community Recipes */}
+        <CarouselSection
+          title="Featured Community Recipes"
+          subtitle={`${Math.min(communityRecipes.length, 8)} Resep Kreasi Komunitas & Chef Lokal`}
+          carouselRef={communityCarouselRef}
+          recipes={communityRecipes}
+        />
 
-            {/* Carousel Arrow Controls */}
-            <div className="flex items-center gap-1.5">
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(communityCarouselRef, 'left')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser Komunitas ke Kiri"
-                title="Sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </motion.button>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(communityCarouselRef, 'right')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser Komunitas ke Kanan"
-                title="Berikutnya"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </motion.button>
-            </div>
-          </div>
+        {/* 7. Trending & Hot Recipes */}
+        <CarouselSection
+          title="Trending & Hot Recipes"
+          subtitle={`${Math.min(hotRecipes.length, 8)} Resep Paling Populer Minggu Ini`}
+          carouselRef={hotCarouselRef}
+          recipes={hotRecipes}
+        />
 
-          <div 
-            ref={communityCarouselRef}
-            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
-          >
-            {communityRecipes.map((comm) => (
-              <motion.div
-                key={comm.id}
-                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
-                whileHover={{ y: -3 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => handleCommunityClick(comm)}
-                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
-              >
-                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
-                  <CardImageWithSkeleton
-                    src={comm.imageUrl}
-                    alt={comm.title}
-                    fallbackSrc={FALLBACK_FOOD_IMAGE}
-                    containerClassName="w-full h-full relative"
-                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                  />
-                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
-                    {comm.time}
-                  </div>
-                </div>
-
-                <div className="p-2.5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
-                      {comm.title}
-                    </h4>
-                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
-                      {comm.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
-                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
-                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
-                    </span>
-                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
-                      {comm.tag}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* 5B. Trending & Hot Recipes Carousel */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-                Trending & Hot Recipes
-              </h3>
-              <p className="text-xs text-[#727972] font-semibold mt-0.5">
-                8 Resep Paling Banyak Dimasak & Disukai Minggu Ini
-              </p>
-            </div>
-
-            {/* Carousel Arrow Controls */}
-            <div className="flex items-center gap-1.5">
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(hotCarouselRef, 'left')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser Hot ke Kiri"
-                title="Sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </motion.button>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(hotCarouselRef, 'right')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser Hot ke Kanan"
-                title="Berikutnya"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </motion.button>
-            </div>
-          </div>
-
-          <div 
-            ref={hotCarouselRef}
-            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
-          >
-            {HOME_HOT_RECIPES.map((item) => (
-              <motion.div
-                key={item.id}
-                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
-                whileHover={{ y: -3 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => handleShowcaseClick(item)}
-                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
-              >
-                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
-                  <CardImageWithSkeleton
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fallbackSrc={FALLBACK_FOOD_IMAGE}
-                    containerClassName="w-full h-full relative"
-                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                  />
-                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
-                    {item.time}
-                  </div>
-                </div>
-
-                <div className="p-2.5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
-                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
-                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
-                    </span>
-                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
-                      {item.tag}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* 5C. New Creations & Fresh Arrivals Carousel */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
-                New Creations & Fresh Arrivals
-              </h3>
-              <p className="text-xs text-[#727972] font-semibold mt-0.5">
-                8 Resep Terbaru Dikurasi Ahli Gizi & Nutrisi
-              </p>
-            </div>
-
-            {/* Carousel Arrow Controls */}
-            <div className="flex items-center gap-1.5">
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(newCarouselRef, 'left')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser New ke Kiri"
-                title="Sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </motion.button>
-              <motion.button
-                type="button"
-                whileTap={{ scale: 0.8 }}
-                whileHover={{ scale: 1.12 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                onClick={() => scrollCarousel(newCarouselRef, 'right')}
-                className="w-8 h-8 rounded-full border border-[#c2c8c0]/70 bg-white hover:bg-[#163422] text-[#163422] hover:text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
-                aria-label="Geser New ke Kanan"
-                title="Berikutnya"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </motion.button>
-            </div>
-          </div>
-
-          <div 
-            ref={newCarouselRef}
-            className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
-          >
-            {HOME_NEW_RECIPES.map((item) => (
-              <motion.div
-                key={item.id}
-                whileTap={{ scale: 0.93, filter: 'brightness(0.96)' }}
-                whileHover={{ y: -3 }}
-                transition={{ type: 'spring', stiffness: 450, damping: 25 }}
-                onClick={() => handleShowcaseClick(item)}
-                className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
-              >
-                <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
-                  <CardImageWithSkeleton
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fallbackSrc={FALLBACK_FOOD_IMAGE}
-                    containerClassName="w-full h-full relative"
-                    imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
-                  />
-                  <div className="absolute bottom-1.5 right-1.5 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded font-mono font-bold pointer-events-none">
-                    {item.time}
-                  </div>
-                </div>
-
-                <div className="p-2.5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-[#1A1C1B] group-hover:text-[#163422] transition-colors line-clamp-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
-                    <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
-                      <Play className="w-2.5 h-2.5 text-[#163422] fill-current" /> Lihat Resep
-                    </span>
-                    <span className="text-[#7c5800] bg-[#fdc65c]/25 px-1.5 py-0.5 rounded text-[9px] font-bold group-active:scale-95 transition-transform">
-                      {item.tag}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* 6. Sorghum Impact Infographic matching HTML */}
+        {/* 8. Sorghum Impact Infographic matching HTML — stays static */}
         <section className="bg-[#ffdea7] text-[#271900] rounded-3xl p-5 sm:p-7 border border-[#fdc65c]/50 shadow-md">
           <div className="max-w-xl mx-auto space-y-4">
             <div className="text-center space-y-1">
@@ -846,7 +580,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* 7. Daily Tip matching HTML */}
+        {/* 9. Daily Tip matching HTML — stays static */}
         <section className="bg-[#2d4b37] text-white rounded-3xl p-5 flex items-start justify-between gap-3.5 shadow-sm">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 text-[#fdc65c]">
@@ -873,10 +607,10 @@ export const HomePage: React.FC<HomePageProps> = ({
           </button>
         </section>
 
-        {/* 8. Load More Inspiration button matching HTML */}
+        {/* 10. Load More Inspiration button matching HTML */}
         <div className="flex justify-center pt-2 pb-6">
           <button
-            onClick={hasLoadedMore ? onStartGenerator : handleLoadMore}
+            onClick={hasLoadedMore ? onStartGenerator : () => setHasLoadedMore(true)}
             className="px-6 py-3 bg-white border border-[#727972]/40 rounded-full font-bold text-xs sm:text-sm text-[#163422] hover:bg-[#e2e3e1] transition-all shadow-xs flex items-center gap-2 active:scale-95"
           >
             <Sparkles className="w-4 h-4 text-[#7c5800]" />
