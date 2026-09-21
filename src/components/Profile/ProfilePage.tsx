@@ -40,7 +40,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onViewRecipe,
   savedRecipes = [],
   userName: userNameProp = 'Guest',
-  userRole: userRoleProp = 'Guest Mode',
+  userRole: userRoleProp = '',
   onSaveProfile,
   onLogout,
   onRemoveSaved,
