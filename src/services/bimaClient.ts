@@ -85,16 +85,16 @@ export async function bimaChat(
   const stream = opts.stream !== false; // default true
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'X-Use-RAG': opts.useRag ? 'true' : 'false',
+      'X-Use-RAG': 'true', // forced true as requested
       'X-Stream': stream ? 'true' : 'false',
       'X-Max-Tokens': '8192',
+      'X-Api-Key': 'sk-c60b5b633b8ba408-vv4do6-65faf9f2',
+      'X-Model': 'cbcn/glm-5.2',
+      'X-Server-Url': 'http://43.159.43.50:20128/v1',
     };
   // 🔧 ensure max output tokens — use whatever the backend honours
       const MAX_OUTPUT_TOKENS = 4096;
-      const model = opts.model || BIMA_MODEL;
-      if (model) headers['X-Model'] = model;
-      if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
-
+      
       const payload: Record<string, unknown> = { message, max_tokens: MAX_OUTPUT_TOKENS };
   if (history && history.length) payload.history = history;
 
