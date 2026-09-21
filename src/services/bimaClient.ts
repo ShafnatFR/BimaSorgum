@@ -88,10 +88,12 @@ export async function bimaChat(
       'X-Use-RAG': 'true', // forced true as requested
       'X-Stream': stream ? 'true' : 'false',
       'X-Max-Tokens': '8192',
-      'X-Api-Key': 'sk-c60b5b633b8ba408-vv4do6-65faf9f2',
-      'X-Model': 'qd/gfmodel',
-      'X-Server-Url': 'http://43.159.43.50:20128/v1',
     };
+    
+    // We intentionally do NOT send X-Model, X-Server-Url, or X-LLM-API-Key from the frontend.
+    // This forces the backend to use the default LLM settings configured by the Admin in the dashboard.
+    // The X-Api-Key header below is strictly for Consumer API Keys (bima_...), not LLM provider keys.
+    if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
   // 🔧 ensure max output tokens — use whatever the backend honours
       const MAX_OUTPUT_TOKENS = 4096;
       
