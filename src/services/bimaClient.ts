@@ -45,11 +45,11 @@ function extractFirstJson(text: string): string {
   return text;
 }
 
-/** Parse SSE delta stream into a single accumulated response string. */
 async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<string> {
   const decoder = new TextDecoder();
   let full = '';
   let buffer = '';
+  let validationData: any = null;
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const { done, value } = await reader.read();
@@ -65,9 +65,23 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
         const obj = JSON.parse(payload);
         if (obj.delta) full += obj.delta;
         if (obj.response) full = obj.response;
+        if (obj.validation) validationData = obj.validation;
       } catch { /* ignore malformed line */ }
     }
   }
+  
+  // 🔧 If the backend RAG guard flagged the recipe as unfit/dangerous, DO NOT render the food!
+  // Force it into an 'unpayload' refusal so the frontend displays the warning instead.
+  if (validationData && validationData.verdict === 'tidak_valid') {
+    const issues = validationData.issues || [];
+    const reasons = issues.map((i: any) => `- **${i.aspect}**: ${i.problem}`).join('\n');
+    const msg = `**Resep Ditolak (Skor Kelayakan: ${validationData.score}/100)**\n\nResep ini dinilai belum layak dipraktikkan karena:\n${reasons}\n\n*Sistem AI BIMA telah memblokir resep ini demi keamanan dan kenyamanan.*`;
+    return JSON.stringify({
+      status: 'unpayload',
+      message: msg
+    });
+  }
+
   // The backend appends metadata after the recipe JSON, which would break JSON.parse
   // (e.g. ""summary": "", "reviewer_ran": false, ..." after the closing brace).
   // Extract only the first complete JSON object.
