@@ -8,7 +8,8 @@ import {
   Check, 
   X, 
   Sparkles,
-  Edit3
+  Edit3,
+  User
 } from 'lucide-react';
 import { Recipe, SavedRecipe } from '../../types';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
@@ -129,13 +130,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         {/* Profile Header */}
         <section className="flex flex-col items-center text-center mt-6">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-full overflow-hidden mb-3 border border-[#2d4b37]/20 shadow-[0_4px_16px_rgba(45,75,55,0.12)]">
-              <img
-                alt={isGoogleUser ? (googleDisplayName || 'User') : 'Profile'}
-                className="w-full h-full object-cover"
-                src={isGoogleUser && googleAvatarUrl ? googleAvatarUrl : "https://lh3.googleusercontent.com/aida-public/AB6AXuBUrillJkto-_hexgR7w82lV_mJQuJcgcVQXmnvHmvRIoDFKdWoTmlt_pesxYrl186UygJjNLFBzQesEeXGIjElgXqbqoQcsQTVzsSVu5ywcgB_eHOfCybpfguf69oOSIIUiCtTG9RmeyH8zBCCE-0gmC_fDP-_kd0nKKh9VewKThcewDJDQ89z2D6qLUHGjyMmxXLOme-Lo4dWZvISd1iFQ6pWdFL27g0S7vSql-W5xn59zHNVeGtWnw"}
-                referrerPolicy="no-referrer"
-              />
+            <div className="w-24 h-24 rounded-full overflow-hidden mb-3 border border-[#2d4b37]/20 shadow-[0_4px_16px_rgba(45,75,55,0.12)] flex items-center justify-center bg-[#e2e3e1]">
+              {isGoogleUser && googleAvatarUrl ? (
+                <img
+                  alt={googleDisplayName || 'User'}
+                  className="w-full h-full object-cover"
+                  src={googleAvatarUrl}
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <User className="w-12 h-12 text-[#727972]" />
+              )}
             </div>
             <button
               onClick={() => {

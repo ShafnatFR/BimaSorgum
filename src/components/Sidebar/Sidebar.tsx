@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Settings, X, Sparkles, BookOpen, ArrowLeft, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare, Settings, X, Sparkles, BookOpen, ArrowLeft, Trash2, User } from 'lucide-react';
 import { SavedRecipe } from '../../types';
 import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 
@@ -228,20 +228,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onOpenProfile}
             className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-[#e2e3e1]/60 transition-colors text-left text-sm text-[#1A1C1B]"
           >
-            <div className="w-9 h-9 rounded-full bg-[#e2e3e1] overflow-hidden flex-shrink-0 border border-[#c2c8c0]">
-              <img
-                alt={isGoogleUser ? (googleDisplayName || 'User') : 'User profile'}
-                src={isGoogleUser && googleAvatarUrl ? googleAvatarUrl : "https://lh3.googleusercontent.com/aida-public/AB6AXuDXNnnFWAYIvK-IjrPrmqA4slYEoBsg6zqf1K5nTuZ8q20rn-cRmPnDqbr-Ymy-XFH0kTYj3zMTBU9nLX0Mre-91Pcj5Y5yEV-tnbkIk6K2ia3rZU7A_zF2ImAfF00PMY5DJ7Gjwx_sdxb36ZFnV2teWraVcPVdE2gW8zqoyGDMMCTs71XsIeyQg6bX8coXtNYhhU5q4XWTKKciNAyMcs5zgpf40PZlVIoOdKxiIDsVUf4Wv1PlcjaNGw"}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover"
-              />
+            <div className="w-9 h-9 rounded-full bg-[#e2e3e1] overflow-hidden flex-shrink-0 border border-[#c2c8c0] flex items-center justify-center">
+              {isGoogleUser && googleAvatarUrl ? (
+                <img
+                  alt={googleDisplayName || 'User'}
+                  src={googleAvatarUrl}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-5 h-5 text-[#727972]" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <span className="font-semibold text-xs text-[#163422] block truncate">
-                {isGoogleUser ? (googleDisplayName || 'User') : 'Shafna T. R.'}
+                {isGoogleUser ? (googleDisplayName || 'User') : 'Guest'}
               </span>
               <span className="text-[10px] text-[#727972] block truncate">
-                {isGoogleUser ? 'Google Account' : 'Sorghum Enthusiast'}
+                {isGoogleUser ? 'Google Account' : ''}
               </span>
             </div>
             <Settings className="w-4 h-4 text-[#727972] flex-shrink-0" />
