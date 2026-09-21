@@ -1,16 +1,12 @@
 # ============================================================
-# BIMA AI Frontend - Dockerfile for Dockploy
-# ============================================================
-# Stage 1: Build the Vite / React App (Node.js)
-# Stage 2: Serve the built static files using Nginx
+# BIMA AI Frontend - Dockerfile for Dockploy (Vite Preview)
 # ============================================================
 
-# --- Stage 1: Frontend Builder -------------------------------
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Increase npm network timeout for slow server connections (optional but helpful)
+# Increase npm network timeout for slow server connections
 RUN npm config set fetch-timeout 600000 && \
     npm config set fetch-retry-mintimeout 20000 && \
     npm config set fetch-retry-maxtimeout 120000 && \
@@ -26,21 +22,8 @@ COPY . .
 # Build the Vite application
 RUN npm run build
 
+# Expose port 4173 (Vite preview default)
+EXPOSE 4173
 
-# --- Stage 2: Nginx Web Server -------------------------------
-FROM nginx:alpine
-
-# Remove default nginx static assets
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy the built assets from Stage 1
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy the custom Nginx configuration for React SPA routing
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Nginx alpine runs natively in the foreground, no need for custom entrypoint
-CMD ["nginx", "-g", "daemon off;"]
+# Run vite preview
+CMD ["npm", "run", "preview"]
