@@ -200,27 +200,38 @@ const RECIPE_JSON_SCHEMA = `{
   "tags": ["string"]
 }`;
 
-// Rules injected into every generate prompt to harden against illogical
-// ingredient combos and unrealistic pricing (see recipeGuard.ts).
-const PROMPT_RULES = `ATURAN PENTING (WAJIB diikuti):
-1. Jika kombinasi bahan terasa tidak lazim / tidak enak dimakan (mis. madu dicampur terasi, madu dengan cabai pedas, durian dengan petis, atau bahan yang benar-benar tidak bisa dimasak bersama), JANGAN paksa membuat resep. Sebaliknya, keluarkan JSON dengan format UNPAYLOAD berikut:
-{
+const UNPAYLOAD_JSON_SCHEMA = `{
   "status": "unpayload",
-  "message": "Penjelasan DETAIL mengapa bahan ini tidak bisa di-mix. Sebutkan SEMUA bahan bermasalah secara spesifik, jelaskan mengapa setiap kombinasi bermasalah (rasa, tekstur, kesesuaian kategori), dan sertakan harga pasar wajar per bahan.",
-  "flaggedIngredients": ["bahan1", "bahan2"],
+  "message": "Penjelasan DETAIL (Gunakan Markdown: tabel harga, list alasan) mengapa resep ditolak (kombinasi aneh / budget kurang).",
+  "flaggedIngredients": ["bahan bermasalah"],
   "suggestions": [
-    {"title": "Judul Resep Alternatif 1", "ingredients": ["bahan A", "bahan B", "bahan C"], "estimatedCost": 8500, "description": "Deskripsi singkat kenapa resep ini enak", "ingredientPrices": ["Bahan A: Rp2.500", "Bahan B: Rp3.000", "Bahan C: Rp3.000"], "estimatedTimeMinutes": 25, "removedIngredients": ["bahan X yang dihapus dari input asli", "bahan Y yang diganti"]},
-    {"title": "Judul Resep Alternatif 2", "ingredients": ["bahan X", "bahan Y"], "estimatedCost": 7000, "description": "Deskripsi singkat", "ingredientPrices": ["Bahan X: Rp3.000", "Bahan Y: Rp4.000"], "estimatedTimeMinutes": 15, "removedIngredients": ["bahan Z"]},
-    {"title": "Judul Resep Alternatif 3", "ingredients": ["bahan P", "bahan Q", "bahan R"], "estimatedCost": 9000, "description": "Deskripsi singkat", "ingredientPrices": ["Bahan P: Rp2.000", "Bahan Q: Rp4.000", "Bahan R: Rp3.000"], "estimatedTimeMinutes": 30, "removedIngredients": ["bahan W"]}
+    {
+      "title": "Judul Resep Alternatif",
+      "ingredients": ["bahan A", "bahan B"],
+      "estimatedCost": 8500,
+      "description": "Deskripsi singkat alasan ini lebih baik",
+      "ingredientPrices": ["Bahan A: Rp2.500", "Bahan B: Rp6.000"],
+      "estimatedTimeMinutes": 25,
+      "removedIngredients": ["bahan aneh dari input"]
+    }
   ]
-}
-PENTING untuk message: Gunakan format markdown yang kaya — tabel untuk perbandingan harga bahan bermasalah vs bahan alternatif, listing untuk alasan ketidakcocokan, dan quote untuk tips.
-PENTING untuk suggestions: HARUS sertakan ingredientPrices (harga per bahan), estimatedTimeMinutes (total waktu masak), dan removedIngredients (bahan asli yang dihilangkan/diganti).
-2. Jika budget terlalu rendah untuk bahan premium (mis. budget Rp 5.000 tapi minta salmon + wagyu), gunakan format UNPAYLOAD yang sama — jelaskan bahan mana yang terlalu mahal dan sarankan alternatif yang muat di budget.
-3. Harga setiap bahan (estimatedPrice) HARUS realistis sesuai harga pasar Indonesia 2026. JANGAN menurunkan harga demi muat di budget.
-4. estimatedCost HARUS SAMA dengan jumlah seluruh estimatedPrice bahan.
-5. Respon harus JSON VALID — setiap field harus punya nilai (tidak boleh ada field kosong).
-6. HANYA keluarkan JSON dengan struktur di atas (resep ATAU unpayload). JANGAN menambahkan field lain. JANGAN gunakan markdown triple backticks.`;
+}`;
+
+const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
+1. KELAYAKAN RESEP: Jika kombinasi bahan tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
+2. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
+3. HARGA REALISTIS: Harga bahan (\`estimatedPrice\`) HARUS wajar sesuai harga pasar Indonesia 2026. DILARANG menurunkan harga fiktif hanya agar muat di budget.
+4. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+
+### FORMAT OUTPUT
+Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
+Pilih SALAH SATU struktur JSON berikut:
+
+JIKA RESEP DITERIMA (Valid):
+${RECIPE_JSON_SCHEMA}
+
+JIKA RESEP DITOLAK (Melanggar aturan 1 atau 2):
+${UNPAYLOAD_JSON_SCHEMA}`;
 
 /** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
 async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
@@ -433,21 +444,21 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
  */
 export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe | AiRefusalResponse> {
   const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
-Buatkan 1 resep masakan sorgum sehat dalam format JSON valid sesuai kriteria berikut:
+Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
+
+### INPUT USER
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
 - Bahan Pokok: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
 - Target Budget per porsi: Rp ${formData.budgetPerPortion}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
-- ATURAN BAHAN: HANYA gunakan bahan pokok di atas DITAMBAH bahan dapur umum (air, garam, merica, minyak goreng, bawang). JANGAN menambahkan bahan lain yang tidak diminta (mis. madu, keju, saus tiram, kecap manis, dll) kecuali bahan pokok sudah mencakup bahan tersebut.
 
-${PROMPT_RULES}
+### ATURAN BAHAN
+- HANYA gunakan Bahan Pokok di atas.
+- DIIZINKAN menambahkan bahan dapur umum (air, garam, merica, minyak goreng, bawang).
+- DILARANG menambahkan bahan khusus lainnya (mis. keju, saus tiram, madu) kecuali sudah ada di Bahan Pokok.
 
-Respon HARUS berupa JSON murni tanpa markdown triple backs.
-Jika resep BERHASIL dibuat (aturan terpenuhi), gunakan struktur ini:
-${RECIPE_JSON_SCHEMA}
-
-Jika resep DITOLAK (sesuai Aturan 1 & 2), WAJIB gunakan struktur JSON "unpayload" seperti dicontohkan di atas.`;
+${PROMPT_RULES}`;
 
   const result = await generateWithRetry(prompt);
 
@@ -824,12 +835,12 @@ export async function generateCustomRecipeQueryAsync(userPrompt: string): Promis
   // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
   // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
   const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
-      Pengguna meminta: "${userPrompt}"
-      Buatkan 1 resep masakan sorgum sehat dalam format JSON valid (HANYA JSON — tidak boleh ada teks di luar JSON, tidak boleh pakai markdown) dengan struktur persis:
-      ${RECIPE_JSON_SCHEMA}
+Tugas Anda adalah merancang resep masakan sorgum sehat berdasarkan permintaan pengguna.
 
-      ${PROMPT_RULES}
-      PENTING: keluaran akhir hanya boleh JSON — tanpa teks tambahan apapun, tanpa tanda \`\`\`json, tanpa markdown.`;
+### INPUT USER
+Permintaan: "${userPrompt}"
+
+${PROMPT_RULES}`;
 
   const result = await generateWithRetry(prompt);
   if (result && !('__refusal' in result) && result.title) {
