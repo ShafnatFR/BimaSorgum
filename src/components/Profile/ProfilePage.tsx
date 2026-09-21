@@ -114,13 +114,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
       {/* TopAppBar */}
       <header className="fixed top-0 w-full z-40 bg-[#f9f9f7]/95 backdrop-blur-md shadow-xs flex items-center justify-between px-5 py-3 border-b border-[#e2e3e1]/70">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#c2c8c0]/40">
-            <img
-              alt="User profile avatar"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY7kYlZEGSj7F6RcSi-U_yc8Y8W_YRH299ATPsshdJvmcJ5gODC2YPmJ7CLVYX80ueXWVEBZXB1ZGmeqtxjJQzd9xkub_INjmu4KQQaVWZp4iCdd-U0bvpYMoNuxq6Q0SZnyIPEjQ9ER2NbqE0nLn8jubwL0mMcvd1vns99IodH3CyiOQiZaUag4Hcz3L23a0526eCiTMVQW-zpcCDpSHXGTR7ZRYw1kgwlSgkH-L_czh7j3GQO_B9WA"
-              referrerPolicy="no-referrer"
-            />
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-[#c2c8c0]/40 flex items-center justify-center bg-[#e2e3e1]">
+            {isGoogleUser && googleAvatarUrl ? (
+              <img
+                alt={googleDisplayName || 'User'}
+                className="w-full h-full object-cover"
+                src={googleAvatarUrl}
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <User className="w-5 h-5 text-[#727972]" />
+            )}
           </div>
           <span className="text-xl font-bold text-[#163422] tracking-tight">SorghumCare</span>
         </div>

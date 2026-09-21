@@ -18,7 +18,8 @@ import {
   ChefHat,
   Copy,
   Check,
-  Link as LinkIcon
+  Link as LinkIcon,
+  User
 } from 'lucide-react';
 import { CommentSection } from '../Comments/CommentSection';
 
@@ -130,15 +131,16 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             className="w-10 h-10 rounded-full overflow-hidden bg-[#e2e3e1] flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity border border-[#c2c8c0]/60"
             title="Profil Pengguna"
           >
-            <img
-              alt="User profile avatar"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCudvekLJiocvO_ywpDaoM9-Ske30nSjVucUlcXcsFwH9_tUee5K0lj41Vi9CJW1xzfwsbKMndd3VKgWvO59oqu7wax6_-OmHpR9-2fJiTyL_562NTmt69H5T-wGgBOvjN02XQGVCqKQdVjbfo_tpEqb1UQycxOtiPuOegU4gr9kWjrekoFCnO9llUxFRc-AnSUbtvtCGJEsRrUWP9LdbNjGBLlb_AdVHYkYkwQAo0rK42xy-yUZNkXkQ"
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
-              }}
-            />
+            {isGoogleUser && googleAvatarUrl ? (
+              <img
+                alt={googleDisplayName || 'User'}
+                className="w-full h-full object-cover"
+                src={googleAvatarUrl}
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <User className="w-5 h-5 text-[#727972]" />
+            )}
           </div>
 
           <h1
