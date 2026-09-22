@@ -82,9 +82,20 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
   // The backend appends metadata after the recipe JSON, which would break JSON.parse
   // (e.g. ""summary": "", "reviewer_ran": false, ..." after the closing brace).
   // Extract only the first complete JSON object.
-  if (full.startsWith('{')) {
-    const clean = extractFirstJson(full);
-    if (clean !== full) full = clean;
+  const trimmedFull = full.trim();
+  if (trimmedFull.startsWith('{')) {
+    const clean = extractFirstJson(trimmedFull);
+    try {
+      // If the LLM hallucinated a JSON wrapper { "type": "text", "text": "..." }
+      const parsedClean = JSON.parse(clean);
+      if (parsedClean && parsedClean.type === 'text' && typeof parsedClean.text === 'string') {
+        full = parsedClean.text;
+      } else if (clean !== full) {
+        full = clean;
+      }
+    } catch (e) {
+      if (clean !== full) full = clean;
+    }
   }
   return full;
 }
