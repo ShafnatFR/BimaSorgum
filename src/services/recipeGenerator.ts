@@ -833,7 +833,7 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
  * Generate a custom recipe from a user prompt using the BIMA AI LLM.
  * Falls back to the offline smart query matcher if the call fails.
  */
-export async function generateCustomRecipeQueryAsync(userPrompt: string): Promise<Recipe> {
+export async function generateCustomRecipeQueryAsync(userPrompt: string, budgetOverride?: number): Promise<Recipe> {
   // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
   // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
   const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
@@ -851,7 +851,8 @@ ${PROMPT_RULES}`;
       const refusalText = (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
       throw new Error(refusalText);
     }
-    const { issues, repaired } = validateRecipe(result, 12000);
+    const budgetLimit = budgetOverride ?? 999999;
+    const { issues, repaired } = validateRecipe(result, budgetLimit);
     
     // Jika ada peringatan kombinasi bahan tidak lazim, tolak resepnya!
     const conflictIssue = issues.find(i => i.message.includes('Kombinasi bahan tidak lazim'));
@@ -859,7 +860,7 @@ ${PROMPT_RULES}`;
       throw new Error(`BIMA menolak resep ini: ${conflictIssue.message}`);
     }
 
-    const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
+    const recipe = recipeFromLlmJson(repaired, budgetLimit, 'camilan_sehat');
     (recipe as any).aiWarnings = issues;
     return recipe;
   }

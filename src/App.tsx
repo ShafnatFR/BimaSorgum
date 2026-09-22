@@ -593,7 +593,7 @@ export default function App() {
       .filter((h) => h.content.trim());
 
     // 3) 🔧 DETEKSI INTENT: resep keyword → JSON recipe, lainnya → chat natural
-        const recipeKeywords = /(buatkan?|bikinin?|carikan?\s*(resep|menu)|resep\b|masakkan?|hidangkan?|olah|kreasikan?)/i;
+        const recipeKeywords = /(buatkan?|bikinin?|carikan?\s*(resep|menu)|resep\b|masakkan?|masak\b|hidangkan?|olahan|kreasikan?)/i;
         const explicitRecipeOrder = recipeKeywords.test(trimmed);
         const isConversational = !explicitRecipeOrder;
 
