@@ -16,10 +16,10 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   const [isListening, setIsListening] = useState(false);
 
   const fallbackPrompts = [
-    'Bekal anak SD budget Rp 10.000',
-    'Pancake tepung sorgum tanpa gluten',
-    'Menu lansia rendah gula darah (Low GI)',
-    'Camilan sorgum renyah modal 8 ribu',
+    'Apa itu sorgum?',
+    'Manfaat sorgum untuk kesehatan',
+    'Kandungan gizi sorgum vs nasi',
+    'Kenapa sorgum cocok untuk diabetes?',
   ];
 
   const quickPrompts = (dynamicPrompts && dynamicPrompts.length >= 2) ? dynamicPrompts : fallbackPrompts;
