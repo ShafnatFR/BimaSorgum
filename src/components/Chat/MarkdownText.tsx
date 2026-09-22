@@ -6,6 +6,13 @@ import React from 'react';
  * No external dependency — handles the full subset the backend emits.
  */
 
+const CIRCLED_VALS: Record<string, number> = {
+  '①': 1, '②': 2, '③': 3, '④': 4, '⑤': 5, '⑥': 6, '⑦': 7, '⑧': 8, '⑨': 9, '⑩': 10,
+  '⑪': 11, '⑫': 12, '⑬': 13, '⑭': 14, '⑮': 15, '⑯': 16, '⑰': 17, '⑱': 18, '⑲': 19, '⑳': 20,
+  '❶': 1, '❷': 2, '❸': 3, '❹': 4, '❺': 5, '❻': 6, '❼': 7, '❽': 8, '❾': 9, '❿': 10,
+  '⑴': 1, '⑵': 2, '⑶': 3, '⑷': 4, '⑸': 5, '⑹': 6, '⑺': 7, '⑻': 8, '⑼': 9, '⑽': 10,
+};
+
 /** Parse **bold** and *italic* inline, and [text](url) links. */
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
@@ -77,7 +84,8 @@ function MarkdownText({ text }: { text: string }) {
 
   // 2. Pre-process lines safely:
   // - Strip bare "#" artifacts
-  // - Only split multiple inline emoji bullets on plain text lines (NOT inside tables, quotes, code, or headings)
+  // - Split inline circled step numbers (①, ②, ③, etc.) and tree branches (├──, └──)
+  // - Split multiple inline emoji bullets on plain text lines
   const rawLines = normalized.split('\n');
   const safeLines: string[] = [];
 
@@ -99,6 +107,32 @@ function MarkdownText({ text }: { text: string }) {
     ) {
       safeLines.push(rawLine);
       continue;
+    }
+
+    // Check if line starts with tree branch (├──, └──, ├─, └─) -> convert to sub-bullet item
+    if (/^[├└│][─\-]{1,2}\s*/.test(trimmed)) {
+      safeLines.push('- ' + trimmed.replace(/^[├└│][─\-]{1,2}\s*/, '').trim());
+      continue;
+    }
+
+    // Check if line contains circled step numbers (e.g. "① PANEN ... ② PERONTOKAN ...")
+    if (/[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳❶❷❸❹❺❻❼❽❾❿⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽]/.test(trimmed)) {
+      const stepParts = trimmed
+        .split(/(?=[①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳❶❷❸❹❺❻❼❽❾❿⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽]|[├└│][─\-]{1,2}\s*)/)
+        .filter(Boolean);
+
+      if (stepParts.length > 1) {
+        for (const part of stepParts) {
+          let cleanPart = part.trim();
+          if (/^[├└│][─\-]{1,2}\s*/.test(cleanPart)) {
+            cleanPart = '- ' + cleanPart.replace(/^[├└│][─\-]{1,2}\s*/, '').trim();
+          }
+          // Strip trailing step arrows like ↓ or →
+          cleanPart = cleanPart.replace(/\s*[↓→]\s*$/g, '').trim();
+          if (cleanPart) safeLines.push(cleanPart);
+        }
+        continue;
+      }
     }
 
     // Check for multiple emoji bullets on a single plain text line
@@ -410,6 +444,31 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
+    // Ordered list item (1., 2., 1), (1), [1], or circled digits ①, ②, ❶, etc.)
+    const olMatch =
+      line.match(/^\s*(\d+)[.)]\s+(.*)$/) ||
+      line.match(/^\s*\(([0-9]+)\)\s+(.*)$/) ||
+      line.match(/^\s*\[([0-9]+)\]\s+(.*)$/) ||
+      line.match(/^\s*([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳❶❷❸❹❺❻❼❽❾❿⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽])\s*(.*)$/);
+
+    if (olMatch) {
+      flushParagraph();
+      const numKey = olMatch[1];
+      const stepNumber = CIRCLED_VALS[numKey] || parseInt(numKey, 10) || 1;
+
+      if (!listBuffer || listBuffer.type !== 'ol') {
+        flushList();
+        listBuffer = { type: 'ol', items: [], startNum: stepNumber };
+      }
+      let itemContent = olMatch[2].trim();
+      // Clean residual ASCII box borders & trailing step arrows
+      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝↓→]+$/g, '').trim();
+      if (itemContent) {
+        listBuffer.items.push(itemContent);
+      }
+      continue;
+    }
+
     // Unordered list item (standard markers or emoji bullets)
     const ulMatch =
       line.match(/^\s*[-*+]\s+(.*)$/) ||
@@ -420,25 +479,9 @@ function MarkdownText({ text }: { text: string }) {
         flushList();
         listBuffer = { type: 'ul', items: [] };
       }
-      // Clean residual ASCII box borders & trailing pipes
+      // Clean residual ASCII box borders & trailing pipes/arrows
       let itemContent = ulMatch[1].trim();
-      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+$/g, '').trim();
-      if (itemContent) {
-        listBuffer.items.push(itemContent);
-      }
-      continue;
-    }
-
-    // Ordered list item (1., 2., 1))
-    const olMatch = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
-    if (olMatch) {
-      flushParagraph();
-      if (!listBuffer || listBuffer.type !== 'ol') {
-        flushList();
-        listBuffer = { type: 'ol', items: [], startNum: parseInt(olMatch[1], 10) };
-      }
-      let itemContent = olMatch[2].trim();
-      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+$/g, '').trim();
+      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝↓→]+$/g, '').trim();
       if (itemContent) {
         listBuffer.items.push(itemContent);
       }
