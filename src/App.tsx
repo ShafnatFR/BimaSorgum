@@ -670,20 +670,21 @@ export default function App() {
                       }
                     }
 
-                    // 🔁 Auto-continue: hanya jika respons SANGAT pendek (< 80 chars) dan tidak diakhiri tanda baca
-                    const TERMINAL_END = /[.!?"'»\u201D\u2019\u2033\u270E\u2705\u2714\u2713\u2764\u2605\u2B50\u2728\u274C\u274E\u203C\u2049\u2048\u2611\u2610\u2716\u2795\u2796\u2797\u2702\u2709\u270F\u2708\u2693\u26A0\u26A1\u2622\u2623\u2640\u2642\u2695\u2696\u267B\u262E\u262F\u267E\u267F\u269B\u269C\u2708\u2709\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753\u2754\u2755\u2757\u2763\u2764\u2765\u2766\u2767\u2795\u2796\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05\u2B06\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]$/u;
-                    // Strip trailing markdown artifacts before checking completion
+                    // 🔁 Auto-continue: hanya aktif jika kalimat benar-benar terpotong di tengah kata/huruf
+                    // (Bukan tabel '|', bukan kurung ')'/']', bukan format markdown, bukan list, dan bukan tanda baca)
+                    const lastLineTrimmed = replyText.trimEnd().split('\n').pop()?.trim() || '';
+                    const isTableOrMarkdownBlock = lastLineTrimmed.startsWith('|') || lastLineTrimmed.endsWith('|') || lastLineTrimmed.startsWith('#') || lastLineTrimmed.startsWith('>') || lastLineTrimmed.startsWith('-');
                     const cleanedForCheck = replyText.replace(/\n*#+\s*$/g, '').replace(/\n*(?:---+|\*\*\*+|_{3,})\s*$/g, '').trim();
                     const lastChar = cleanedForCheck.slice(-1);
-                    const looksComplete = /[.!?"'\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(lastChar);
-                    const isShortEnough = replyText.length < 80;
+                    const looksComplete = isTableOrMarkdownBlock || /[.!?"'»\u201D\u2019\u2033\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}|\]\)\:\*_~`-]/u.test(lastChar);
 
-                    if (!looksComplete && !isShortEnough) {
-                      const MAX_CONTINUE = 5;
+                    // Dengan max_tokens=32768 di backend, auto-continue hanya sebagai fallback darurat jika teks terputus di tengah kata
+                    if (!looksComplete && replyText.length > 200 && !isTableOrMarkdownBlock) {
+                      const MAX_CONTINUE = 2;
                       let continueCount = 0;
                       while (replyText && continueCount < MAX_CONTINUE) {
                         const contLast = replyText.trimEnd().slice(-1);
-                        const contLooksComplete = /[.!?"'\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(contLast);
+                        const contLooksComplete = /[.!?"'\p{Emoji_Presentation}\p{Extended_Pictographic}|\]\)\:\*_~`-]/u.test(contLast);
                         if (contLooksComplete) break;
                         setChatMessages((prev) =>
                           prev.map((m) =>
@@ -698,7 +699,6 @@ export default function App() {
                         ];
                         const cont = await bimaChat('Kalimat terakhir terpotong. Selesaikan HANYA kalimat/paragraf yang terpotong. JANGAN tambahkan topik atau section baru. Tulis sesedikit mungkin.', contHistory, { useRag: false });
                         if (!cont.response?.trim()) break;
-                        // 🔧 Hapus duplikat: jika continuation mengulang kalimat terakhir dari respons sebelumnya
                         const contText = cont.response.trim();
                         const lastLines = replyText.split('\n').filter((l: string) => l.trim()).slice(-3);
                         let cleanCont = contText;
@@ -707,7 +707,7 @@ export default function App() {
                             cleanCont = cleanCont.slice(ll.trim().length).trim();
                           }
                         }
-                        if (cleanCont) replyText += '\n\n' + cleanCont;
+                        if (cleanCont) replyText += ' ' + cleanCont;
                         continueCount++;
                       }
                     }
