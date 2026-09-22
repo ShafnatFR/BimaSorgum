@@ -281,7 +281,9 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
       const parsed = await tryGenerate(prompt);
       if (parsed) return parsed;
     } catch (err) {
-      console.warn(`BIMA AI attempt ${attempt + 1} failed:`, err);
+      // 422 = Guard rejected the recipe outright. Do NOT retry - it is a definitive verdict.
+      const rejMsg = err instanceof Error ? err.message : String(err);
+      if (rejMsg.includes('422')) throw err;
     }
   }
   return null;
