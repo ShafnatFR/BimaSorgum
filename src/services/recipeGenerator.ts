@@ -850,6 +850,13 @@ ${PROMPT_RULES}`;
       throw new Error(refusalText);
     }
     const { issues, repaired } = validateRecipe(result, 12000);
+    
+    // Jika ada peringatan kombinasi bahan tidak lazim, tolak resepnya!
+    const conflictIssue = issues.find(i => i.message.includes('Kombinasi bahan tidak lazim'));
+    if (conflictIssue) {
+      throw new Error(`BIMA menolak resep ini: ${conflictIssue.message}`);
+    }
+
     const recipe = recipeFromLlmJson(repaired, 12000, 'camilan_sehat');
     (recipe as any).aiWarnings = issues;
     return recipe;
@@ -858,7 +865,6 @@ ${PROMPT_RULES}`;
     throw new Error(result.message);
   }
   throw new Error('AI backend tidak memberikan respons yang valid.');
-  }
 
   // ---- removed offline recipe fallback (pancake/nasi goreng) ----
   // All offline recipe generation was deleted. Only AI output is shown.
