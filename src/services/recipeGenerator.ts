@@ -235,7 +235,7 @@ ${UNPAYLOAD_JSON_SCHEMA}`;
 
 /** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
 async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
-  const result = await bimaChat(prompt, [], { useRag: false }); // 🔧 RAG dimatikan: hemat token output
+  const result = await bimaChat(prompt, [], { useRag: false, stream: false }); // RAG dimatikan, dan non-stream agar Backend Guard dapat berjalan
   if (!result || !result.response) return null;
   const responseText = result.response;
 
