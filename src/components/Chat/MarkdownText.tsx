@@ -71,9 +71,24 @@ function stripQuotePrefix(line: string): string {
 }
 
 function MarkdownText({ text }: { text: string }) {
+  // 🔧 Normalize: strip \r (Windows/SSE), collapse multiple blank lines
+  const normalized = text.replace(/\r\n?/g, '\n').replace(/\n{3,}/g, '\n\n');
+
+  // 🔧 Pre-process: strip bare heading artifacts (lines that are ONLY # chars)
+  const strippedBareHeadings = normalized
+    .split('\n')
+    .map((l) => {
+      const t = l.trim();
+      // Bare "##" or "###" with nothing after → remove entirely
+      if (/^#{1,6}$/.test(t)) return '';
+      // Heading with content → keep as-is (will be parsed below)
+      return l;
+    })
+    .join('\n');
+
   // 🔧 Pre-process: split lines with multiple emoji bullets into separate lines
   const EMOJI_BULLETS = /[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]/g;
-  const preprocessed = text.replace(/^(\s*)(\S+\s+)((?:[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+.{3,}(?=\s+[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]|$))+)/gm, (match) => {
+  const preprocessed = strippedBareHeadings.replace(/^(\s*)(\S+\s+)((?:[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+.{3,}(?=\s+[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]|$))+)/gm, (match) => {
     const parts = match.split(/(?=\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+)/).filter(Boolean);
     if (parts.length > 1) return parts.map((p: string) => p.trim()).join('\n');
     return match;
@@ -303,8 +318,8 @@ function MarkdownText({ text }: { text: string }) {
           flushQuote();
         }
 
-        // Heading
-        const headingMatch = line.match(/^(#{1,4})\s+(.*)$/);
+        // Heading (##, ###, ####, etc — up to h6)
+        const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
     if (headingMatch) {
       flushList();
       flushParagraph();
@@ -355,9 +370,16 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
-    // Normal text line -> accumulate into paragraph
-    flushList();
-    paragraphBuffer.push(line.trim());
+    // Normal text line -> strip residual markdown artifacts, then accumulate
+    let cleanLine = line.trim();
+    // Strip leading # markers that didn't match heading (e.g. "##" with no space, or edge cases)
+    cleanLine = cleanLine.replace(/^#{1,6}\s?/, '');
+    // Strip bare table pipe artifacts (standalone "|---|" or "|" rows that slipped through)
+    if (/^\|[-:\s|]+\|$/.test(cleanLine)) cleanLine = ''; // separator row artifact
+    if (cleanLine) {
+      flushList();
+      paragraphBuffer.push(cleanLine);
+    }
   }
 
   flushAll();

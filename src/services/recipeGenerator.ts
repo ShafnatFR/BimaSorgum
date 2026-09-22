@@ -865,7 +865,4 @@ ${PROMPT_RULES}`;
     throw new Error(result.message);
   }
   throw new Error('AI backend tidak memberikan respons yang valid.');
-
-  // ---- removed offline recipe fallback (pancake/nasi goreng) ----
-  // All offline recipe generation was deleted. Only AI output is shown.
 }
