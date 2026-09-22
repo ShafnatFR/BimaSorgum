@@ -868,3 +868,4 @@ ${PROMPT_RULES}`;
 
   // ---- removed offline recipe fallback (pancake/nasi goreng) ----
   // All offline recipe generation was deleted. Only AI output is shown.
+}

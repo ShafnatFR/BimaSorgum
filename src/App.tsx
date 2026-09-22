@@ -492,8 +492,8 @@ export default function App() {
         text: userPromptText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-      const errorMsgText = typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string'
-        ? (e as any).message
+      const errorMsgText = typeof err === 'object' && err !== null && 'message' in err && typeof (err as any).message === 'string'
+        ? (err as any).message
         : 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.';
       const aiErrorMsg: ChatMessage = {
         id: `msg-ai-${Date.now()}`,
