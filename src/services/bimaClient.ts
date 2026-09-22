@@ -138,7 +138,14 @@ export async function bimaChat(
 
   if (!res.ok) {
     const errText = await res.text().catch(() => '');
-    throw new Error(`BIMA AI error ${res.status}: ${errText.slice(0, 300)}`);
+    let cleanMsg = errText;
+    try {
+      const parsed = JSON.parse(errText);
+      if (parsed.detail) cleanMsg = parsed.detail;
+    } catch (e) {
+      cleanMsg = errText.slice(0, 300);
+    }
+    throw new Error(`BIMA AI error ${res.status}: ${cleanMsg}`);
   }
 
   let response: string;
