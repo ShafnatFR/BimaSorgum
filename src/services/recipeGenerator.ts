@@ -218,10 +218,11 @@ const UNPAYLOAD_JSON_SCHEMA = `{
 }`;
 
 const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
-1. KELAYAKAN RESEP: Jika kombinasi bahan tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
-2. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
-3. HARGA REALISTIS: Harga bahan (\`estimatedPrice\`) HARUS wajar sesuai harga pasar Indonesia 2026. DILARANG menurunkan harga fiktif hanya agar muat di budget.
-4. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, harga bahan, konversi satuan, dan perhitungan gram dari dokumen tersebut. Gunakan harga dari dokumen (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
+2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
+3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
+4. HARGA REALISTIS: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. DILARANG menurunkan harga fiktif hanya agar muat di budget.
+5. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
