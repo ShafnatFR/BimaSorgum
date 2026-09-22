@@ -9,8 +9,8 @@ import React from 'react';
 /** Parse **bold** and *italic* inline, and [text](url) links. */
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
-  // Order: inline code (`…`) → bold (**…**) → italic (*…*) → links ([…](…))
-  const regex = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
+  // Order: inline code (`…`) → bold (**…**) → italic (*…* or _…_) → links ([…](…))
+  const regex = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|\[[^\]]+\]\([^)]+\))/g;
   let lastIndex = 0;
   let m: RegExpExecArray | null;
   let i = 0;
@@ -46,7 +46,7 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
           {label}
         </a>
       );
-    } else if (token.startsWith('*') && token.endsWith('*')) {
+    } else if ((token.startsWith('*') && token.endsWith('*')) || (token.startsWith('_') && token.endsWith('_') && token.length > 2)) {
       nodes.push(
         <em key={`${keyPrefix}-i${i++}`} className="italic">
           {token.slice(1, -1)}
