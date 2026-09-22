@@ -76,10 +76,7 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
     const issues = validationData.issues || [];
     const reasons = issues.map((i: any) => `- **${i.aspect}**: ${i.problem}`).join('\n');
     const msg = `**Resep Ditolak (Skor Kelayakan: ${validationData.score}/100)**\n\nResep ini dinilai belum layak dipraktikkan karena:\n${reasons}\n\n*Sistem AI BIMA telah memblokir resep ini demi keamanan dan kenyamanan.*`;
-    return JSON.stringify({
-      status: 'unpayload',
-      message: msg
-    });
+    return msg;
   }
 
   // The backend appends metadata after the recipe JSON, which would break JSON.parse
