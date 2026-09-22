@@ -676,7 +676,7 @@ export default function App() {
                     const isTableOrMarkdownBlock = lastLineTrimmed.startsWith('|') || lastLineTrimmed.endsWith('|') || lastLineTrimmed.startsWith('#') || lastLineTrimmed.startsWith('>') || lastLineTrimmed.startsWith('-');
                     const cleanedForCheck = replyText.replace(/\n*#+\s*$/g, '').replace(/\n*(?:---+|\*\*\*+|_{3,})\s*$/g, '').trim();
                     const lastChar = cleanedForCheck.slice(-1);
-                    const looksComplete = isTableOrMarkdownBlock || /[.!?"'»\u201D\u2019\u2033\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}|\]\)\:\*_~`-]/u.test(lastChar);
+                    const looksComplete = isTableOrMarkdownBlock || /[.!?"'»\u201D\u2019\u2033\u270E-\u2B55\p{Emoji_Presentation}\p{Extended_Pictographic}|\]):*_~`\-]/u.test(lastChar);
 
                     // Dengan max_tokens=32768 di backend, auto-continue hanya sebagai fallback darurat jika teks terputus di tengah kata
                     if (!looksComplete && replyText.length > 200 && !isTableOrMarkdownBlock) {
@@ -684,7 +684,7 @@ export default function App() {
                       let continueCount = 0;
                       while (replyText && continueCount < MAX_CONTINUE) {
                         const contLast = replyText.trimEnd().slice(-1);
-                        const contLooksComplete = /[.!?"'\p{Emoji_Presentation}\p{Extended_Pictographic}|\]\)\:\*_~`-]/u.test(contLast);
+                        const contLooksComplete = /[.!?"'\p{Emoji_Presentation}\p{Extended_Pictographic}|\]):*_~`\-]/u.test(contLast);
                         if (contLooksComplete) break;
                         setChatMessages((prev) =>
                           prev.map((m) =>
