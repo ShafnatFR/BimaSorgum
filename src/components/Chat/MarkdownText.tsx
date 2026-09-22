@@ -104,7 +104,7 @@ function MarkdownText({ text }: { text: string }) {
     // Check for multiple emoji bullets on a single plain text line
     const bulletMatches = trimmed.match(/[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]/g);
     if (bulletMatches && bulletMatches.length > 1) {
-      const parts = trimmed.split(/(?=[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+)/).filter(Boolean);
+      const parts = trimmed.split(/(?=[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s*)/).filter(Boolean);
       if (parts.length > 1) {
         for (const p of parts) {
           if (p.trim()) safeLines.push(p.trim());
@@ -131,6 +131,16 @@ function MarkdownText({ text }: { text: string }) {
     return cells.length > 0 && cells.every((cell) => /^[\s:|-]+$/.test(cell) && cell.includes('-'));
   };
 
+  const isRealTableRow = (line: string): boolean => {
+    const t = line.trim();
+    if (!t.includes('|')) return false;
+    if (isTableSeparator(t)) return true;
+    const inner = t.replace(/^\|/, '').replace(/\|$/, '').trim();
+    if (!inner) return false;
+    const cells = inner.split('|').map((c) => c.trim()).filter((c) => c.length > 0);
+    return cells.length >= 2;
+  };
+
   const parseTableRow = (line: string): string[] => {
     let l = line.trim();
     if (l.startsWith('|')) l = l.slice(1);
@@ -144,22 +154,18 @@ function MarkdownText({ text }: { text: string }) {
       return;
     }
 
-    // Remove any trailing or leading purely blank lines in table buffer
     const validRows = tableBuffer.filter((r) => r.trim().length > 0);
     if (validRows.length === 0) {
       tableBuffer = null;
       return;
     }
 
-    // Filter out rows that are purely separator lines to check data content
     const nonSeparatorRows = validRows.filter((r) => !isTableSeparator(r));
     if (nonSeparatorRows.length === 0) {
-      // Entire buffer was just |---|---| -> discard
       tableBuffer = null;
       return;
     }
 
-    // Header is the first non-separator row
     let headerRow = validRows[0];
     let startIdx = 1;
     if (isTableSeparator(headerRow)) {
@@ -175,7 +181,6 @@ function MarkdownText({ text }: { text: string }) {
     }
 
     const headerCells = parseTableRow(headerRow);
-    // Header must have at least one cell with meaningful characters (not all dashed/blank)
     const hasMeaningfulHeader = headerCells.some(
       (c) => c.length > 0 && !/^[\s:|-]+$/.test(c)
     );
@@ -324,7 +329,7 @@ function MarkdownText({ text }: { text: string }) {
     const line = raw.trimEnd();
     const trimmed = line.trim();
 
-    // Blank line: flush table, quote, paragraph
+    // Blank line: flush table, quote, paragraph (keep lists open if separated by 1 blank line)
     if (trimmed === '') {
       flushTable();
       flushCode();
@@ -351,8 +356,13 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
-    // Table row (starts with | or is table line)
-    if (trimmed.startsWith('|')) {
+    // Ignore pure decorative box borders / isolated pipes / ASCII frame boundaries
+    if (/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝_\-]+$/.test(trimmed)) {
+      continue;
+    }
+
+    // Table row (has valid table structure with at least 2 cells or separator)
+    if (isRealTableRow(trimmed)) {
       flushList();
       flushParagraph();
       if (!tableBuffer) tableBuffer = [];
@@ -403,14 +413,19 @@ function MarkdownText({ text }: { text: string }) {
     // Unordered list item (standard markers or emoji bullets)
     const ulMatch =
       line.match(/^\s*[-*+]\s+(.*)$/) ||
-      line.match(/^\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+(.*)$/);
+      line.match(/^\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s*(.*)$/);
     if (ulMatch) {
       flushParagraph();
       if (!listBuffer || listBuffer.type !== 'ul') {
         flushList();
         listBuffer = { type: 'ul', items: [] };
       }
-      listBuffer.items.push(ulMatch[1]);
+      // Clean residual ASCII box borders & trailing pipes
+      let itemContent = ulMatch[1].trim();
+      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+$/g, '').trim();
+      if (itemContent) {
+        listBuffer.items.push(itemContent);
+      }
       continue;
     }
 
@@ -422,7 +437,11 @@ function MarkdownText({ text }: { text: string }) {
         flushList();
         listBuffer = { type: 'ol', items: [], startNum: parseInt(olMatch[1], 10) };
       }
-      listBuffer.items.push(olMatch[2]);
+      let itemContent = olMatch[2].trim();
+      itemContent = itemContent.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+$/g, '').trim();
+      if (itemContent) {
+        listBuffer.items.push(itemContent);
+      }
       continue;
     }
 
@@ -436,10 +455,8 @@ function MarkdownText({ text }: { text: string }) {
     // Normal text line -> clean residual artifacts
     let cleanLine = trimmed;
     cleanLine = cleanLine.replace(/^#{1,6}\s?/, '');
-    // Ignore standalone table separator artifacts
-    if (/^\|?[-:\s|]+\|?$/.test(cleanLine) && cleanLine.includes('-')) {
-      cleanLine = '';
-    }
+    // Clean residual box characters or isolated pipes from text
+    cleanLine = cleanLine.replace(/^[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+|[\s|│┌┐└┘├┤┬┴┼─═║╔╗╚╝]+$/g, '').trim();
 
     if (cleanLine) {
       flushList();
