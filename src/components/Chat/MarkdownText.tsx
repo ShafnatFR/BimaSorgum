@@ -2,8 +2,8 @@ import React from 'react';
 
 /**
  * Lightweight markdown renderer for the AI chat responses (BIMA AI returns
- * markdown: bold, italic, headings, bullet & numbered lists, links).
- * No external dependency — handles the subset the backend actually emits.
+ * markdown: bold, italic, headings, bullet & numbered lists, links, tables, blockquotes, code).
+ * No external dependency — handles the full subset the backend emits.
  */
 
 /** Parse **bold** and *italic* inline, and [text](url) links. */
@@ -65,50 +65,70 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
 
 /** Strip leading > from a blockquote line. Handles `> `, `>`, `>text`. */
 function stripQuotePrefix(line: string): string {
-  // Match optional leading whitespace, then > then optional space
   const m = line.match(/^\s*>\s?(.*)$/);
   return m ? m[1] : line;
 }
 
 function MarkdownText({ text }: { text: string }) {
-  // 🔧 Normalize: strip \r (Windows/SSE), collapse multiple blank lines
+  if (!text) return null;
+
+  // 1. Normalize line breaks and multiple empty lines
   const normalized = text.replace(/\r\n?/g, '\n').replace(/\n{3,}/g, '\n\n');
 
-  // 🔧 Pre-process: strip bare heading artifacts (lines that are ONLY # chars)
-  const strippedBareHeadings = normalized
-    .split('\n')
-    .map((l) => {
-      const t = l.trim();
-      // Bare "##" or "###" with nothing after → remove entirely
-      if (/^#{1,6}$/.test(t)) return '';
-      // Heading with content → keep as-is (will be parsed below)
-      return l;
-    })
-    .join('\n');
+  // 2. Pre-process lines safely:
+  // - Strip bare "#" artifacts
+  // - Only split multiple inline emoji bullets on plain text lines (NOT inside tables, quotes, code, or headings)
+  const rawLines = normalized.split('\n');
+  const safeLines: string[] = [];
 
-  // 🔧 Pre-process: split lines with multiple emoji bullets into separate lines
-  const EMOJI_BULLETS = /[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]/g;
-  const preprocessed = strippedBareHeadings.replace(/^(\s*)(\S+\s+)((?:[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+.{3,}(?=\s+[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]|$))+)/gm, (match) => {
-    const parts = match.split(/(?=\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+)/).filter(Boolean);
-    if (parts.length > 1) return parts.map((p: string) => p.trim()).join('\n');
-    return match;
-  });
-  const lines = preprocessed.split('\n');
+  for (const rawLine of rawLines) {
+    const trimmed = rawLine.trim();
+
+    // Bare "##" or "###" with nothing after → remove
+    if (/^#{1,6}$/.test(trimmed)) {
+      continue;
+    }
+
+    // Do NOT alter table lines (starting with '|'), headings, quotes, code blocks, or horizontal rules
+    if (
+      trimmed.startsWith('|') ||
+      trimmed.startsWith('#') ||
+      trimmed.startsWith('>') ||
+      trimmed.startsWith('```') ||
+      /^[-*_]{3,}$/.test(trimmed)
+    ) {
+      safeLines.push(rawLine);
+      continue;
+    }
+
+    // Check for multiple emoji bullets on a single plain text line
+    const bulletMatches = trimmed.match(/[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]/g);
+    if (bulletMatches && bulletMatches.length > 1) {
+      const parts = trimmed.split(/(?=[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+)/).filter(Boolean);
+      if (parts.length > 1) {
+        for (const p of parts) {
+          if (p.trim()) safeLines.push(p.trim());
+        }
+        continue;
+      }
+    }
+
+    safeLines.push(rawLine);
+  }
+
   const blocks: React.ReactNode[] = [];
   let listBuffer: { type: 'ul' | 'ol'; items: string[]; startNum?: number } | null = null;
   let paragraphBuffer: string[] = [];
-  // Table buffer: raw "| ... |" rows until flushed
   let tableBuffer: string[] | null = null;
-  // Blockquote buffer: consecutive "> ..." lines
-    let quoteBuffer: string[] | null = null;
-    // Fenced code block buffer: triple-backtick ``` ... ```
-    let codeBuffer: { lang: string; lines: string[] } | null = null;
-    let key = 0;
+  let quoteBuffer: string[] | null = null;
+  let codeBuffer: { lang: string; lines: string[] } | null = null;
+  let key = 0;
 
-  const isTableSeparator = (line: string) => {
-    // Matches rows like | --- | :---: | ---: | (dashes/colons/spaces only inside pipes)
+  const isTableSeparator = (line: string): boolean => {
     const inner = line.trim().replace(/^\|/, '').replace(/\|$/, '');
-    return inner.split('|').every((cell) => /^[\s:|-]+$/.test(cell) && cell.includes('-'));
+    if (!inner) return false;
+    const cells = inner.split('|');
+    return cells.length > 0 && cells.every((cell) => /^[\s:|-]+$/.test(cell) && cell.includes('-'));
   };
 
   const parseTableRow = (line: string): string[] => {
@@ -119,37 +139,75 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushTable = () => {
-        if (!tableBuffer || tableBuffer.length === 0) {
-          tableBuffer = null;
-          return;
-        }
-        // Header = first row; second row (separator) is skipped if present.
-        const header = parseTableRow(tableBuffer[0]);
-        let startIdx = 1;
-        if (tableBuffer.length > 1 && isTableSeparator(tableBuffer[1])) {
-          startIdx = 2;
-        }
-        const body = tableBuffer.slice(startIdx)
-          .map(parseTableRow)
-          .filter((row) => row.length >= 2 && row.some((c) => c.trim().length > 0)); // 🔧 skip malformed/truncated rows
+    if (!tableBuffer || tableBuffer.length === 0) {
+      tableBuffer = null;
+      return;
+    }
 
-      blocks.push(
-        <div key={`t${key++}`} className="my-2 overflow-x-auto">
-          <table className="w-full text-xs sm:text-sm border-collapse rounded-xl overflow-hidden">
-            <thead>
-              <tr className="bg-[#163422] text-white">
-                {header.map((cell, idx) => (
-                  <th
-                    key={idx}
-                    className="px-3 py-2 text-left font-bold whitespace-nowrap border border-[#163422]/40"
-                  >
-                    {renderInline(cell, `th${idx}`)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+    // Remove any trailing or leading purely blank lines in table buffer
+    const validRows = tableBuffer.filter((r) => r.trim().length > 0);
+    if (validRows.length === 0) {
+      tableBuffer = null;
+      return;
+    }
+
+    // Filter out rows that are purely separator lines to check data content
+    const nonSeparatorRows = validRows.filter((r) => !isTableSeparator(r));
+    if (nonSeparatorRows.length === 0) {
+      // Entire buffer was just |---|---| -> discard
+      tableBuffer = null;
+      return;
+    }
+
+    // Header is the first non-separator row
+    let headerRow = validRows[0];
+    let startIdx = 1;
+    if (isTableSeparator(headerRow)) {
+      if (validRows.length > 1) {
+        headerRow = validRows[1];
+        startIdx = 2;
+      } else {
+        tableBuffer = null;
+        return;
+      }
+    } else if (validRows.length > 1 && isTableSeparator(validRows[1])) {
+      startIdx = 2;
+    }
+
+    const headerCells = parseTableRow(headerRow);
+    // Header must have at least one cell with meaningful characters (not all dashed/blank)
+    const hasMeaningfulHeader = headerCells.some(
+      (c) => c.length > 0 && !/^[\s:|-]+$/.test(c)
+    );
+    if (!hasMeaningfulHeader) {
+      tableBuffer = null;
+      return;
+    }
+
+    const bodyRows = validRows
+      .slice(startIdx)
+      .filter((r) => !isTableSeparator(r))
+      .map(parseTableRow)
+      .filter((row) => row.some((c) => c.length > 0));
+
+    blocks.push(
+      <div key={`t${key++}`} className="my-2 overflow-x-auto">
+        <table className="w-full text-xs sm:text-sm border-collapse rounded-xl overflow-hidden border border-[#e2e3e1]">
+          <thead>
+            <tr className="bg-[#163422] text-white">
+              {headerCells.map((cell, idx) => (
+                <th
+                  key={idx}
+                  className="px-3 py-2 text-left font-bold border border-[#163422]/40"
+                >
+                  {renderInline(cell, `th${key}-${idx}`)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          {bodyRows.length > 0 && (
             <tbody>
-              {body.map((row, ridx) => (
+              {bodyRows.map((row, ridx) => (
                 <tr
                   key={ridx}
                   className={ridx % 2 === 0 ? 'bg-white' : 'bg-[#f4f4f2]/70'}
@@ -159,79 +217,86 @@ function MarkdownText({ text }: { text: string }) {
                       key={cidx}
                       className="px-3 py-2 border border-[#e2e3e1] text-[#1A1C1B] align-top"
                     >
-                      {renderInline(cell, `td${ridx}-${cidx}`)}
+                      {renderInline(cell, `td${key}-${ridx}-${cidx}`)}
                     </td>
                   ))}
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-      );
-      tableBuffer = null;
-    };
+          )}
+        </table>
+      </div>
+    );
+    tableBuffer = null;
+  };
 
-    const flushQuote = () => {
-      if (!quoteBuffer || quoteBuffer.length === 0) {
-        quoteBuffer = null;
-        return;
-      }
-      const lines = quoteBuffer.map(stripQuotePrefix).filter((l) => l.trim() !== '');
-      if (lines.length === 0) {
-        quoteBuffer = null;
-        return;
-      }
-      blocks.push(
-        <blockquote
-          key={`bq${key++}`}
-          className="border-l-[3px] border-[#fdc65c] bg-[#fef9ed]/60 pl-4 pr-3 py-2 my-2 rounded-r-lg italic text-sm sm:text-base leading-relaxed text-justify text-[#424843]"
-        >
-          {lines.map((ln, idx) => (
-            <p key={idx} className={idx > 0 ? 'mt-1' : ''}>
-              {renderInline(ln, `bq${idx}`)}
-            </p>
-          ))}
-        </blockquote>
-      );
+  const flushQuote = () => {
+    if (!quoteBuffer || quoteBuffer.length === 0) {
       quoteBuffer = null;
-          };
+      return;
+    }
+    const lines = quoteBuffer.map(stripQuotePrefix).filter((l) => l.trim() !== '');
+    if (lines.length === 0) {
+      quoteBuffer = null;
+      return;
+    }
+    blocks.push(
+      <blockquote
+        key={`bq${key++}`}
+        className="border-l-[3px] border-[#fdc65c] bg-[#fef9ed]/60 pl-4 pr-3 py-2 my-2 rounded-r-lg italic text-sm sm:text-base leading-relaxed text-justify text-[#424843]"
+      >
+        {lines.map((ln, idx) => (
+          <p key={idx} className={idx > 0 ? 'mt-1' : ''}>
+            {renderInline(ln, `bq${key}-${idx}`)}
+          </p>
+        ))}
+      </blockquote>
+    );
+    quoteBuffer = null;
+  };
 
-          const flushCode = () => {
-            if (!codeBuffer || codeBuffer.lines.length === 0) {
-              codeBuffer = null;
-              return;
-            }
-            blocks.push(
-              <pre key={`pre${key++}`} className="bg-[#1A1C1B] text-[#e2e3e1] rounded-xl px-4 py-3 my-2 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed">
-                <code>{codeBuffer.lines.join('\n')}</code>
-              </pre>
-            );
-            codeBuffer = null;
-          };
+  const flushCode = () => {
+    if (!codeBuffer || codeBuffer.lines.length === 0) {
+      codeBuffer = null;
+      return;
+    }
+    blocks.push(
+      <pre
+        key={`pre${key++}`}
+        className="bg-[#1A1C1B] text-[#e2e3e1] rounded-xl px-4 py-3 my-2 overflow-x-auto text-xs sm:text-sm font-mono leading-relaxed"
+      >
+        <code>{codeBuffer.lines.join('\n')}</code>
+      </pre>
+    );
+    codeBuffer = null;
+  };
 
-        const flushList = () => {
-    if (!listBuffer) return;
+  const flushList = () => {
+    if (!listBuffer || listBuffer.items.length === 0) {
+      listBuffer = null;
+      return;
+    }
     if (listBuffer.type === 'ul') {
       blocks.push(
         <ul key={`l${key++}`} className="list-disc pl-5 space-y-1 my-1.5">
           {listBuffer.items.map((item, idx) => (
             <li key={idx} className="text-sm sm:text-base leading-relaxed text-justify">
-              {renderInline(item, `ul${idx}`)}
+              {renderInline(item, `ul${key}-${idx}`)}
             </li>
           ))}
         </ul>
       );
     } else {
-          blocks.push(
-            <ol key={`l${key++}`} start={listBuffer.startNum || 1} className="list-decimal pl-5 space-y-1 my-1.5">
-              {listBuffer.items.map((item, idx) => (
-                <li key={idx} className="text-sm sm:text-base leading-relaxed text-justify">
-                  {renderInline(item, `ol${idx}`)}
-                </li>
-              ))}
-            </ol>
-          );
-        }
+      blocks.push(
+        <ol key={`l${key++}`} start={listBuffer.startNum || 1} className="list-decimal pl-5 space-y-1 my-1.5">
+          {listBuffer.items.map((item, idx) => (
+            <li key={idx} className="text-sm sm:text-base leading-relaxed text-justify">
+              {renderInline(item, `ol${key}-${idx}`)}
+            </li>
+          ))}
+        </ol>
+      );
+    }
     listBuffer = null;
   };
 
@@ -248,78 +313,74 @@ function MarkdownText({ text }: { text: string }) {
   };
 
   const flushAll = () => {
-        flushTable();
-        flushCode();
-        flushQuote();
-        flushList();
-        flushParagraph();
-      };
+    flushTable();
+    flushCode();
+    flushQuote();
+    flushList();
+    flushParagraph();
+  };
 
-  for (const raw of lines) {
+  for (const raw of safeLines) {
     const line = raw.trimEnd();
+    const trimmed = line.trim();
 
-    // Blank line: flush everything
-        if (line.trim() === '') {
-                  // 🔧 Don't flush lists on blank lines — OL items separated by blank lines
-                  // should stay in the same list to preserve numbering
-                  flushTable();
-                  flushCode();
-                  flushQuote();
-                  flushParagraph();
-                  continue;
-                }
-
-        // Fenced code block (```)
-        if (/^\s*```/.test(line)) {
-          if (codeBuffer) {
-            // closing fence → flush code block
-            flushCode();
-          } else {
-            // opening fence → start code buffer
-            flushAll();
-            const lang = line.trim().slice(3).trim();
-            codeBuffer = { lang, lines: [] };
-          }
-          continue;
-        }
-
-        // Inside a fenced code block → accumulate raw lines
-        if (codeBuffer) {
-          codeBuffer.lines.push(raw); // preserve original line endings
-          continue;
-        }
-
-        // Table row (starts with a pipe)
-    if (line.trim().startsWith('|')) {
-      flushList();
+    // Blank line: flush table, quote, paragraph
+    if (trimmed === '') {
+      flushTable();
+      flushCode();
+      flushQuote();
       flushParagraph();
-      // Separator row after header: keep accumulating, it's part of table
-      if (!tableBuffer) tableBuffer = [];
-      tableBuffer.push(line.trim());
       continue;
     }
 
-    // Any non-table line ends an in-progress table
-        if (tableBuffer && tableBuffer.length > 0) {
-          flushTable();
-        }
+    // Fenced code block (```)
+    if (/^\s*```/.test(line)) {
+      if (codeBuffer) {
+        flushCode();
+      } else {
+        flushAll();
+        const lang = trimmed.slice(3).trim();
+        codeBuffer = { lang, lines: [] };
+      }
+      continue;
+    }
 
-        // Blockquote (line starting with >)
-        if (/^\s*>/.test(line)) {
-          flushList();
-          flushParagraph();
-          if (!quoteBuffer) quoteBuffer = [];
-          quoteBuffer.push(line);
-          continue;
-        }
+    // Inside a fenced code block
+    if (codeBuffer) {
+      codeBuffer.lines.push(raw);
+      continue;
+    }
 
-        // Any non-quote line ends an in-progress blockquote
-        if (quoteBuffer && quoteBuffer.length > 0) {
-          flushQuote();
-        }
+    // Table row (starts with | or is table line)
+    if (trimmed.startsWith('|')) {
+      flushList();
+      flushParagraph();
+      if (!tableBuffer) tableBuffer = [];
+      tableBuffer.push(trimmed);
+      continue;
+    }
 
-        // Heading (##, ###, ####, etc — up to h6)
-        const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+    // If current line is not a table row, flush in-progress table
+    if (tableBuffer && tableBuffer.length > 0) {
+      flushTable();
+    }
+
+    // Blockquote (line starting with >)
+    if (/^\s*>/.test(line)) {
+      flushList();
+      flushParagraph();
+      if (!quoteBuffer) quoteBuffer = [];
+      quoteBuffer.push(line);
+      continue;
+    }
+
+    // If current line is not blockquote, flush in-progress quote
+    if (quoteBuffer && quoteBuffer.length > 0) {
+      flushQuote();
+    }
+
+    // Heading (##, ###, ####, etc — up to h6)
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
     if (headingMatch) {
       flushList();
       flushParagraph();
@@ -340,8 +401,10 @@ function MarkdownText({ text }: { text: string }) {
     }
 
     // Unordered list item (standard markers or emoji bullets)
-        const ulMatch = line.match(/^\s*[-*+]\s+(.*)$/) || line.match(/^\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧💡📌🎯]\s+(.*)$/);
-        if (ulMatch) {
+    const ulMatch =
+      line.match(/^\s*[-*+]\s+(.*)$/) ||
+      line.match(/^\s*[🌱🌿🍽️✅❌📌💡🔹🔸▪️▫️•◦⁃▶️⭐🌟✨🔥💪🎯📝🧪🔬🌾📊🏆👍👎⚡🎨🛠️🔧]\s+(.*)$/);
+    if (ulMatch) {
       flushParagraph();
       if (!listBuffer || listBuffer.type !== 'ul') {
         flushList();
@@ -351,17 +414,17 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
-    // Ordered list item
-        const olMatch = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
-        if (olMatch) {
-          flushParagraph();
-          if (!listBuffer || listBuffer.type !== 'ol') {
-            flushList();
-            listBuffer = { type: 'ol', items: [], startNum: parseInt(olMatch[1], 10) };
-          }
-          listBuffer.items.push(olMatch[2]);
-          continue;
-        }
+    // Ordered list item (1., 2., 1))
+    const olMatch = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
+    if (olMatch) {
+      flushParagraph();
+      if (!listBuffer || listBuffer.type !== 'ol') {
+        flushList();
+        listBuffer = { type: 'ol', items: [], startNum: parseInt(olMatch[1], 10) };
+      }
+      listBuffer.items.push(olMatch[2]);
+      continue;
+    }
 
     // Horizontal rule
     if (/^\s*(---+|\*\*\*+|___+)\s*$/.test(line)) {
@@ -370,12 +433,14 @@ function MarkdownText({ text }: { text: string }) {
       continue;
     }
 
-    // Normal text line -> strip residual markdown artifacts, then accumulate
-    let cleanLine = line.trim();
-    // Strip leading # markers that didn't match heading (e.g. "##" with no space, or edge cases)
+    // Normal text line -> clean residual artifacts
+    let cleanLine = trimmed;
     cleanLine = cleanLine.replace(/^#{1,6}\s?/, '');
-    // Strip bare table pipe artifacts (standalone "|---|" or "|" rows that slipped through)
-    if (/^\|[-:\s|]+\|$/.test(cleanLine)) cleanLine = ''; // separator row artifact
+    // Ignore standalone table separator artifacts
+    if (/^\|?[-:\s|]+\|?$/.test(cleanLine) && cleanLine.includes('-')) {
+      cleanLine = '';
+    }
+
     if (cleanLine) {
       flushList();
       paragraphBuffer.push(cleanLine);
