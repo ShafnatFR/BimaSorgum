@@ -492,10 +492,13 @@ export default function App() {
         text: userPromptText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
+      const errorMsgText = typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string'
+        ? (e as any).message
+        : 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.';
       const aiErrorMsg: ChatMessage = {
         id: `msg-ai-${Date.now()}`,
         sender: 'ai',
-        text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.',
+        text: errorMsgText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setChatMessages([errorMsg, aiErrorMsg]);
@@ -721,11 +724,12 @@ export default function App() {
             }
 } catch (e) {
       console.error('chat error:', e);
+      const eMsg = e instanceof Error ? e.message : (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string' ? (e as any).message : 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.');
       setChatMessages((prev) =>
         prev.map((m) => {
           if (m.id !== aiPlaceholderId) return m;
           if (m.text && m.text.length > 100 && !m.isTypingStep) return m;
-          return { ...m, text: 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.', isTypingStep: false };
+          return { ...m, text: eMsg, isTypingStep: false };
         })
       );
     } finally {
