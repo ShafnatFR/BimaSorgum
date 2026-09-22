@@ -21,13 +21,13 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
     const token = m[0];
     if (token.startsWith('`') && token.endsWith('`')) {
       nodes.push(
-        <code key={`${keyPrefix}-c${i++}`} className="bg-[#e2e3e1]/70 text-[#163422] px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono">
+        <code key={`${keyPrefix}-c${i++}`} className="bg-black/10 text-current px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono">
           {token.slice(1, -1)}
         </code>
       );
     } else if (token.startsWith('**') && token.endsWith('**')) {
       nodes.push(
-        <strong key={`${keyPrefix}-b${i++}`} className="font-bold text-[#163422]">
+        <strong key={`${keyPrefix}-b${i++}`} className="font-bold text-inherit">
           {token.slice(2, -2)}
         </strong>
       );
@@ -41,14 +41,14 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[#163422] underline decoration-[#163422]/40 hover:decoration-[#163422]"
+          className="text-inherit underline decoration-current/40 hover:decoration-current"
         >
           {label}
         </a>
       );
     } else if ((token.startsWith('*') && token.endsWith('*')) || (token.startsWith('_') && token.endsWith('_') && token.length > 2)) {
       nodes.push(
-        <em key={`${keyPrefix}-i${i++}`} className="italic">
+        <em key={`${keyPrefix}-i${i++}`} className="italic text-inherit">
           {token.slice(1, -1)}
         </em>
       );
