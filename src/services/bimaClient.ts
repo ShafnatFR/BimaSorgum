@@ -18,7 +18,7 @@ const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';
 const BIMA_API_KEY = import.meta.env.VITE_BIMA_API_KEY || '';
 
 export interface BimaChatMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
@@ -105,12 +105,12 @@ export async function bimaChat(
   opts: { model?: string; useRag?: boolean; stream?: boolean } = {}
 ): Promise<BimaChatResult> {
   const stream = opts.stream !== false; // default true
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'X-Use-RAG': 'true', // forced true as requested
-      'X-Stream': stream ? 'true' : 'false',
-      'X-Max-Tokens': '8192',
-    };
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-Use-RAG': String(opts.useRag ?? true),
+        'X-Stream': stream ? 'true' : 'false',
+        'X-Max-Tokens': '8192',
+      };
     
     // We intentionally do NOT send X-Model, X-Server-Url, or X-LLM-API-Key from the frontend.
     // This forces the backend to use the default LLM settings configured by the Admin in the dashboard.

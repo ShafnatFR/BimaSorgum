@@ -632,8 +632,11 @@ export default function App() {
                     const systemInstructions = isShortGreeting
                       ? `\n\n[Di akhir jawaban, tulis 4 pertanyaan lanjutan singkat (masing-masing maks 6 kata) yang relevan. Format: mulai baris dengan ">>>" tanpa nomor, satu per baris. Contoh:\n>>> Apa itu sorgum\n>>> Manfaat sorgum untuk kesehatan]`
                       : `\n\n[Instruksi: Jika pertanyaan di atas ambigu, tidak jelas, atau kamu tidak yakin apa yang diminta, JANGAN menebak — tanyakan balik dengan sopan untuk klarifikasi.]\n\n[RULES: (1) Jawab dalam bahasa Indonesia yang natural. (2) Jawab HANYA apa yang ditanya, jangan melebar. (3) JANGAN membuat resep, tabel bahan, atau analisis formulasi produk KECUALI user secara eksplisit meminta "buatkan resep", "rancangkan resep", atau "formulasikan". (4) Untuk pertanyaan umum tentang sorgum, jawab dengan penjelasan informatif saja, bukan resep. (5) FORMAT: Gunakan markdown kaya — heading (#), tabel (|), list bernomor, **bold**, > blockquote. JANGAN tulis datar tanpa formatting.]\n\n[Di akhir jawaban, tulis 4 pertanyaan lanjutan singkat (masing-masing maks 6 kata) yang relevan dengan topik. Format: mulai baris dengan ">>>" tanpa nomor, satu per baris. Contoh:\n>>> Apa itu sorgum\n>>> Manfaat sorgum untuk kesehatan]`;
-                    const chatPrompt = `${trimmed}${systemInstructions}`;
-                    let answer = await bimaChat(chatPrompt, history, { useRag: false }); // RAG dimatikan: terlalu lambat (169dtk) & memicu resep otomatis
+                    const chatHistory: BimaChatMessage[] = [
+                      ...history,
+                      { role: 'system', content: systemInstructions }
+                    ];
+                    let answer = await bimaChat(trimmed, chatHistory, { useRag: false }); // RAG dimatikan: terlalu lambat (169dtk) & memicu resep otomatis
                     let replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
                     // 🔧 Hapus metadata backend reviewer (Catatan Verifikasi, Skor kelayakan)
                     replyText = replyText.replace(/\n*### Catatan Verifikasi[\s\S]*$/i, '').trim();
