@@ -282,8 +282,9 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
       if (parsed) return parsed;
     } catch (err) {
       // 422 = Guard rejected the recipe outright. Do NOT retry - it is a definitive verdict.
+      // 504/502/524 = Backend timed out or crashed. Retrying will just hang the user longer.
       const rejMsg = err instanceof Error ? err.message : String(err);
-      if (rejMsg.includes('422')) throw err;
+      if (rejMsg.includes('422') || rejMsg.includes('504') || rejMsg.includes('502') || rejMsg.includes('524')) throw err;
     }
   }
   return null;
