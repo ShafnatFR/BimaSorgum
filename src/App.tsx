@@ -636,8 +636,8 @@ export default function App() {
                     let answer = await bimaChat(chatPrompt, history, { useRag: false }); // RAG dimatikan: terlalu lambat (169dtk) & memicu resep otomatis
                     let replyText = answer.response?.trim() || 'Maaf, saya belum bisa memproses permintaan itu.';
                     // 🔧 Hapus metadata backend reviewer (Catatan Verifikasi, Skor kelayakan)
-                    replyText = replyText.replace(/\n*Catatan Verifikasi[\s\S]*$/i, '').trim();
-                    replyText = replyText.replace(/\n*Skor kelayakan[\s\S]*$/i, '').trim();
+                    replyText = replyText.replace(/\n*### Catatan Verifikasi[\s\S]*$/i, '').trim();
+                    replyText = replyText.replace(/\n*_Skor kelayakan:[\s\S]*$/i, '').trim();
                     replyText = replyText.replace(/\n*Draf perlu disusun[\s\S]*$/i, '').trim();
                     // 🔧 Hapus artefak markdown (###, ---, ***, ___) dari SELURUH respons — baris yang hanya berisi artefak
                     replyText = replyText.split('\n').filter((l: string) => !/^\s*(?:#{1,6}|---+|\*\*\*+|_{3,})\s*$/.test(l.trim())).join('\n').trim();
