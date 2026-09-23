@@ -1307,6 +1307,7 @@ export default function App() {
                                       isPublished={!!msg.recipe.isPublished || isRecipePublished(msg.recipe)}
                                       onPublish={handlePublishRecipe}
                                       isPublishing={publishingIds.has(msg.recipe.id) || publishingIds.has(msg.recipe.slug || '')}
+                                      inputIngredientNames={[...wizardData.selectedIngredientIds, ...wizardData.customIngredients]}
                                     />
                                     <span className="text-[10px] text-[#727972] mt-2 px-1">
                                       {msg.timestamp}

@@ -32,6 +32,8 @@ interface RecipeCardViewProps {
   onPublish?: (recipe: Recipe) => void | Promise<void>;
   /** uploading state shown on the button */
   isPublishing?: boolean;
+  /** Ingredient names the user selected in the wizard — to show unused ones */
+  inputIngredientNames?: string[];
 }
 
 export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
@@ -156,6 +158,23 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
               <span className="leading-relaxed">{w.message}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Unused ingredients warning — red badge */}
+      {unusedIngredients.length > 0 && (
+        <div className="flex items-start gap-2 p-3 rounded-xl text-xs sm:text-sm bg-[#ffdad6]/50 border border-[#ba1a1a]/30 text-[#ba1a1a]">
+          <span className="material-symbols-outlined text-base flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>
+            warning
+          </span>
+          <div className="leading-relaxed">
+            <span className="font-bold">Bahan tidak dipakai:</span>{' '}
+            {unusedIngredients.map((name, i) => (
+              <span key={i} className="inline-block bg-[#ba1a1a]/10 text-[#ba1a1a] text-[11px] font-bold px-1.5 py-0.5 rounded-full mr-1 mb-0.5">
+                {name}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
