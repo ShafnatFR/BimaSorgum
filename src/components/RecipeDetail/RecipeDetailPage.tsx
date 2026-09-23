@@ -491,7 +491,10 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                             <span className="font-semibold text-[#1a1c1b]">{ing.name}</span>
                           </div>
                         </td>
-                        <td className="py-2.5 pr-2.5 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+                        <td className="py-2.5 pr-3 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+                        <td className="py-2.5 pr-2.5 text-right font-semibold text-[#163422] whitespace-nowrap">
+                          Rp {((ing.estimatedPrice || 0) * servingsMultiplier).toLocaleString('id-ID')}
+                        </td>
                       </tr>
                     );
                   })}

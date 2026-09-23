@@ -85,9 +85,18 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     }
   };
 
+  const formatRupiah = (amount: number) => {
+    return `Rp ${(amount * portionMultiplier).toLocaleString('id-ID')}`;
+  };
+
+  const totalCalculatedCost = recipe.ingredients.reduce(
+    (sum, ing) => sum + (ing.estimatedPrice || 0) * portionMultiplier,
+    0
+  );
+
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name} (${scaleAmount(i.amount)})`)
+      .map((i) => `- ${i.name} - ${scaleAmount(i.amount)} (${formatRupiah(i.estimatedPrice || 0)})`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -193,11 +202,19 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
             {recipe.ingredients.map((ing, idx) => (
               <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
                 <td className="py-1.5 pr-3 text-[#1A1C1B]">{ing.name}</td>
-                <td className="py-1.5 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+                <td className="py-1.5 pr-3 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+                <td className="py-1.5 text-right font-semibold text-[#163422] whitespace-nowrap">{formatRupiah(ing.estimatedPrice || 0)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <div className="pt-2 mt-1 border-t border-[#f4f4f2] flex justify-between items-center text-xs text-[#424843]">
+          <span>Total Estimasi Belanja:</span>
+          <span className="font-bold text-sm text-[#163422]">
+            {formatRupiah(recipe.estimatedCost || totalCalculatedCost / portionMultiplier)}
+          </span>
+        </div>
       </div>
 
       {/* Nutrisi Unggulan Card matching mockup */}

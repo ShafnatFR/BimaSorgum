@@ -78,11 +78,79 @@ export const WizardStep4: React.FC<WizardStep4Props> = ({
         {/* Title & Subtitle */}
         <div className="text-center mt-2 mb-8">
           <h1 className="text-2xl sm:text-[26px] font-bold text-[#163422] tracking-tight mb-3">
-            Atur Waktu Persiapan
+            Atur Anggaran & Waktu
           </h1>
           <p className="text-sm text-[#424843] leading-relaxed max-w-xs mx-auto">
-            Pilih batas waktu persiapan yang sesuai dengan jadwal Anda.
+            Pilih target biaya dan batas waktu persiapan yang sesuai.
           </p>
+        </div>
+
+        {/* Budget Display Card */}
+        <div className="bg-white rounded-3xl p-6 border border-[#c2c8c0]/60 shadow-earthy-glow mb-6">
+          <div className="text-center mb-4">
+            <span className="text-xs font-semibold text-[#727972] uppercase tracking-wider block mb-1">
+              Target Modal
+            </span>
+            <div className="text-3xl sm:text-4xl font-extrabold text-[#163422] tracking-tight">
+              {formatCurrency(formData.budgetPerPortion)}
+            </div>
+          </div>
+
+          {/* Custom Slider */}
+          <div className="px-2 mb-5">
+            <div className="relative flex items-center">
+              <input
+                id="budget-slider"
+                type="range"
+                min="5000"
+                max="25000"
+                step="500"
+                value={Math.min(Math.max(formData.budgetPerPortion, 5000), 25000)}
+                onChange={(e) => selectBudget(Number(e.target.value))}
+                className="w-full h-2.5 bg-[#afcfa9]/40 rounded-lg appearance-none cursor-pointer focus:outline-none"
+              />
+            </div>
+            <div className="flex justify-between items-center text-xs font-medium text-[#727972] mt-2">
+              <span>Rp 5.000</span>
+              <span>Rp 15.000</span>
+              <span>Rp 25.000</span>
+            </div>
+          </div>
+
+          {/* Preset budget chips */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {PRESET_BUDGETS.map((b) => (
+              <button
+                key={b}
+                type="button"
+                onClick={() => selectBudget(b)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  formData.budgetPerPortion === b && !isCustomBudget
+                    ? 'bg-[#163422] text-white'
+                    : 'bg-[#f4f4f2] text-[#424843] hover:bg-[#e2e3e1]'
+                }`}
+              >
+                {formatCurrency(b)}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom budget input */}
+          <div className="flex items-center gap-2 bg-[#f9f9f7] border border-[#c2c8c0]/70 rounded-2xl p-3">
+            <Pencil className="w-4 h-4 text-[#163422] flex-shrink-0" />
+            <span className="text-xs font-bold text-[#727972] flex-shrink-0">Isi sendiri:</span>
+            <div className="flex items-center flex-1 bg-white rounded-xl border border-[#c2c8c0]/60 px-3 py-1.5 focus-within:border-[#163422]">
+              <span className="text-sm font-bold text-[#424843] mr-1">Rp</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="cth: 12500"
+                value={isCustomBudget ? String(formData.budgetPerPortion) : budgetDraft}
+                onChange={(e) => handleBudgetDraft(e.target.value)}
+                className="w-full bg-transparent outline-none text-sm font-semibold text-[#1A1C1B] placeholder-[#b0b5af]"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Pilihan Sebelumnya Card */}
