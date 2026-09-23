@@ -55,7 +55,21 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [ingredientsTab, setIngredientsTab] = useState<'takaran' | 'belanja'>('takaran');
+
+  /** Scale an amount string like "100 gram" or "50 ml" by the portion multiplier */
+  const scaleAmount = (amount: string | undefined): string => {
+    if (!amount || servingsMultiplier === 1) return amount || '';
+    const match = amount.match(/^([\d.,]+)\s*(.*)$/);
+    if (match) {
+      const num = parseFloat(match[1].replace(',', '.'));
+      const unit = match[2];
+      if (!isNaN(num)) {
+        const scaled = num * servingsMultiplier;
+        return `${scaled % 1 === 0 ? scaled.toFixed(0) : scaled.toFixed(1).replace(/\.0$/, '')} ${unit}`;
+      }
+    }
+    return amount;
+  };
 
   const recipeSlug = getRecipeSlug(recipe);
   const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
@@ -429,35 +443,60 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             <div>
               <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
                 <h3 className="text-base sm:text-lg font-bold text-[#1a1c1b]">Ingredients</h3>
+                {/* Servings Multiplier Switcher */}
+                <div className="flex items-center gap-1 bg-[#f4f4f2] p-1 rounded-xl border border-[#e2e3e1]">
+                  <span className="text-[11px] text-[#727972] font-semibold pl-1.5 pr-0.5">Porsi:</span>
+                  {[1, 2, 3, 4, 5].map((mult) => (
+                    <button
+                      key={mult}
+                      onClick={() => setServingsMultiplier(mult)}
+                      className={`w-7 h-6 sm:w-8 sm:h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                        servingsMultiplier === mult
+                          ? 'bg-[#163422] text-white shadow-xs'
+                          : 'text-[#424843] hover:bg-[#e2e3e1]'
+                      }`}
+                      title={`${mult}x Porsi`}
+                    >
+                      {mult}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <ul className="space-y-1">
-                {recipe.ingredients.map((ing, idx) => {
-                  const isChecked = checkedIngredients.includes(idx);
-                  return (
-                    <li
-                      key={idx}
-                      onClick={() => toggleIngredientCheck(idx)}
-                      className={`flex items-center gap-3 py-2.5 px-2.5 rounded-xl border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
-                        isChecked ? 'opacity-40 line-through' : ''
-                      }`}
-                    >
-                      <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
-                        <img
-                          alt={ing.name}
-                          className="w-full h-full object-cover"
-                          src={getIngredientThumbnail(ing.name, idx)}
-                          referrerPolicy="no-referrer"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-                          }}
-                        />
-                      </div>
-                      <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
-                    </li>
-                  );
-                })}
-              </ul>
+              <table className="w-full text-sm sm:text-base">
+                <tbody>
+                  {recipe.ingredients.map((ing, idx) => {
+                    const isChecked = checkedIngredients.includes(idx);
+                    return (
+                      <tr
+                        key={idx}
+                        onClick={() => toggleIngredientCheck(idx)}
+                        className={`border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
+                          isChecked ? 'opacity-40 line-through' : ''
+                        }`}
+                      >
+                        <td className="py-2.5 pl-2.5 pr-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-[#e8e8e6] rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
+                              <img
+                                alt={ing.name}
+                                className="w-full h-full object-cover"
+                                src={getIngredientThumbnail(ing.name, idx)}
+                                referrerPolicy="no-referrer"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
+                                }}
+                              />
+                            </div>
+                            <span className="font-semibold text-[#1a1c1b]">{ing.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 pr-2.5 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
 
             <div className="mt-4 pt-3 border-t border-[#e2e3e1] text-xs text-[#424843]">

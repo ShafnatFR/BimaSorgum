@@ -101,7 +101,7 @@ export default function App() {
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
-  const [wizardStep, setWizardStep] = useState<number>(1);
+  const [wizardStep, setWizardStep] = useState<number>(2);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 768 : true
   );
@@ -967,7 +967,7 @@ export default function App() {
       ...prev,
       dishCategory: categoryKey as DishCategoryId,
     }));
-    handleSetWizardStep(1);
+    handleSetWizardStep(2);
   };
 
   return (
@@ -1006,7 +1006,7 @@ export default function App() {
               onViewRecipe={handleViewRecipe}
               onOpenVideoTutorial={handleOpenTutorial}
               onStartGenerator={() => {
-                handleSetWizardStep(1);
+                handleSetWizardStep(2);
               }}
               isGoogleUser={isGoogleUser}
               googleDisplayName={googleDisplayName}
@@ -1025,7 +1025,7 @@ export default function App() {
               onToggleSaveRecipe={handleToggleSaveRecipe}
               isRecipeSaved={isRecipeSaved}
               onStartGenerator={() => {
-                handleSetWizardStep(1);
+                handleSetWizardStep(2);
               }}
               recipesOverride={dbRecipes}
             />
@@ -1096,7 +1096,7 @@ export default function App() {
                     setIsSidebarOpen(false);
                   }}
                   onStartWizard={() => {
-                    handleSetWizardStep(1);
+                    handleSetWizardStep(2);
                   }}
                   onNavigateTab={handleSelectTab}
                   isGoogleUser={isGoogleUser}
@@ -1108,15 +1108,15 @@ export default function App() {
               {/* Generator Workspace: Wizard or Chat */}
                             <div className="flex-1 flex flex-col h-full w-full relative pb-6 overflow-y-auto">
                 {generatorMode === 'wizard' ? (
-                  /* Wizard Flow (4-Step) */
+                  /* Wizard Flow (3-Step — Step 1 hidden, focus on food categories & ingredients) */
                   <main className="flex-1 flex flex-col justify-between py-3 sm:py-6">
                     <div className="w-full flex items-center justify-between px-4 max-w-md mx-auto">
                       <WizardProgressBar
-                        currentStep={wizardStep}
-                        totalSteps={4}
+                        currentStep={wizardStep - 1}
+                        totalSteps={3}
                         showStepText={wizardStep >= 3}
                         onBack={() => {
-                          if (wizardStep > 1) {
+                          if (wizardStep > 2) {
                             handleSetWizardStep(wizardStep - 1);
                           } else {
                             handleSelectTab('home');
@@ -1125,19 +1125,11 @@ export default function App() {
                       />
                     </div>
 
-                    {wizardStep === 1 && (
-                      <WizardStep1
-                        selectedConsumers={wizardData.targetConsumers}
-                        onToggleConsumer={handleToggleConsumer}
-                        onNext={() => handleSetWizardStep(2)}
-                      />
-                    )}
-
                     {wizardStep === 2 && (
                       <WizardStep2
                         selectedCategory={wizardData.dishCategory}
                         onSelectCategory={(cat) => setWizardData((prev) => ({ ...prev, dishCategory: cat }))}
-                        onPrevious={() => handleSetWizardStep(1)}
+                        onPrevious={() => handleSelectTab('home')}
                         onNext={() => handleSetWizardStep(3)}
                       />
                     )}
@@ -1257,7 +1249,7 @@ export default function App() {
                               <button
                                 id="btn-hero-smart-generate"
                                 onClick={() => {
-                                  handleSetWizardStep(1);
+                                  handleSetWizardStep(2);
                                 }}
                                 className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#163422] hover:bg-[#2d4b37] text-white text-left transition-all shadow-md group cursor-pointer active:scale-[0.98]"
                               >
@@ -1368,7 +1360,7 @@ export default function App() {
                                     {msg.refusalNoSuggestions && !msg.refusalSuggestions && !msg.isTypingStep && (
                                       <div className="flex gap-2 mt-2">
                                         <button
-                                          onClick={() => handleSetWizardStep(1)}
+                                          onClick={() => handleSetWizardStep(2)}
                                           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#163422] text-white hover:bg-[#2d4b37] transition-all shadow-xs active:scale-[0.98]"
                                         >
                                           Kembali ke Wizard

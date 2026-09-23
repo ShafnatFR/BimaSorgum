@@ -47,6 +47,22 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
+
+  /** Scale an amount string like "100 gram" or "50 ml" by the portion multiplier */
+  const scaleAmount = (amount: string | undefined): string => {
+    if (!amount || portionMultiplier === 1) return amount || '';
+    const match = amount.match(/^([\d.,]+)\s*(.*)$/);
+    if (match) {
+      const num = parseFloat(match[1].replace(',', '.'));
+      const unit = match[2];
+      if (!isNaN(num)) {
+        const scaled = num * portionMultiplier;
+        return `${scaled % 1 === 0 ? scaled.toFixed(0) : scaled.toFixed(1).replace(/\.0$/, '')} ${unit}`;
+      }
+    }
+    return amount;
+  };
 
   const handleSaveClick = () => {
     onToggleSave(recipe);
@@ -71,7 +87,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name}`)
+      .map((i) => `- ${i.name} (${scaleAmount(i.amount)})`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -147,20 +163,41 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </div>
       )}
 
-      {/* BAHAN-BAHAN List */}
+      {/* BAHAN-BAHAN Table */}
       <div className="space-y-2 bg-white rounded-2xl p-4 border border-[#e2e3e1] shadow-xs">
-        <h3 className="text-xs font-bold text-[#424843] uppercase tracking-wider">
-          BAHAN-BAHAN
-        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-xs font-bold text-[#424843] uppercase tracking-wider">
+            BAHAN-BAHAN
+          </h3>
+          {/* Stepper Porsi */}
+          <div className="flex items-center gap-1.5 bg-[#f4f4f2] px-2 py-0.5 rounded-full border border-[#e2e3e1]">
+            <span className="text-[11px] font-bold text-[#727972]">Porsi:</span>
+            <button
+              onClick={() => setPortionMultiplier((p) => Math.max(1, p - 1))}
+              className="w-5 h-5 rounded-full bg-white text-[#163422] font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#e2e3e1]"
+            >
+              -
+            </button>
+            <span className="text-xs font-bold text-[#163422] px-1">{portionMultiplier}x</span>
+            <button
+              onClick={() => setPortionMultiplier((p) => Math.min(10, p + 1))}
+              className="w-5 h-5 rounded-full bg-[#163422] text-white font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#2d4b37]"
+            >
+              +
+            </button>
+          </div>
+        </div>
 
-        <ul className="space-y-1.5 pt-1">
-          {recipe.ingredients.map((ing, idx) => (
-            <li key={idx} className="flex items-center gap-2 text-sm sm:text-base text-[#1A1C1B]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#163422] flex-shrink-0" />
-              <span>{ing.name}</span>
-            </li>
-          ))}
-        </ul>
+        <table className="w-full text-sm sm:text-base">
+          <tbody>
+            {recipe.ingredients.map((ing, idx) => (
+              <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
+                <td className="py-1.5 pr-3 text-[#1A1C1B]">{ing.name}</td>
+                <td className="py-1.5 text-right text-[#727972] font-semibold whitespace-nowrap">{scaleAmount(ing.amount)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Nutrisi Unggulan Card matching mockup */}
