@@ -851,14 +851,15 @@ ${PROMPT_RULES}`;
       const refusalText = (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
       throw new Error(refusalText);
     }
-        
+    const { issues, repaired } = validateRecipe(result, budgetOverride || 0);
+
     // Jika ada peringatan kombinasi bahan tidak lazim, tolak resepnya!
     const conflictIssue = issues.find(i => i.message.includes('Kombinasi bahan tidak lazim'));
     if (conflictIssue) {
       throw new Error(`BIMA menolak resep ini: ${conflictIssue.message}`);
     }
 
-    const recipe = recipeFromLlmJson(result, 'camilan_sehat');
+    const recipe = recipeFromLlmJson(repaired, budgetOverride || 15000, 'camilan_sehat');
         return recipe;
   }
   if (result && '__refusal' in result) {
