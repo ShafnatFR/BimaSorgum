@@ -189,12 +189,10 @@ const RECIPE_JSON_SCHEMA = `{
   "subtitle": "string",
   "targetAge": "string",
   "dishCategory": "string",
-  "targetBudget": number,
-  "estimatedCost": number,
   "prepTimeMinutes": number,
   "cookTimeMinutes": number,
   "servings": number,
-  "ingredients": [{"name": "string (Tulis spesifik dengan gramasinya, misal: 'Bawang Merah (80 gram)')", "amount": "string (misal: '80 gram')", "estimatedPrice": number}],
+  "ingredients": [{"name": "string (Tulis spesifik dengan gramasinya, misal: 'Bawang Merah (80 gram)')", "amount": "string (misal: '80 gram')"}],
   "nutritionHighlight": {"title": "string", "description": "string", "fiberGrams": number, "proteinGrams": number, "glycemicIndex": "string", "caloriesEstimate": number},
   "steps": [{"stepNumber": number, "title": "string", "instruction": "string", "timerMinutes": number}],
   "tags": ["string"]
@@ -202,15 +200,13 @@ const RECIPE_JSON_SCHEMA = `{
 
 const UNPAYLOAD_JSON_SCHEMA = `{
   "status": "unpayload",
-  "message": "Penjelasan DETAIL (Gunakan Markdown: tabel harga, list alasan) mengapa resep ditolak (kombinasi aneh / budget kurang).",
+  "message": "Penjelasan DETAIL mengapa resep ditolak (kombinasi aneh).",
   "flaggedIngredients": ["bahan bermasalah"],
   "suggestions": [
     {
       "title": "Judul Resep Alternatif",
       "ingredients": ["bahan A (gram)", "bahan B (gram)"],
-      "estimatedCost": 8500,
       "description": "Deskripsi singkat alasan ini lebih baik",
-      "ingredientPrices": ["Bahan A (100g): Rp2.500", "Bahan B (50g): Rp6.000"],
       "estimatedTimeMinutes": 25,
       "removedIngredients": ["bahan aneh dari input"]
     }
@@ -218,11 +214,9 @@ const UNPAYLOAD_JSON_SCHEMA = `{
 }`;
 
 const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
-1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, harga bahan, konversi satuan, dan perhitungan gram dari dokumen tersebut. Gunakan harga dari dokumen (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
+1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun dan konversi satuan dari dokumen tersebut.
 2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
-3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
-4. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
-5. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+3. JUMLAH BAHAN SPESIFIK: Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang Merah (80 gram)".
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
@@ -454,7 +448,6 @@ Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 - Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
 - Bahan Pokok: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
-- Target Budget per porsi: Rp ${formData.budgetPerPortion}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
 ### ATURAN BAHAN
