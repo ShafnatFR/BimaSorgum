@@ -3,7 +3,7 @@ import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
-
+import { validateRecipe, GLOBAL_MINIMUM_PRICE } from './recipeGuard';
 
 /** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
  *  Guarantees consistency: what the user sees in the card = what they get. */
@@ -476,7 +476,40 @@ ${PROMPT_RULES}`;
         flaggedIngredients: [],
       }, formData);
     }
-        const recipe = recipeFromLlmJson(parsed, formData.dishCategory);
+    const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
+    const errorIssues = issues.filter(i => i.level === 'error');
+
+    // If guard found critical errors (price fraud, budget overrun), refuse the recipe entirely.
+    // Don't show a broken recipe card with red badges — show a chat bubble instead.
+    if (errorIssues.length > 0) {
+      const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
+      const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
+
+      // Build detailed price table — apply GLOBAL_MINIMUM_PRICE to show corrected prices
+      const priceTable = ingredients
+        .filter((i: any) => i.name && i.estimatedPrice > 0)
+        .map((i: any) => {
+          const rawPrice = Number(i.estimatedPrice) || 0;
+          const correctedPrice = Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
+          return `| ${i.name} | Rp ${correctedPrice.toLocaleString('id-ID')} |`;
+        })
+        .join('\n');
+      const correctedTotal = ingredients.reduce((s: number, i: any) => {
+        const rawPrice = Number(i.estimatedPrice) || 0;
+        return s + Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
+      }, 0);
+      const priceSection = priceTable
+        ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${correctedTotal.toLocaleString('id-ID')}** |\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |`
+        : '';
+
+      return buildRefusalResponse({
+        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan:`,
+        flaggedIngredients: ingredientNames.slice(0, 5),
+      }, formData);
+    }
+
+    const { repaired } = validateRecipe(parsed, formData.budgetPerPortion);
+    const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
     return recipe;
   }
 
