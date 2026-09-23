@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Recipe, SavedRecipe } from '../../types';
 import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
+import { getIngredientDisplayName, getIngredientSearchTerms } from '../../data/mockData';
 import { 
   Bookmark, 
   BookmarkCheck, 
@@ -55,13 +56,14 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   const [ingredientsTab, setIngredientsTab] = useState<'takaran' | 'belanja'>('takaran');
 
   // Compute which user-selected ingredients were NOT used in the final recipe
-  const unusedIngredients = inputIngredientNames.filter(name => {
-    const lower = name.toLowerCase();
+  // Compute unused ingredients: match by ID, display name, or partial keywords
+  const unusedIngredients = inputIngredientNames.filter(inputId => {
+    const searchTerms = getIngredientSearchTerms(inputId);
     return !recipe.ingredients.some(ri => {
       const riLower = ri.name.toLowerCase();
-      return riLower.includes(lower) || lower.includes(riLower.split(' ')[0].split('(')[0]);
+      return searchTerms.some(term => riLower.includes(term) || term.includes(riLower.split('(')[0].trim()));
     });
-  });
+  }).map(id => getIngredientDisplayName(id));
 
   const formatRupiah = (amount: number) => {
     return `Rp ${(amount * portionMultiplier).toLocaleString('id-ID')}`;
@@ -280,11 +282,21 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
           </div>
         )}
 
-        <div className="pt-2 border-t border-[#f4f4f2] flex justify-between items-center text-xs text-[#424843]">
-          <span>Total Estimasi Belanja:</span>
-          <span className="font-bold text-sm text-[#163422]">
-            {formatRupiah(recipe.estimatedCost)}
-          </span>
+        <div className="pt-2 border-t border-[#f4f4f2] space-y-1">
+          <div className="flex justify-between items-center text-xs text-[#424843]">
+            <span>Total Estimasi Belanja:</span>
+            <span className="font-bold text-sm text-[#163422]">
+              {formatRupiah(recipe.estimatedCost)}
+            </span>
+          </div>
+          {recipe.servings > 1 && (
+            <div className="flex justify-between items-center text-xs text-[#727972]">
+              <span>Harga per porsi ({recipe.servings} porsi):</span>
+              <span className="font-bold text-[#424843]">
+                {formatRupiah(Math.round(recipe.estimatedCost / recipe.servings))}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

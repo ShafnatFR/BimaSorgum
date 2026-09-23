@@ -160,6 +160,23 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
   },
 ];
 
+/** Map ingredient IDs to display names for badge comparison */
+export function getIngredientDisplayName(id: string): string {
+  const found = DEFAULT_INGREDIENTS.find(i => i.id === id);
+  return found ? found.name : id;
+}
+
+/** Get all searchable keywords for an ingredient ID (for matching recipe ingredients) */
+export function getIngredientSearchTerms(id: string): string[] {
+  const found = DEFAULT_INGREDIENTS.find(i => i.id === id);
+  if (!found) return [id.toLowerCase()];
+  const terms = [found.name.toLowerCase(), id.replace(/_/g, ' ').toLowerCase()];
+  // Add partial matches: "biji_sorgum" -> ["biji", "sorgum"]
+  id.split('_').forEach(w => { if (w.length > 2) terms.push(w.toLowerCase()); });
+  return [...new Set(terms)];
+}
+
+
 // Initial featured recipe matching the mockup exactly
 export const INITIAL_FEATURED_RECIPE: Recipe = {
   id: 'nasi-goreng-sorgum-sd',
