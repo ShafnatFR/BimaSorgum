@@ -1,0 +1,67 @@
+nama_bahan	Jan	Feb	Mar	Apr	Mei	Jun	Jul	Ags	Sep	Okt	Nov	Des	bulan_murah	sumber
+Beras Premium	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS/Badan Pangan
+Beras Medium	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS/Badan Pangan
+Beras SPHP	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS/Badan Pangan
+Beras merah	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS
+Tepung terigu	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Impor/stabil
+Tepung sorgum	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS
+Jagung	langka	langka	tersedia	musim	musim	musim	musim	musim	tersedia	langka	langka	langka	Apr-Ags	BPS/Badan Pangan
+Oat	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Impor
+Quinoa	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Impor
+Daging sapi	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Impor/lokal
+Daging ayam	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Daging kambing	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Ayam kampung	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Daging bebek	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Telur ayam	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Telur bebek	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Ikan kembung	tersedia	tersedia	musim	musim	musim	tersedia	langka	langka	langka	tersedia	tersedia	tersedia	Mar-Mei	BPS/MKP
+Ikan tongkol	tersedia	tersedia	musim	musim	musim	tersedia	langka	langka	langka	tersedia	tersedia	tersedia	Mar-Mei	BPS/MKP
+Ikan bandeng	tersedia	tersedia	tersedia	musim	musim	tersedia	tersedia	langka	langka	tersedia	tersedia	tersedia	Apr-Mei	BPS
+Ikan lele	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Budidaya
+Ikan nila	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Budidaya
+Udang	langka	langka	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	Apr-Jun	BPS/MKP
+Cumi-cumi	tersedia	tersedia	musim	musim	musim	tersedia	tersedia	langka	langka	tersedia	tersedia	tersedia	Mar-Mei	BPS/MKP
+Bayam	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Kangkung	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Wortel	musim	musim	tersedia	langka	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Okt-Dec	BPS
+Kentang	musim	musim	tersedia	langka	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Okt-Dec	BPS
+Kol/kubis	musim	musim	musim	tersedia	tersedia	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Tomat	musim	musim	tersedia	langka	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Cabai merah	langka	langka	tersedia	musim	musim	musim	tersedia	tersedia	langka	langka	langka	langka	Apr-Jun	BPS/Badan Pangan
+Cabai rawit	langka	langka	tersedia	musim	musim	musim	tersedia	tersedia	langka	langka	langka	langka	Apr-Jun	BPS/Badan Pangan
+Bawang merah	langka	langka	tersedia	musim	musim	musim	musim	musim	tersedia	langka	langka	langka	Apr-Ags	BPS/Badan Pangan
+Bawang putih	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Impor
+Brokoli	musim	musim	musim	tersedia	tersedia	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Terong	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	panjang musim	BPS
+Buncis	musim	musim	musim	tersedia	tersedia	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Seledri	musim	musim	musim	tersedia	tersedia	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Pisang	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	sepanjang tahun	BPS
+Jeruk	musim	musim	tersedia	tersedia	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Apel	tersedia	tersedia	tersedia	tersedia	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	Mei-Jun (Malang)	BPS
+Mangga	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	langka	musim	musim	Nov-Mar	BPS
+Pepaya	musim	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	sepanjang tahun (puncak awal)	BPS
+Semangka	tersedia	tersedia	tersedia	musim	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	Apr-Ags	BPS
+Alpukat	tersedia	tersedia	musim	musim	musim	tersedia	tersedia	langka	langka	tersedia	tersedia	tersedia	Mar-Mei	BPS
+Durian	musim	musim	musim	langka	langka	langka	langka	langka	langka	langka	langka	musim	Des-Mar	BPS
+Nanas	musim	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	Jan-Mei	BPS
+Salak	tersedia	musim	musim	musim	tersedia	langka	langka	langka	langka	langka	langka	tersedia	Feb-Apr	BPS
+Rambutan	musim	musim	musim	langka	langka	langka	langka	langka	langka	langka	langka	musim	Des-Mar	BPS
+Jeruk nipis	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	sepanjang tahun	BPS
+Jahe	musim	musim	tersedia	langka	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Kunyit	musim	musim	tersedia	langka	langka	langka	langka	langka	tersedia	musim	musim	musim	Jan-Mar, Sep-Dec	BPS
+Lengkuas	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	sepanjang tahun	BPS
+Serai	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	sepanjang tahun	BPS
+Daun salam	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	musim	sepanjang tahun	BPS
+Kacang tanah	langka	langka	langka	langka	tersedia	musim	musim	musim	musim	tersedia	langka	langka	Mei-Ags	BPS
+Kedelai	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	musim	tersedia	tersedia	tersedia	Jul-Sep (Impor stabil)	BPS
+Kacang merah	tersedia	tersedia	tersedia	tersedia	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	Mei-Jun	BPS
+Gula pasir	tersedia	tersedia	tersedia	musim	musim	musim	tersedia	tersedia	langka	langka	langka	langka	Apr-Jun	BPS
+Minyak goreng	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Stabil
+Santan	musim	musim	musim	musim	musim	tersedia	tersedia	tersedia	tersedia	tersedia	musim	musim	Jan-Mei	BPS
+Telur puyuh	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Garam	langka	langka	tersedia	tersedia	musim	musim	musim	musim	musim	tersedia	langka	langka	Mei-Sep	BPS
+Tahu	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Tempe	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	Lokal
+Madu	musim	musim	musim	tersedia	tersedia	langka	langka	langka	tersedia	tersedia	musim	musim	Jan-Mar	Peternakan
+Es batu	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	tersedia	sepanjang tahun	N/A

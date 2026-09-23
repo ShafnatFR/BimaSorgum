@@ -1,0 +1,91 @@
+nama_bahan	rasa_manis	rasa_asin	rasa_asam	rasa_pahit	rasa_umami	kategori_rasa	pasangan_cocok	pasangan_hindari	sumber
+Beras putih	0	0	0	0	1	netral	semua lauk, santan	tidak ada	FlavorDB/culinary
+Beras merah	0	0	0	1	1	earthy, nutty	ikan, sayuran hijau	tidak ada	FlavorDB/culinary
+Beras sorgum	0	0	0	1	1	nutty, earthy	bumbu kuat, santan	manis berlebihan	FlavorDB/culinary
+Tepung terigu	0	0	0	0	0	netral	semua	tidak ada	FlavorDB/culinary
+Tepung beras	0	0	0	0	0	netral, mild	gorengan, kue	tidak ada	FlavorDB/culinary
+Tepung sorgum	0	0	0	1	1	nutty, earthy	bumbu tradisional	manis ringan	FlavorDB/culinary
+Oat	0	0	0	1	1	earthy, mild	susu, buah, madu	terasi, ikan	FlavorDB/culinary
+Quinoa	0	0	0	1	1	nutty, mild	sayuran, alpukat	manis berat	FlavorDB/culinary
+Jagung manis	3	0	0	0	1	manis, buttery	mentega, cabai, keju	ikan asin	FlavorDB/culinary
+Mie instan	0	3	0	0	2	asin, umami	telur, sayuran, sambal	buah segar	FlavorDB/culinary
+Daging sapi	0	1	0	0	4	umami, savory	bawang, merica, kecap	manis berat, buah	FlavorDB/culinary
+Daging ayam	0	1	0	0	3	mild umami	bawang, kunyit, jahe, serai	terasi, durian	FlavorDB/culinary
+Daging kambing	0	1	0	0	3	gamey, umami	jintan, ketumbar, yogurt	santan manis	FlavorDB/culinary
+Ayam kampung	0	1	0	0	3	umami, rich	bumbu tradisional	terasi	FlavorDB/culinary
+Daging bebek	0	1	0	0	4	rich, gamey	bumbu bali, sambal	manis ringan	FlavorDB/culinary
+Telur ayam	0	1	0	0	3	savory, mild	bawang, sambal, kecap	terasi, durian	FlavorDB/culinary
+Telur bebek	0	1	0	0	3	rich, savory	bumbu kuat	manis	FlavorDB/culinary
+Ikan salmon	0	1	0	0	4	buttery, umami	lemon, dill, mentega	terasi, kecap manis	FlavorDB/culinary
+Ikan tuna	0	1	0	0	4	meaty, umami	kecap, jahe, wijen	santan	FlavorDB/culinary
+Ikan kembung	0	1	0	0	3	rich, oily	kunyit, bawang, cabai	susu, keju	FlavorDB/culinary
+Ikan lele	0	1	0	0	2	mild, flaky	sambal, bawang, jeruk nipis	santan manis	FlavorDB/culinary
+Udang	0	1	0	0	4	sweet umami	bawang, cabai, jeruk nipis	susu, keju	FlavorDB/culinary
+Cumi-cumi	0	1	0	0	3	mild umami, chewy	cabai, bawang, jeruk	santan manis	FlavorDB/culinary
+Tahu putih	0	0	0	0	1	netral, absorbs	bumbu apa saja, kecap, sambal	tidak ada	FlavorDB/culinary
+Tempe	0	0	0	1	3	nutty, umami, earthy	bawang, kecap, sambal, terasi	manis berat	FlavorDB/culinary
+Kedelai	0	0	0	1	3	beany, umami	kecap, bawang, jahe	manis, buah	FlavorDB/culinary
+Kacang merah	0	0	0	1	2	earthy, mild sweet	gula, santan, bawang	terasi, ikan	FlavorDB/culinary
+Kacang hijau	0	0	0	1	2	earthy, mild	gula, santan, pandan	terasi, ikan	FlavorDB/culinary
+Kacang tanah	1	1	0	1	2	nutty, earthy	cabai, kecap, gula, bawang	susu, keju	FlavorDB/culinary
+Kacang mete	1	1	0	0	2	buttery, nutty	bumbu kari, cabai	terasi	FlavorDB/culinary
+Bayam	0	0	0	1	1	earthy, mild	bawang, terasi, cabai	keju, susu	FlavorDB/culinary
+Kangkung	0	0	0	0	1	earthy, green	terasi, bawang, cabai	keju	FlavorDB/culinary
+Wortel	2	0	0	0	1	sweet, earthy	mentega, madu, jintan	terasi	FlavorDB/culinary
+Kentang	0	0	0	0	1	starchy, mild	mentega, bawang, keju	terasi, ikan	FlavorDB/culinary
+Kol/kubis	0	0	0	1	1	mild, peppery	bawang, cuka, gula	susu	FlavorDB/culinary
+Tomat	1	0	2	0	2	asam, umami	bawang, basil, kecap	susu, keju	FlavorDB/culinary
+Brokoli	0	0	0	1	1	green, mild bitter	bawang putih, mentega, keju	terasi, ikan asin	FlavorDB/culinary
+Terong	0	0	0	1	1	mild, earthy	bumbu bali, terasi, kecap	susu	FlavorDB/culinary
+Buncis	0	0	0	0	1	green, crisp	bawang, terasi, kelapa	susu	FlavorDB/culinary
+Cabai merah	0	0	1	0	0	pedas, asam	bawang, terasi, kecap	susu, keju, manis	FlavorDB/culinary
+Cabai rawit	0	0	1	0	0	sangat pedas	bawang, terasi	susu, keju, manis	FlavorDB/culinary
+Bawang merah	0	0	0	0	2	aromatic, umami	semua masakan Indonesia	tidak ada	FlavorDB/culinary
+Bawang putih	0	0	0	0	2	aromatic, pungent	semua masakan	tidak ada	FlavorDB/culinary
+Jamur tiram	0	0	0	0	3	umami, earthy	bawang, kecap, mentega	tidak ada	FlavorDB/culinary
+Pisang	3	0	0	0	0	manis, creamy	susu, cokelat, madu	ikan, terasi	FlavorDB/culinary
+Jeruk	2	0	3	0	0	asam, manis	salad, yogurt	susu (curdling)	FlavorDB/culinary
+Apel	2	0	1	0	0	manis, crisp	kayu manis, karamel	terasi, ikan	FlavorDB/culinary
+Mangga	3	0	1	0	0	tropis, manis	santan, sticky rice, cabai	terasi, ikan asin	FlavorDB/culinary
+Pepaya	2	0	0	0	0	manis, tropis	jeruk nipis, madu	ikan, terasi	FlavorDB/culinary
+Semangka	3	0	0	0	0	manis, segar	mint, jeruk nipis	ikan, terasi	FlavorDB/culinary
+Alpukat	1	0	0	0	1	creamy, mild	gula, susu, cokelat, jeruk	terasi, ikan asin	FlavorDB/culinary
+Durian	3	0	0	0	1	manis, creamy, pungent	santan, gula, ketan	alkohol, terasi, ikan asin	FlavorDB/culinary
+Jeruk nipis	0	0	3	0	0	asam, segar	ikan, udang, sambal, kecap	susu (curdling)	FlavorDB/culinary
+Strawberry	3	0	2	0	0	manis asam	krim, cokelat, yogurt	terasi, ikan	FlavorDB/culinary
+Jahe	0	0	0	1	1	pedas, aromatic	bawang, kunyit, madu, teh	tidak ada	FlavorDB/culinary
+Kunyit	0	0	0	1	1	earthy, pahit	jahe, bawang, santan, kelapa	manis berat	FlavorDB/culinary
+Lengkuas	0	0	0	1	1	aromatic, woody	jahe, kunyit, serai, santan	cokelat, kopi	FlavorDB/culinary
+Serai	0	0	0	0	0	citrus, segar	jahe, kunyit, santan, kelapa	tidak ada	FlavorDB/culinary
+Kemiri	1	0	0	1	1	nutty, creamy	bawang, cabai, kunyit	manis	FlavorDB/culinary
+Ketumbar	0	0	0	1	0	earthy, citrus	jintan, kunyit, bawang	manis	FlavorDB/culinary
+Jintan	0	0	0	1	0	warm, earthy	ketumbar, kunyit, merica	manis	FlavorDB/culinary
+Merica	0	0	0	2	0	pedas, pahit	semua masakan gurih	manis berat	FlavorDB/culinary
+Daun salam	0	0	0	0	1	aromatic, herbal	semua masakan berkuah	tidak ada	FlavorDB/culinary
+Daun pandan	1	0	0	0	0	vanilla, floral	santan, gula, ketan	terasi, ikan	FlavorDB/culinary
+Kecap manis	2	2	0	0	3	manis, umami, asin	semua masakan gurih	manis berat, buah	FlavorDB/culinary
+Kecap asin	0	3	0	0	3	asin, umami	semua masakan gurih	manis berat, buah	FlavorDB/culinary
+Saus sambal	0	2	1	0	1	pedas, asam, asin	gorengan, mie, nasi	manis, susu	FlavorDB/culinary
+Saus tomat	1	1	1	0	1	asam, manis, asin	gorengan, pasta, daging	tidak ada	FlavorDB/culinary
+Terasi udang	0	3	0	0	5	sangat umami, asin	bawang, cabai, jeruk nipis, nasi	susu, keju, manis, buah	FlavorDB/culinary
+Petis udang	1	2	0	0	4	manis, umami, asin	gado-gado, rujak, sate	susu	FlavorDB/culinary
+Tauco	0	2	0	0	3	asin, umami, fermented	bawang, cabai, sayuran	susu, buah	FlavorDB/culinary
+Madu	4	0	0	0	0	sangat manis, floral	teh, roti, yogurt, ayam	terasi, ikan asin, cabai	FlavorDB/culinary
+Gula pasir	4	0	0	0	0	manis murni	semua manisan, kue	terasi, ikan asin	FlavorDB/culinary
+Gula kelapa	3	0	0	1	0	manis, karamel, earthy	kue tradisional, kopi	ikan, terasi	FlavorDB/culinary
+Gula aren	3	0	0	1	0	manis, smoky, kopi	es, kue, kopi	ikan, terasi	FlavorDB/culinary
+Minyak goreng	0	0	0	0	0	netral	semua gorengan	tidak ada	FlavorDB/culinary
+Minyak kelapa	1	0	0	0	0	tropis, mild	kari, kue, gorengan	salad dressing	FlavorDB/culinary
+Minyak zaitun	0	0	0	1	1	fruity, peppery	salad, pasta, roti	masakan Indonesia tradisional	FlavorDB/culinary
+Minyak wijen	0	0	0	1	1	nutty, aromatic	mie, tumisan, marinasi	kue manis	FlavorDB/culinary
+Susu sapi	1	0	0	0	1	manis, creamy	sereal, kopi, kue	terasi, ikan asin, cabai	FlavorDB/culinary
+Keju cheddar	0	1	0	0	3	asin, umami, creamy	roti, pasta, burger	terasi, ikan asin	FlavorDB/culinary
+Mentega	1	0	0	0	1	creamy, rich	roti, kue, masakan	terasi	FlavorDB/culinary
+Yogurt	0	0	2	0	1	asam, creamy	buah, madu, granola	terasi, ikan asin	FlavorDB/culinary
+Santan	1	0	0	0	1	creamy, tropis	kari, gulai, kue, es	terasi (dosis tinggi)	FlavorDB/culinary
+Garam	0	5	0	0	0	sangat asin	semua masakan	manis murni	FlavorDB/culinary
+Teh hijau	0	0	0	2	1	astringent, herbal	madu, lemon, snack ringan	terasi, ikan asin	FlavorDB/culinary
+Kopi	0	0	0	3	1	pahit, roasty	gula, susu, cokelat	terasi, ikan asin	FlavorDB/culinary
+Cuka	0	0	4	0	0	sangat asam	gula, kecap (untuk balance)	susu	FlavorDB/culinary
+Asam jawa	0	0	3	0	1	asam, fruity	gula, cabai, garam (rujak)	susu	FlavorDB/culinary
+Es batu	0	0	0	0	0	netral, dingin	semua minuman	tidak ada	FlavorDB/culinary

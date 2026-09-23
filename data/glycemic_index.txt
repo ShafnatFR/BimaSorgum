@@ -1,0 +1,381 @@
+nama_bahan	gi_value	gi_kategori	kalori_per_100g	karbohidrat_per_100g	beban_glikemik	sumber
+Beras putih (long grain)	56	sedang	130	28	15.7	Atkinson et al. 2008
+Beras putih (medium grain)	64	sedang	130	28.2	18.0	University of Sydney GI Database
+Beras putih (short grain)	72	tinggi	130	28.7	20.7	University of Sydney GI Database
+Nasi putih (dimasak)	73	tinggi	130	28.2	20.6	Atkinson et al. 2008
+Beras merah	50	rendah	112	22.8	11.4	University of Sydney GI Database
+Nasi merah (dimasak)	55	sedang	112	22.8	12.5	Atkinson et al. 2008
+Beras hitam	42	rendah	125	25.6	10.8	TKPI 2018
+Beras ketan putih	86	tinggi	169	37.5	32.2	TKPI 2018
+Beras ketan hitam	82	tinggi	169	37.2	30.5	TKPI 2018
+Beras basmati	50	rendah	130	28	14.0	University of Sydney GI Database
+Beras jasmine	89	tinggi	130	28.6	25.5	University of Sydney GI Database
+Beras organik	54	rendah	115	23	12.4	TKPI 2018
+Beras pandan wangi	68	sedang	130	28.5	19.4	TKPI 2018
+Beras rojolele	70	tinggi	130	28	19.6	TKPI 2018
+Nasi uduk	78	tinggi	175	29	22.6	Estimasi TKPI 2018
+Nasi goreng	74	tinggi	228	30	22.2	Estimasi TKPI 2018
+Nasi kuning	76	tinggi	190	31	23.6	Estimasi TKPI 2018
+Lontong	71	tinggi	40	8.8	6.2	TKPI 2018
+Ketupat	73	tinggi	45	9.5	6.9	TKPI 2018
+Bihun (rice vermicelli)	61	sedang	109	25	15.2	University of Sydney GI Database
+Bihun goreng	67	sedang	170	26	17.4	Estimasi TKPI 2018
+Mie kuning (egg noodle)	55	sedang	138	25	13.8	University of Sydney GI Database
+Mie instan (Indomie)	59	sedang	350	52	30.7	Estimasi nutrisi label
+Mie goreng	62	sedang	220	30	18.6	Estimasi TKPI 2018
+Mie rebus	57	sedang	68	12	6.8	Estimasi TKPI 2018
+Kwetiau (flat rice noodle)	60	sedang	109	24	14.4	University of Sydney GI Database
+Soun (glass noodle)	39	rendah	80	19.5	7.6	TKPI 2018
+Pasta (spaghetti)	49	rendah	158	31	15.2	University of Sydney GI Database
+Makaroni	47	rendah	155	30.5	14.3	University of Sydney GI Database
+Sagu (tapioca starch)	86	tinggi	359	88	75.7	TKPI 2018
+Tepung terigu	70	tinggi	364	76	53.2	TKPI 2018
+Roti tawar putih	75	tinggi	265	49	36.8	University of Sydney GI Database
+Roti tawar gandum	65	sedang	247	46	29.9	University of Sydney GI Database
+Roti gandum utuh	53	rendah	247	43	22.8	University of Sydney GI Database
+Roti prata	72	tinggi	310	42	30.2	University of Sydney GI Database
+Roti canai	72	tinggi	308	41.5	29.9	Estimasi
+Roti soba	56	sedang	230	44	24.6	University of Sydney GI Database
+Oat (rolled oats)	55	sedang	389	66	36.3	University of Sydney GI Database
+Oatmeal (dimasak)	55	sedang	68	12	6.6	Atkinson et al. 2008
+Granola	54	rendah	471	64	34.6	University of Sydney GI Database
+Sereal gandum	55	sedang	370	73	40.1	University of Sydney GI Database
+Sereal jagung	81	tinggi	370	84	68.0	University of Sydney GI Database
+Sereal beras	82	tinggi	380	86	70.5	University of Sydney GI Database
+Ubi jalar (kuning)	63	sedang	86	20	12.6	TKPI 2018; Atkinson et al. 2008
+Ubi jalar (ungu)	55	sedang	90	20.7	11.4	TKPI 2018
+Ubi jalar (merah)	61	sedang	86	20.1	12.3	TKPI 2018
+Ubi jalar bakar	94	tinggi	95	21	19.7	University of Sydney GI Database
+Ubi jalar rebus	63	sedang	86	20	12.6	TKPI 2018
+Singkong (ubi kayu)	46	rendah	160	38	17.5	TKPI 2018
+Singkong rebus	55	sedang	146	35	19.2	TKPI 2018
+Singkong goreng	70	tinggi	270	40	28.0	Estimasi TKPI 2018
+Tape singkong	52	rendah	170	34	17.7	TKPI 2018
+Kentang rebus	78	tinggi	87	20	15.6	University of Sydney GI Database
+Kentang panggang	93	tinggi	93	21	19.5	University of Sydney GI Database
+Kentang goreng	75	tinggi	312	41	30.8	University of Sydney GI Database
+Kentang tumbuk (mashed)	83	tinggi	107	17	14.1	University of Sydney GI Database
+Keripik kentang (chips)	56	sedang	536	53	29.7	University of Sydney GI Database
+Talas rebus	52	rendah	108	26	13.5	TKPI 2018
+Gadung rebus	51	rendah	98	23	11.7	TKPI 2018
+Ganyong rebus	48	rendah	80	18.5	8.9	TKPI 2018
+Kacang tanah	14	rendah	567	16	2.2	University of Sydney GI Database
+Kacang kedelai (rebus)	16	rendah	147	11	1.8	University of Sydney GI Database
+Kacang hijau (rebus)	27	rendah	105	16.3	4.4	TKPI 2018
+Kacang merah (rebus)	24	rendah	127	22.8	5.5	University of Sydney GI Database
+Kacang hitam	30	rendah	132	24	7.2	University of Sydney GI Database
+Kacang polong	22	rendah	81	14.5	3.2	University of Sydney GI Database
+Kacang buncis (rebus)	21	rendah	31	5.5	1.2	TKPI 2018
+Kacang kapri	22	rendah	42	7.6	1.7	TKPI 2018
+Kacang lentil (rebus)	29	rendah	116	20	5.8	University of Sydney GI Database
+Kacang arab (chickpea)	28	rendah	164	27	7.6	University of Sydney GI Database
+Kacang lima	32	rendah	113	20	6.4	University of Sydney GI Database
+Tahu	15	rendah	76	1.9	0.3	TKPI 2018
+Tahu goreng	20	rendah	125	3.5	0.7	TKPI 2018
+Tempe	15	rendah	192	9.4	1.4	TKPI 2018
+Tempe goreng	20	rendah	270	12	2.4	Estimasi TKPI 2018
+Oncom	17	rendah	175	10	1.7	TKPI 2018
+Susu kedelai	18	rendah	39	3	0.5	TKPI 2018
+Tepung kacang hijau	36	rendah	345	62	22.3	TKPI 2018
+Bayam (rebus)	15	rendah	23	3.6	0.5	TKPI 2018
+Kangkung (rebus)	14	rendah	25	4.1	0.6	TKPI 2018
+Sawi hijau	12	rendah	19	2.2	0.3	TKPI 2018
+Sawi putih (petsai)	10	rendah	13	2.2	0.2	TKPI 2018
+Brokoli (rebus)	10	rendah	34	6.6	0.7	University of Sydney GI Database
+Kembang kol (rebus)	15	rendah	25	4.9	0.7	TKPI 2018
+Wortel (rebus)	39	rendah	35	8.2	3.2	University of Sydney GI Database
+Wortel (mentah)	16	rendah	41	9.6	1.5	University of Sydney GI Database
+Tomat	15	rendah	18	3.9	0.6	TKPI 2018
+Timun	15	rendah	12	2.2	0.3	TKPI 2018
+Terong	15	rendah	25	5.9	0.9	TKPI 2018
+Labu kuning (rebus)	51	rendah	20	4.9	2.5	TKPI 2018
+Labu siam (rebus)	20	rendah	26	5.7	1.1	TKPI 2018
+Labu botol	15	rendah	14	3.1	0.5	TKPI 2018
+Jagung muda (baby corn)	48	rendah	26	5.1	2.4	TKPI 2018
+Jagung manis (rebus)	52	rendah	96	21	10.9	TKPI 2018
+Jagung pipil	55	sedang	110	25	13.8	TKPI 2018
+Buncis (rebus)	21	rendah	31	5.5	1.2	TKPI 2018
+Kacang panjang	15	rendah	31	6.2	0.9	TKPI 2018
+Daun singkong (rebus)	15	rendah	34	6.1	0.9	TKPI 2018
+Daun katuk	12	rendah	45	7.5	0.9	TKPI 2018
+Pepaya muda (rebus)	20	rendah	23	5	1.0	TKPI 2018
+Nangka muda (gori)	22	rendah	42	10.5	2.3	TKPI 2018
+Kol/kubis	10	rendah	25	5.8	0.6	TKPI 2018
+Selada	12	rendah	15	2.9	0.3	TKPI 2018
+Pakcoy	12	rendah	13	2.2	0.3	TKPI 2018
+Jamur tiram	10	rendah	31	6.1	0.6	TKPI 2018
+Jamur kuping	10	rendah	38	7.3	0.7	TKPI 2018
+Jamur champignon	10	rendah	22	3.3	0.3	TKPI 2018
+Asparagus	15	rendah	20	3.9	0.6	TKPI 2018
+Pare	15	rendah	17	3.7	0.6	TKPI 2018
+Okra	15	rendah	33	7.5	1.1	TKPI 2018
+Seledri	15	rendah	14	3	0.5	TKPI 2018
+Daun bawang	15	rendah	30	7.3	1.1	TKPI 2018
+Bawang bombay	10	rendah	40	9.3	0.9	TKPI 2018
+Peterseli	15	rendah	36	6.3	0.9	TKPI 2018
+Apel	36	rendah	52	13.8	5.0	University of Sydney GI Database
+Apel hijau	34	rendah	52	13	4.4	University of Sydney GI Database
+Pisang (matang)	62	sedang	89	22.8	14.1	University of Sydney GI Database
+Pisang hijau (mentah)	30	rendah	89	22	6.6	University of Sydney GI Database
+Pisang raja	65	sedang	103	25	16.2	TKPI 2018
+Pisang ambon	58	sedang	92	23	13.3	TKPI 2018
+Pisang kepok	55	sedang	100	24.5	13.5	TKPI 2018
+Pisang tanduk	60	sedang	105	26	15.6	TKPI 2018
+Pisang nangka	55	sedang	98	24	13.2	TKPI 2018
+Jeruk (mandarin)	43	rendah	47	11.8	5.1	University of Sydney GI Database
+Jeruk bali	48	rendah	46	11	5.3	TKPI 2018
+Jeruk manis	42	rendah	45	11.2	4.7	TKPI 2018
+Jeruk nipis	20	rendah	17	5.4	1.1	TKPI 2018
+Mangga (matang)	51	rendah	65	15	7.7	University of Sydney GI Database
+Mangga muda	36	rendah	50	12.5	4.5	TKPI 2018
+Semangka	76	tinggi	30	7.6	5.8	University of Sydney GI Database
+Melon	65	sedang	34	8.2	5.3	TKPI 2018
+Pepaya	60	sedang	39	10	6.0	University of Sydney GI Database
+Nanas	59	sedang	50	13.1	7.7	University of Sydney GI Database
+Anggur	46	rendah	69	18	8.3	University of Sydney GI Database
+Stroberi	40	rendah	32	7.7	3.1	University of Sydney GI Database
+Blueberry	53	rendah	57	14.5	7.7	University of Sydney GI Database
+Jambu biji	12	rendah	68	14.3	1.7	TKPI 2018
+Jambu air	15	rendah	46	11.6	1.7	TKPI 2018
+Salak	37	rendah	82	20.2	7.5	TKPI 2018
+Rambutan	52	rendah	68	16.5	8.6	TKPI 2018
+Durian	47	rendah	147	27.1	12.7	TKPI 2018
+Kedondong	25	rendah	40	10.5	2.6	TKPI 2018
+Belimbing	29	rendah	31	6.7	1.9	TKPI 2018
+Duku	45	rendah	62	15	6.8	TKPI 2018
+Langsat	46	rendah	63	15.2	7.0	TKPI 2018
+Manggis	30	rendah	73	17.9	5.4	TKPI 2018
+Sirsak	28	rendah	66	16.8	4.7	TKPI 2018
+Alpukat	15	rendah	160	8.5	1.3	University of Sydney GI Database
+Kelapa muda	18	rendah	19	3.7	0.7	TKPI 2018
+Kurma	42	rendah	277	75	31.5	University of Sydney GI Database
+Kismis	64	sedang	299	79	50.6	University of Sydney GI Database
+Kurma (segar)	42	rendah	142	38	16.0	TKPI 2018
+Ceri	22	rendah	50	12.2	2.7	University of Sydney GI Database
+Pir	38	rendah	57	15.2	5.8	University of Sydney GI Database
+Kiwi	53	rendah	61	14.7	7.8	University of Sydney GI Database
+Persik (peach)	42	rendah	39	9.5	4.0	University of Sydney GI Database
+Plum	35	rendah	46	11.4	4.0	University of Sydney GI Database
+Nangka (matang)	55	sedang	95	23.5	12.9	TKPI 2018
+Markisa	30	rendah	97	23.4	7.0	TKPI 2018
+Tomat cherry	15	rendah	18	3.9	0.6	TKPI 2018
+Susu sapi (full cream)	31	rendah	61	4.8	1.5	University of Sydney GI Database
+Susu sapi (skim)	32	rendah	34	5	1.6	University of Sydney GI Database
+Susu kental manis	61	sedang	338	55	33.5	TKPI 2018
+Yoghurt (plain)	36	rendah	59	4.7	1.7	University of Sydney GI Database
+Yoghurt (buah)	38	rendah	105	17	6.5	University of Sydney GI Database
+Keju cheddar	0	rendah	403	1.3	0.0	TKPI 2018
+Keju mozarella	0	rendah	280	3.1	0.0	TKPI 2018
+Es krim vanila	61	sedang	207	24	14.6	University of Sydney GI Database
+Es krim cokelat	68	sedang	216	28	19.0	University of Sydney GI Database
+Daging ayam (tanpa kulit)	0	rendah	165	0	0.0	TKPI 2018
+Daging sapi (lean)	0	rendah	250	0	0.0	TKPI 2018
+Daging kambing	0	rendah	203	0	0.0	TKPI 2018
+Daging babi	0	rendah	242	0	0.0	TKPI 2018
+Ikan lele	0	rendah	145	0	0.0	TKPI 2018
+Ikan mas	0	rendah	126	0	0.0	TKPI 2018
+Ikan nila	0	rendah	96	0	0.0	TKPI 2018
+Ikan salmon	0	rendah	208	0	0.0	TKPI 2018
+Ikan tuna	0	rendah	130	0	0.0	TKPI 2018
+Ikan tongkol	0	rendah	108	0	0.0	TKPI 2018
+Ikan teri	0	rendah	131	0	0.0	TKPI 2018
+Ikan bandeng	0	rendah	154	0	0.0	TKPI 2018
+Ikan kakap	0	rendah	97	0	0.0	TKPI 2018
+Udang	0	rendah	85	0.2	0.0	TKPI 2018
+Cumi-cumi	0	rendah	78	1.6	0.0	TKPI 2018
+Kepiting	0	rendah	87	0.7	0.0	TKPI 2018
+Kerang	0	rendah	78	4.1	0.0	TKPI 2018
+Telur ayam (rebus)	0	rendah	155	1.1	0.0	TKPI 2018
+Telur ayam (goreng)	0	rendah	196	1.2	0.0	TKPI 2018
+Telur bebek	0	rendah	181	1.5	0.0	TKPI 2018
+Telur puyuh	0	rendah	158	0.6	0.0	TKPI 2018
+Pindang telur	0	rendah	165	1.3	0.0	TKPI 2018
+Abon sapi	35	rendah	425	25	8.8	TKPI 2018
+Dendeng sapi	30	rendah	390	18	5.4	TKPI 2018
+Sosis ayam	28	rendah	255	8	2.2	TKPI 2018
+Nugget ayam	40	rendah	250	18	7.2	TKPI 2018
+Bakso sapi	30	rendah	195	10	3.0	TKPI 2018
+Bakso ikan	28	rendah	125	8	2.2	TKPI 2018
+Gula pasir	68	sedang	387	100	68.0	University of Sydney GI Database
+Gula merah (aren)	65	sedang	375	95	61.8	TKPI 2018
+Gula kelapa	54	rendah	376	94	50.8	TKPI 2018
+Gula jagung (HFCS)	73	tinggi	281	76	55.5	University of Sydney GI Database
+Madu	58	sedang	304	82	47.6	University of Sydney GI Database
+Sirup jagung	78	tinggi	286	77	60.1	University of Sydney GI Database
+Tepung beras	85	tinggi	360	80	68.0	TKPI 2018
+Tepung tapioka	86	tinggi	358	88	75.7	TKPI 2018
+Tepung jagung (maizena)	85	tinggi	365	88	74.8	TKPI 2018
+Tepung ketan	80	tinggi	362	82	65.6	TKPI 2018
+Tepung roti (panko)	70	tinggi	367	72	50.4	TKPI 2018
+Minyak kelapa	0	rendah	862	0	0.0	TKPI 2018
+Minyak sawit	0	rendah	884	0	0.0	TKPI 2018
+Minyak kedelai	0	rendah	884	0	0.0	TKPI 2018
+Mentega	0	rendah	717	0.1	0.0	TKPI 2018
+Margarin	0	rendah	720	0.4	0.0	TKPI 2018
+Kecap manis	60	sedang	205	48	28.8	TKPI 2018
+Kecap asin	15	rendah	53	7.6	1.1	TKPI 2018
+Sambal	15	rendah	35	7.8	1.2	TKPI 2018
+Terasi	15	rendah	55	5	0.8	TKPI 2018
+Asam jawa	35	rendah	239	62	21.7	TKPI 2018
+Gado-gado	35	rendah	130	12	4.2	Estimasi TKPI 2018
+Soto ayam	40	rendah	68	7	2.8	Estimasi TKPI 2018
+Rendang	20	rendah	195	5	1.0	Estimasi TKPI 2018
+Gulai kambing	25	rendah	180	6	1.5	Estimasi TKPI 2018
+Sayur lodeh	30	rendah	55	7.5	2.2	Estimasi TKPI 2018
+Sayur asem	25	rendah	35	6	1.5	Estimasi TKPI 2018
+Sop buntut	15	rendah	95	4	0.6	Estimasi TKPI 2018
+Rawon	20	rendah	85	5	1.0	Estimasi TKPI 2018
+Soto betawi	40	rendah	120	8	3.2	Estimasi TKPI 2018
+Pecel lele	45	rendah	180	10	4.5	Estimasi TKPI 2018
+Bakwan (gorengan)	70	tinggi	230	30	21.0	Estimasi TKPI 2018
+Tempe goreng tepung	60	sedang	245	20	12.0	Estimasi TKPI 2018
+Tahu isi goreng	65	sedang	190	22	14.3	Estimasi TKPI 2018
+Pisang goreng	75	tinggi	230	35	26.2	Estimasi TKPI 2018
+Combro	62	sedang	200	28	17.4	Estimasi TKPI 2018
+Misro	65	sedang	195	30	19.5	Estimasi TKPI 2018
+Perkedel kentang	70	tinggi	180	22	15.4	Estimasi TKPI 2018
+Perkedel jagung	60	sedang	170	20	12.0	Estimasi TKPI 2018
+Rempeyek	55	sedang	340	25	13.8	TKPI 2018
+Kerupuk udang	75	tinggi	420	55	41.2	TKPI 2018
+Kerupuk kampung	80	tinggi	410	60	48.0	TKPI 2018
+Emping melinjo	30	rendah	368	40	12.0	TKPI 2018
+Keripik singkong	72	tinggi	450	65	46.8	TKPI 2018
+Keripik pisang	70	tinggi	420	58	40.6	TKPI 2018
+Keripik tempe	55	sedang	380	35	19.2	TKPI 2018
+Risol	65	sedang	180	22	14.3	Estimasi TKPI 2018
+Lumpia	58	sedang	175	20	11.6	Estimasi TKPI 2018
+Pastel	68	sedang	200	24	16.3	Estimasi TKPI 2018
+Es cendol/dawet	65	sedang	120	28	18.2	Estimasi TKPI 2018
+Es doger	62	sedang	135	25	15.5	Estimasi TKPI 2018
+Es campur	58	sedang	110	22	12.8	Estimasi TKPI 2018
+Kolak pisang	68	sedang	145	30	20.4	Estimasi TKPI 2018
+Kolak ubi	70	tinggi	150	32	22.4	Estimasi TKPI 2018
+Bubur sumsum	60	sedang	90	18	10.8	Estimasi TKPI 2018
+Bubur kacang hijau	45	rendah	110	20	9.0	Estimasi TKPI 2018
+Bubur ketan hitam	72	tinggi	125	26	18.7	Estimasi TKPI 2018
+Bubur ayam	55	sedang	75	12	6.6	Estimasi TKPI 2018
+Klepon	70	tinggi	160	30	21.0	Estimasi TKPI 2018
+Onde-onde	68	sedang	210	32	21.8	Estimasi TKPI 2018
+Lapis legit	65	sedang	380	45	29.2	Estimasi TKPI 2018
+Dadar gulung	60	sedang	175	25	15.0	Estimasi TKPI 2018
+Kue lapis	70	tinggi	310	42	29.4	Estimasi TKPI 2018
+Kue cubit	65	sedang	200	30	19.5	Estimasi TKPI 2018
+Serabi	62	sedang	155	25	15.5	Estimasi TKPI 2018
+Martabak manis	72	tinggi	310	45	32.4	Estimasi TKPI 2018
+Martabak telur	55	sedang	250	18	9.9	Estimasi TKPI 2018
+Pisang molen	70	tinggi	220	32	22.4	Estimasi TKPI 2018
+Teh tanpa gula	0	rendah	1	0.3	0.0	TKPI 2018
+Teh manis	55	sedang	40	10	5.5	Estimasi TKPI 2018
+Kopi hitam (tanpa gula)	0	rendah	2	0	0.0	TKPI 2018
+Kopi susu	40	rendah	55	8	3.2	Estimasi TKPI 2018
+Kopi instan (3in1)	55	sedang	75	14	7.7	Estimasi TKPI 2018
+Es teh manis	55	sedang	45	11	6.0	Estimasi TKPI 2018
+Es jeruk	50	rendah	55	13	6.5	Estimasi TKPI 2018
+Jus jeruk (kemasan)	57	sedang	45	10.4	5.9	University of Sydney GI Database
+Jus apel	41	rendah	46	11.3	4.6	University of Sydney GI Database
+Jus nanas	46	rendah	53	12.9	5.9	TKPI 2018
+Jus wortel	43	rendah	40	9	3.9	TKPI 2018
+Jus tomat	38	rendah	17	3.9	1.5	TKPI 2018
+Jus alpukat	20	rendah	95	8.5	1.7	TKPI 2018
+Susu cokelat (kotak)	43	rendah	72	12	5.2	University of Sydney GI Database
+Susu almond	25	rendah	17	0.6	0.1	TKPI 2018
+Air kelapa	15	rendah	19	3.7	0.6	TKPI 2018
+Air tebu	73	tinggi	60	16	11.7	TKPI 2018
+Es buah	50	rendah	85	18	9.0	Estimasi TKPI 2018
+Cincau	15	rendah	10	2.5	0.4	TKPI 2018
+Sarabba	55	sedang	85	15	8.2	Estimasi TKPI 2018
+Nasi + ayam goreng	72	tinggi	320	35	25.2	Estimasi
+Nasi + rendang	70	tinggi	350	30	21.0	Estimasi
+Nasi + ikan goreng	72	tinggi	280	32	23.0	Estimasi
+Nasi + telur dadar	68	sedang	250	28	19.0	Estimasi
+Nasi + sate ayam	65	sedang	290	25	16.2	Estimasi
+Nasi + gudeg	75	tinggi	310	40	30.0	Estimasi TKPI 2018
+Nasi + rawon	68	sedang	260	30	20.4	Estimasi
+Nasi + soto	66	sedang	200	28	18.5	Estimasi
+Nasi + gulai	70	tinggi	300	32	22.4	Estimasi
+Burger daging	66	sedang	250	30	19.8	University of Sydney GI Database
+Pizza (keju)	60	sedang	266	33	19.8	University of Sydney GI Database
+Sandwich roti putih	70	tinggi	250	35	24.5	University of Sydney GI Database
+Hot dog	62	sedang	290	24	14.9	University of Sydney GI Database
+Kismis (raisin)	64	sedang	299	79	50.6	University of Sydney GI Database
+Kurma medjool	42	rendah	277	75	31.5	University of Sydney GI Database
+Apel kering	38	rendah	243	65	24.7	TKPI 2018
+Mangga kering	50	rendah	319	78	39.0	TKPI 2018
+Pisang kering (chips)	65	sedang	340	58	37.7	TKPI 2018
+Kacang mete	22	rendah	553	30	6.6	TKPI 2018
+Kacang almond	0	rendah	579	22	0.0	TKPI 2018
+Kacang kenari	15	rendah	654	14	2.1	TKPI 2018
+Kacang hazelnut	15	rendah	628	17	2.5	TKPI 2018
+Biji wijen	35	rendah	573	23	8.1	TKPI 2018
+Biji bunga matahari	35	rendah	584	20	7.0	TKPI 2018
+Biji labu	10	rendah	559	11	1.1	TKPI 2018
+Gudeg	65	sedang	135	22	14.3	Estimasi TKPI 2018
+Nasi liwet	74	tinggi	180	30	22.2	Estimasi TKPI 2018
+Nasi timbel	73	tinggi	175	29	21.2	Estimasi TKPI 2018
+Nasi krawu	75	tinggi	200	32	24.0	Estimasi TKPI 2018
+Nasi campur Bali	70	tinggi	250	30	21.0	Estimasi TKPI 2018
+Nasi Padang	75	tinggi	350	38	28.5	Estimasi TKPI 2018
+Bubur manado (tinutuan)	55	sedang	70	14	7.7	Estimasi TKPI 2018
+Papeda	70	tinggi	45	10	7.0	TKPI 2018
+Tiwul	62	sedang	150	34	21.1	TKPI 2018
+Gatot	60	sedang	145	33	19.8	TKPI 2018
+Jenang/jenang sumsum	65	sedang	110	22	14.3	Estimasi TKPI 2018
+Dodol	72	tinggi	350	65	46.8	TKPI 2018
+Wajik	75	tinggi	340	62	46.5	TKPI 2018
+Getuk lindri	62	sedang	175	38	23.6	TKPI 2018
+Talam	60	sedang	120	22	13.2	Estimasi TKPI 2018
+Nagasari	55	sedang	130	24	13.2	Estimasi TKPI 2018
+Putu mayang	58	sedang	115	22	12.8	Estimasi TKPI 2018
+Bika ambon	70	tinggi	290	45	31.5	Estimasi TKPI 2018
+Lemper	62	sedang	155	25	15.5	Estimasi TKPI 2018
+Arem-arem	60	sedang	140	22	13.2	Estimasi TKPI 2018
+Tahu sumedang	45	rendah	180	12	5.4	Estimasi TKPI 2018
+Batagor	58	sedang	200	22	12.8	Estimasi TKPI 2018
+Siomay	50	rendah	120	15	7.5	Estimasi TKPI 2018
+Pempek	62	sedang	180	22	13.6	Estimasi TKPI 2018
+Otak-otak	45	rendah	140	12	5.4	Estimasi TKPI 2018
+Cireng	70	tinggi	200	28	19.6	Estimasi TKPI 2018
+Cilok	68	sedang	160	25	17.0	Estimasi TKPI 2018
+Cimol	65	sedang	175	24	15.6	Estimasi TKPI 2018
+Tahu bulat goreng	60	sedang	185	15	9.0	Estimasi TKPI 2018
+Mendoan	62	sedang	195	20	12.4	Estimasi TKPI 2018
+Whey protein	25	rendah	380	15	3.8	TKPI 2018
+Protein bar	40	rendah	350	38	15.2	TKPI 2018
+Spirulina	15	rendah	290	24	3.6	TKPI 2018
+Cornflakes	81	tinggi	357	84	68.0	University of Sydney GI Database
+Muesli	56	sedang	340	62	34.7	University of Sydney GI Database
+Pretzel	83	tinggi	338	68	56.4	University of Sydney GI Database
+Crackers (plain)	70	tinggi	421	74	51.8	University of Sydney GI Database
+Biskuit Marie	70	tinggi	400	72	50.4	TKPI 2018
+Biskuit Roma	72	tinggi	410	74	53.3	TKPI 2018
+Roti maryam	70	tinggi	320	42	29.4	Estimasi TKPI 2018
+Roti bakar	76	tinggi	275	50	38.0	Estimasi TKPI 2018
+Pizza (deep dish)	62	sedang	290	36	22.3	University of Sydney GI Database
+Tortilla (flour)	68	sedang	312	52	35.4	University of Sydney GI Database
+Popcorn (plain)	65	sedang	375	74	48.1	University of Sydney GI Database
+Kacang rebus	14	rendah	140	8	1.1	TKPI 2018
+Kacang goreng	20	rendah	580	18	3.6	TKPI 2018
+Ikan asin goreng	0	rendah	250	0	0.0	TKPI 2018
+Ikan bakar	0	rendah	140	0	0.0	TKPI 2018
+Pepes ikan	15	rendah	120	3	0.5	Estimasi TKPI 2018
+Pindang ikan	0	rendah	95	0.5	0.0	TKPI 2018
+Ikan presto	0	rendah	105	0	0.0	TKPI 2018
+Udang goreng tepung	45	rendah	200	15	6.8	Estimasi TKPI 2018
+Cumi goreng tepung	42	rendah	195	14	5.9	Estimasi TKPI 2018
+Sambal terasi	15	rendah	40	8	1.2	TKPI 2018
+Sambal matah	15	rendah	60	5	0.8	TKPI 2018
+Sambal bajak	18	rendah	55	9	1.6	TKPI 2018
+Sambal kacang	30	rendah	120	10	3.0	TKPI 2018
+Karedok	20	rendah	45	6	1.2	Estimasi TKPI 2018
+Lalapan (mentah)	12	rendah	25	4	0.5	TKPI 2018
+Urap sayur	25	rendah	75	8	2.0	Estimasi TKPI 2018
+Rice noodles (cooked)	61	sedang	109	25	15.2	University of Sydney GI Database
+Udon noodles	55	sedang	127	22	12.1	University of Sydney GI Database
+Ramen noodles	58	sedang	138	27	15.7	University of Sydney GI Database
+Soba noodles	46	rendah	99	21	9.7	University of Sydney GI Database
+Barley (pearl)	28	rendah	123	28	7.8	University of Sydney GI Database
+Quinoa	53	rendah	120	21	11.1	University of Sydney GI Database
+Buckwheat	54	rendah	343	72	38.9	University of Sydney GI Database
+Millet	71	tinggi	119	23	16.3	University of Sydney GI Database
+Couscous	65	sedang	112	23	14.9	University of Sydney GI Database
+Bulgur	48	rendah	83	19	9.1	University of Sydney GI Database

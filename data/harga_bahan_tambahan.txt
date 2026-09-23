@@ -1,0 +1,154 @@
+nama_bahan	satuan	harga_rp	harga_per_gram	sumber	tanggal_data
+Tepung sorgum	kg	60000	60	biggo.id/CV Timurasa Indonesia	2026-09
+Biji sorgum	kg	25000	25	selina-wamucii.com (Indonesia retail range)	2026-08
+Beras sorgum	kg	32500	32.5	biggo.id/Lazada Indonesia	2026-09
+Santan kelapa (segar)	liter	15000	15	hargabulanini.com/pasar tradisional	2026-08
+Gula kelapa	kg	21500	21.5	rri.co.id (Blitar pasar)	2026-02
+Daun pandan	kg	22800	22.8	pasarsegar.com	2026-08
+Ragi (Fermipan)	kg	110000	110	biggo.id/Fermipan 500g	2026-08
+Vanili bubuk (butterfly brand)	kg	40000	40	biggo.id (Vanili Crystal 1kg)	2026-08
+Bubuk kakao (coklat bubuk)	kg	30000	30	biggo.id/Lazada repack	2026-05
+Susu UHT (Indomilk Full Cream)	liter	15737	15.74	hargabulanini.com/Superindo	2026-07
+Keju cheddar (Kraft)	kg	163500	163.5	biggo.id/Shopee (Kraft 2kg)	2026-05
+Keju mozzarella	kg	120000	120	tokopedia.com retail average	2026-08
+Minyak kelapa (tradisional)	liter	25000	25	harga.web.id retail range	2026-07
+Bubuk kopi (robusta)	kg	80000	80	koffiendo.com/otten coffee	2026-06
+Kurma (Ajwa/Medjool)	kg	60000	60	tokopedia.com retail average	2026-08
+Es batu kristal	kg	1200	1.2	shopee.co.id (20kg bag)	2026-09
+Kecap manis (Bango 275ml)	kg	103818	103.8	biggo.id (Rp28.550/275ml)	2026-05
+Kecap asin (ABC 620ml)	kg	20161	20.2	nyonyor.com/Indomaret (Rp12.500/620ml)	2026-07
+Terasi udang	kg	45000	45	pasar tradisional (estimated)	2026-08
+Sambal (ABC botol 135ml)	kg	51111	51.1	ebelanja.id (Rp6.900/135ml)	2026-08
+Bayam	kg	18000	18	pasar tradisional/Jawa	2026-08
+Wortel	kg	15000	15	mistar.id (Pasar Dwikora)	2026-09
+Kol (kubis)	kg	10000	10	pasar tradisional (Jawa average)	2026-08
+Kentang	kg	15000	15	pasar tradisional/PIHPS	2026-09
+Kentang hijau (for toxicity data)	kg	15000	15	sama dengan kentang biasa	2026-09
+Jamur tiram	kg	35100	35.1	biggo.id/Shopee	2026-05
+Kacang merah (kering)	kg	47000	47	biggo.id (range Rp37k-60k)	2026-08
+Kacang mete (mentah)	kg	172000	172	shopee.co.id (Wonogiri)	2026-05
+Alpukat	kg	17000	17	zonakeren.com (rata-rata nasional)	2026-09
+Durian (Musang King)	kg	60000	60	detikfood.com (Rp40k-80k)	2026-01
+Jeruk nipis	kg	9000	9	nyonyor.com (rata-rata kota besar)	2026-07
+Ikan salmon (fillet)	kg	150000	150	biggo.id (Rp72k-189k range)	2026-05
+Ikan tenggiri	kg	90000	90	rri.co.id/meatfish.com (Rp70k-120k)	2026-08
+Udang vaname segar	kg	120000	120	biggo.id/hargabulanini.com	2026-08
+Santan Bubuk (Kara 200g)	sachet	13500	67.50	pasar modern	2026-08
+Santan Kotak (Kara 200ml)	kotak	8500	42.50	pasar modern	2026-08
+Minyak Zaitun (Borges 500ml)	botol	95000	190	pasar modern	2026-08
+Minyak Wijen (500ml)	botol	65000	130	toko bahan masak	2026-08
+Minyak Canola (500ml)	botol	45000	90	pasar modern	2026-08
+Minyak Bunga Matahari (500ml)	botol	40000	80	pasar modern	2026-08
+Cuka Masak (500ml)	botol	12000	24	pasar modern	2026-08
+Garam Laut (250g)	pack	8000	32	toko bahan masak	2026-08
+Garam Himalaya (250g)	pack	25000	100	toko bahan masak	2026-08
+Kunyit Bubuk (50g)	sachet	5000	100	pasar modern	2026-08
+Ketumbar Bubuk (50g)	sachet	5000	100	pasar modern	2026-08
+Jintan Bubuk (50g)	sachet	8000	160	pasar modern	2026-08
+Merica Bubuk (50g)	sachet	12000	240	pasar modern	2026-08
+Pala Bubuk (25g)	sachet	10000	400	toko bahan masak	2026-08
+Kayu Manis Bubuk (50g)	sachet	10000	200	toko bahan masak	2026-08
+Bawang Bubuk (50g)	sachet	8000	160	pasar modern	2026-08
+Cabe Bubuk (50g)	sachet	7000	140	pasar modern	2026-08
+Paprika Bubuk (50g)	sachet	15000	300	toko bahan masak	2026-08
+Oregano Kering (25g)	sachet	18000	720	toko bahan masak	2026-08
+Basil Kering (25g)	sachet	18000	720	toko bahan masak	2026-08
+Thyme Kering (25g)	sachet	20000	800	toko bahan masak	2026-08
+Rosemary Kering (25g)	sachet	20000	800	toko bahan masak	2026-08
+Cengkeh Bubuk (25g)	sachet	12000	480	toko bahan masak	2026-08
+Bunga Lawang/Pekak (50g)	pack	15000	300	toko bahan masak	2026-08
+Kapulaga (50g)	pack	25000	500	toko bahan masak	2026-08
+Tauco (300g)	botol	12000	40	pasar modern	2026-08
+Kecap Asin (Kikkoman 150ml)	botol	35000	233.33	pasar modern	2026-08
+Mustard (Heinz 250ml)	botol	42000	168	pasar modern	2026-08
+Terasi (ABC 100g)	pack	15000	150	pasar modern	2026-08
+Petis Madura (250g)	botol	12000	48	pasar tradisional	2026-08
+Indomie Goreng (isi 5)	pack	14500	2900	econiq.id/marketplace	2026-09
+Mie Sedaap Goreng (isi 5)	pack	14000	2800	econiq.id/marketplace	2026-09
+Supermi Ayam Bawang (isi 5)	pack	10500	2100	econiq.id/marketplace	2026-09
+Mi Telur (Bihun Juhi 250g)	pack	8000	32	pasar modern	2026-08
+Bihun Jagung (250g)	pack	6000	24	pasar modern	2026-08
+Kwetiau Kering (250g)	pack	8000	32	pasar modern	2026-08
+Spageti (Barilla 500g)	pack	28000	56	pasar modern	2026-08
+Makaroni (500g)	pack	15000	30	pasar modern	2026-08
+Udon Kering (200g)	pack	22000	110	pasar modern	2026-08
+Rice Noodle (200g)	pack	12000	60	pasar modern	2026-08
+Sarden ABC (155g)	kaleng	12500	80.65	pasar modern	2026-08
+Tuna Ayam Brand (170g)	kaleng	22000	129.41	pasar modern	2026-08
+Kornet Pronas (198g)	kaleng	28000	141.41	pasar modern	2026-08
+Kacang Kaleng Baked Beans	kaleng	18000	90	pasar modern	2026-08
+Jamur Kaleng (champignon 400g)	kaleng	25000	62.5	pasar modern	2026-08
+Kacang Almond (250g)	pack	55000	220	pasar modern/toko kacang	2026-08
+Kacang Walnut (250g)	pack	75000	300	toko kacang	2026-08
+Kacang Pistachio (250g)	pack	65000	260	toko kacang	2026-08
+Kacang Macadamia (250g)	pack	85000	340	toko kacang	2026-08
+Kacang Tanah (500g)	pack	18000	36	pasar modern	2026-08
+Wijen Putih (200g)	pack	18000	90	toko bahan masak	2026-08
+Wijen Hitam (200g)	pack	22000	110	toko bahan masak	2026-08
+Biji Bunga Matahari (200g)	pack	18000	90	toko kacang	2026-08
+Biji Labu (200g)	pack	22000	110	toko kacang	2026-08
+Chia Seed (200g)	pack	45000	225	toko health food	2026-08
+Flaxseed (200g)	pack	35000	175	toko health food	2026-08
+Bubuk Kakao (Tulip 100g)	pack	25000	250	toko bahan kue	2026-08
+Dark Cooking Chocolate (250g)	pack	35000	140	toko bahan kue	2026-08
+Cokelat Masak Compound (250g)	pack	28000	112	toko bahan kue	2026-08
+Gula Aren (250g)	pack	10000	40	pasar tradisional	2026-08
+Gula Batu (200g)	pack	12000	60	pasar modern	2026-08
+Kopi Bubuk Robusta (500g)	pack	45000	90	koffiendo.com	2026-06
+Kopi Instan Kapal Api (sachet)	sachet	1500	1500	pasar modern	2026-08
+Kopi Instan Torabika (sachet)	sachet	2000	2000	pasar modern	2026-08
+Teh Celup Sariwangi (25s)	kotak	12000	480	pasar modern	2026-08
+Teh Hijau Tong Tji (25s)	kotak	15000	600	pasar modern	2026-08
+Matcha Bubuk (50g)	pack	35000	700	toko bahan kue	2026-08
+Cokelat Bubuk Milo (240ml)	kotak	8000	33.33	pasar modern	2026-08
+Cokelat Bubuk Tango (sachet)	sachet	3500	116.67	pasar modern	2026-08
+Sirup Marjan Lemon (460ml)	botol	27300	59.35	Indomaret	2026-08
+Sirup ABC Cocopandan (520ml)	botol	25000	48.08	Indomaret	2026-08
+Kurma Ajwa (500g)	pack	45000	90	tokopedia.com	2026-08
+Kurma Medjool (500g)	pack	55000	110	tokopedia.com	2026-08
+Kismis (200g)	pack	22000	110	pasar modern	2026-08
+Cranberry Kering (200g)	pack	45000	225	toko health food	2026-08
+Nugget Ayam So Good (400g)	pack	38000	95	pasar modern	2026-08
+Sosis So Nice (300g)	pack	25000	83.33	pasar modern	2026-08
+Bakso Sapi (500g beku)	pack	35000	70	pasar modern	2026-08
+Tempura (500g beku)	pack	30000	60	pasar modern	2026-08
+Dumpling Ayam (500g beku)	pack	35000	70	pasar modern	2026-08
+Fish Fillet (500g beku)	pack	40000	80	pasar modern	2026-08
+Tahu Sutra (kotak 250g)	kotak	5500	22	pasar modern	2026-08
+Tempe (papan 400g)	papan	5000	12.50	pasar tradisional	2026-08
+Oncom (papan 200g)	papan	4000	20	pasar tradisional Jawa	2026-08
+Quinoa (500g)	pack	65000	130	toko health food	2026-08
+Oat (Quaker 500g)	pack	35000	70	pasar modern	2026-08
+Barley (500g)	pack	30000	60	toko health food	2026-08
+Millet (500g)	pack	25000	50	toko health food	2026-08
+Susu Almond (1L)	kotak	55000	55	pasar modern	2026-08
+Susu Oat (1L)	kotak	50000	50	pasar modern	2026-08
+Susu Kedelai (1L)	kotak	15000	15	pasar modern	2026-08
+Keju Parmesan (100g)	pack	35000	350	pasar modern	2026-08
+Cream Cheese (200g)	pack	32000	160	pasar modern	2026-08
+Mozzarella (200g)	pack	28000	140	pasar modern	2026-08
+Pisang Raja	kg	18000	18	pasar tradisional Jawa	2026-08
+Pisang Ambon	kg	15000	15	pasar tradisional Jawa	2026-08
+Pisang Tanduk	kg	12000	12	pasar tradisional Jawa	2026-08
+Mangga Gedong Gincu	kg	35000	35	pasar tradisional Jawa	2026-08
+Mangga Harum Manis	kg	20000	20	pasar tradisional Jawa	2026-08
+Salak Pondoh	kg	18000	18	pasar tradisional Jawa	2026-08
+Rambutan	kg	15000	15	pasar tradisional Jawa	2026-08
+Jambu Biji	kg	10000	10	pasar tradisional Jawa	2026-08
+Nanas Madu	kg	10000	10	pasar tradisional Jawa	2026-08
+Belimbing	kg	12000	12	pasar tradisional Jawa	2026-08
+Kedondong	kg	8000	8	pasar tradisional Jawa	2026-08
+Markisa	kg	20000	20	pasar tradisional Jawa	2026-08
+Sirsak	kg	15000	15	pasar tradisional Jawa	2026-08
+Buah Naga	kg	25000	25	pasar tradisional Jawa	2026-08
+Kiwi	kg	55000	55	pasar modern	2026-08
+Pear (apel Korea)	kg	50000	50	pasar modern	2026-08
+Peach	kg	45000	45	pasar modern	2026-08
+Plum	kg	50000	50	pasar modern	2026-08
+Ceri	kg	120000	120	pasar modern	2026-08
+Tomat Cherry	kg	35000	35	pasar modern	2026-08
+Baby Corn	kg	20000	20	pasar modern	2026-08
+Baby Carrot	kg	25000	25	pasar modern	2026-08
+Asparagus	kg	80000	80	pasar modern	2026-08
+Zucchini	kg	35000	35	pasar modern	2026-08
+Buncis Import	kg	40000	40	pasar modern	2026-08

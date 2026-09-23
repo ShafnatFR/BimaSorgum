@@ -428,125 +428,40 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
           <div className="md:col-span-7 bg-white rounded-2xl p-5 md:p-6 shadow-[0px_4px_12px_rgba(45,75,55,0.08)] border border-[rgba(45,75,55,0.1)] flex flex-col justify-between">
             <div>
               <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-base sm:text-lg font-bold text-[#1a1c1b]">Ingredients</h3>
-                  {/* Tab toggle */}
-                  <div className="flex items-center bg-[#f4f4f2] rounded-full border border-[#e2e3e1] overflow-hidden">
-                    <button
-                      onClick={() => setIngredientsTab('takaran')}
-                      className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                        ingredientsTab === 'takaran'
-                          ? 'bg-[#163422] text-white'
-                          : 'text-[#727972] hover:text-[#424843]'
-                      }`}
-                    >
-                      Takaran
-                    </button>
-                    <button
-                      onClick={() => setIngredientsTab('belanja')}
-                      className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                        ingredientsTab === 'belanja'
-                          ? 'bg-[#163422] text-white'
-                          : 'text-[#727972] hover:text-[#424843]'
-                      }`}
-                    >
-                      Daftar Belanja
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Servings Multiplier Switcher */}
-                <div className="flex items-center gap-1 bg-[#f4f4f2] p-1 rounded-xl border border-[#e2e3e1]">
-                  <span className="text-[11px] text-[#727972] font-semibold pl-1.5 pr-0.5">Porsi:</span>
-                  {[1, 2, 3, 4].map((mult) => (
-                    <button
-                      key={mult}
-                      onClick={() => setServingsMultiplier(mult)}
-                      className={`w-7 h-6 sm:w-8 sm:h-7 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
-                        servingsMultiplier === mult
-                          ? 'bg-[#163422] text-white shadow-xs'
-                          : 'text-[#424843] hover:bg-[#e2e3e1]'
-                      }`}
-                      title={`${mult}x Porsi`}
-                    >
-                      {mult}
-                    </button>
-                  ))}
-                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#1a1c1b]">Ingredients</h3>
               </div>
 
-              {ingredientsTab === 'takaran' ? (
-                /* Takaran view: name + amount, no price */
-                <ul className="space-y-1">
-                  {recipe.ingredients.map((ing, idx) => {
-                    const isChecked = checkedIngredients.includes(idx);
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => toggleIngredientCheck(idx)}
-                        className={`flex items-center justify-between py-2.5 px-2.5 rounded-xl border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
-                          isChecked ? 'opacity-40 line-through' : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
-                            <img
-                              alt={ing.name}
-                              className="w-full h-full object-cover"
-                              src={getIngredientThumbnail(ing.name, idx)}
-                              referrerPolicy="no-referrer"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-                              }}
-                            />
-                          </div>
-
-                          <div>
-                            <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
-                          </div>
-                        </div>
-
-                        {ing.amount && (
-                          <span className="text-xs font-semibold text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
-                            {ing.amount}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                /* Daftar Belanja view: name + amount + price table */
-                <div>
-                  <table className="w-full text-xs sm:text-sm">
-                    <thead>
-                      <tr className="border-b border-[#e2e3e1]">
-                        <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Bahan</th>
-                        <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Jumlah</th>
-                        <th className="text-right font-bold text-[#424843] pb-1.5">Harga</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recipe.ingredients.map((ing, idx) => (
-                        <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
-                          <td className="py-1.5 pr-2 text-[#1a1c1b] font-medium">{ing.name}</td>
-                          <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                          <td className="py-1.5 text-right font-semibold text-[#163422]">
-                            Rp {(ing.estimatedPrice * servingsMultiplier).toLocaleString('id-ID')}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              <ul className="space-y-1">
+                {recipe.ingredients.map((ing, idx) => {
+                  const isChecked = checkedIngredients.includes(idx);
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => toggleIngredientCheck(idx)}
+                      className={`flex items-center gap-3 py-2.5 px-2.5 rounded-xl border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
+                        isChecked ? 'opacity-40 line-through' : ''
+                      }`}
+                    >
+                      <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
+                        <img
+                          alt={ing.name}
+                          className="w-full h-full object-cover"
+                          src={getIngredientThumbnail(ing.name, idx)}
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
+                          }}
+                        />
+                      </div>
+                      <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#e2e3e1] flex items-center justify-between text-xs text-[#424843]">
+            <div className="mt-4 pt-3 border-t border-[#e2e3e1] text-xs text-[#424843]">
               <span>* Centang bahan yang sudah tersedia di dapur</span>
-              <span className="font-bold text-[#163422]">
-                Total: Rp {(recipe.estimatedCost * servingsMultiplier).toLocaleString('id-ID')}
-              </span>
             </div>
           </div>
         </section>

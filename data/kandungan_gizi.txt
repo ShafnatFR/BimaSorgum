@@ -1,0 +1,111 @@
+nama_bahan	satuan	kalori_kkal	protein_g	lemak_g	karbohidrat_g	serat_g	natrium_mg	kalsium_mg	besi_mg	vitamin_c_mg	sumber
+Beras putih (matang)	100g	130	2.7	0.3	28.2	0.4	1	10	0.2	0	USDA 11486
+Beras merah (matang)	100g	112	2.3	0.8	23.5	1.8	4	10	0.4	0	USDA 11487
+Beras sorgum (matang)	100g	120	3.5	1.1	25.0	2.0	3	5	1.5	0	USDA/TKPI
+Tepung terigu	100g	364	10.3	1.0	76.3	2.7	2	15	1.2	0	USDA 20481
+Tepung beras	100g	366	5.6	0.6	80.1	0.4	0	6	0.4	0	USDA 20132
+Tepung sorgum	100g	339	10.4	3.5	72.0	3.9	3	12	3.4	0	USDA/TKPI
+Tepung tapioka	100g	358	0.2	0.0	88.7	0.9	1	20	0.6	0	USDA 20054
+Tepung maizena	100g	381	0.3	0.1	91.3	0.7	9	2	0.5	0	USDA 20068
+Oat (rolled)	100g	389	16.9	6.9	66.3	10.6	2	54	4.7	0	USDA 08120
+Quinoa (matang)	100g	120	4.4	1.9	21.3	2.8	7	17	1.5	0	USDA 16887
+Jagung manis	100g	86	3.3	1.4	19.0	2.7	15	2	0.5	7	USDA 11168
+Mie instan (matang)	100g	455	9.9	17.8	61.6	2.0	1230	22	3.6	0	USDA/TKPI
+Daging sapi (tanpa lemak)	100g	250	26.0	15.0	0	0	72	12	2.6	0	USDA 13987
+Daging ayam (dada)	100g	165	31.0	3.6	0	0	74	15	1.0	0	USDA 05062
+Daging kambing	100g	143	27.1	3.0	0	0	82	17	2.8	0	USDA 17026
+Telur ayam (1 butir 50g)	100g	155	13.0	11.0	1.1	0	124	56	1.8	0	USDA 01129
+Ikan salmon	100g	208	20.4	13.4	0	0	59	12	0.8	0	USDA 15076
+Ikan tuna	100g	144	23.3	4.9	0	0	39	18	1.3	0	USDA 15073
+Ikan kembung	100g	205	18.6	13.9	0	0	83	22	1.5	0	USDA 15046
+Ikan lele	100g	95	16.4	2.8	0	0	48	42	0.8	0	USDA 15009
+Udang	100g	99	24.0	0.3	0.2	0	111	70	0.5	0	USDA 15149
+Cumi-cumi	100g	92	15.6	1.4	3.1	0	44	32	0.7	0	USDA 15169
+Daging sapi slice	100g	250	26.0	15.0	0	0	72	12	2.6	0	USDA 13987
+Ayam fillet dada	100g	165	31.0	3.6	0	0	74	15	1.0	0	USDA 05062
+Ikan bandeng	100g	147	20.0	7.0	0	0	65	20	1.2	0	TKPI
+Ikan tongkol	100g	144	23.3	4.9	0	0	39	18	1.3	0	USDA 15073
+Ikan tenggiri	100g	158	19.0	8.5	0	0	55	15	1.0	0	TKPI
+Ikan lele	100g	95	16.4	2.8	0	0	48	42	0.8	0	USDA 15009
+Telur bebek	100g	185	13.0	14.0	1.5	0	146	64	3.9	0	USDA 01130
+Telur puyuh	100g	158	13.1	11.1	0.6	0	141	64	3.7	0	USDA 01140
+Tahu putih	100g	76	8.1	4.8	1.9	0.3	7	350	5.4	0	USDA 16158
+Tempe	100g	192	20.8	11.0	7.6	0.9	9	111	2.7	0	USDA 16161
+Kedelai (matang)	100g	173	16.6	9.0	9.9	6.0	2	102	5.1	1.7	USDA 16109
+Kacang merah (matang)	100g	127	8.7	0.5	22.8	6.4	2	28	2.9	1.2	USDA 16033
+Kacang hijau (matang)	100g	105	7.0	0.4	19.2	5.3	4	27	2.1	1.0	USDA 16081
+Kacang tanah	100g	567	25.8	49.2	16.1	8.5	18	92	4.6	0	USDA 16087
+Kacang mete	100g	553	18.2	43.9	30.2	3.3	12	37	6.7	0	USDA 12087
+Bayam	100g	23	2.9	0.4	3.6	2.2	79	99	2.7	28	USDA 11457
+Kangkung	100g	19	2.6	0.2	3.1	2.1	78	70	2.5	55	TKPI
+Wortel	100g	41	0.9	0.2	9.6	2.8	69	33	0.3	6	USDA 11124
+Kentang	100g	77	2.1	0.1	17.5	2.2	6	12	0.8	20	USDA 11362
+Kol/kubis	100g	25	1.3	0.1	5.8	2.5	18	40	0.5	37	USDA 11109
+Tomat	100g	18	0.9	0.2	3.9	1.2	5	10	0.3	14	USDA 11529
+Brokoli	100g	34	2.8	0.4	6.6	2.6	33	47	0.7	89	USDA 11090
+Terong	100g	25	1.0	0.2	5.9	3.0	2	9	0.2	2	USDA 11209
+Buncis	100g	31	1.8	0.1	7.0	3.4	6	37	1.0	16	USDA 11052
+Kacang panjang	100g	47	2.8	0.1	8.4	3.6	4	50	1.0	19	TKPI
+Mentimun	100g	15	0.7	0.1	3.6	0.5	2	16	0.3	3	USDA 11205
+Paprika merah	100g	31	1.0	0.3	6.0	2.1	4	7	0.4	128	USDA 11821
+Sawi hijau	100g	13	1.5	0.2	2.2	1.0	27	105	0.8	45	TKPI
+Seledri	100g	14	0.7	0.1	3.0	1.6	80	40	0.2	3	USDA 11143
+Daun bawang	100g	32	1.8	0.3	7.3	2.6	20	59	1.5	19	TKPI
+Jamur tiram	100g	33	3.3	0.4	6.1	2.3	18	3	1.3	0	TKPI
+Pisang	100g	89	1.1	0.3	22.8	2.6	1	5	0.3	9	USDA 09040
+Jeruk	100g	47	0.9	0.2	11.8	2.4	0	40	0.1	53	USDA 09200
+Apel	100g	52	0.3	0.2	13.8	2.4	1	6	0.1	5	USDA 09003
+Mangga	100g	60	0.8	0.4	15.0	1.6	1	11	0.2	36	USDA 09176
+Pepaya	100g	43	0.5	0.2	10.8	1.7	8	20	0.2	61	USDA 09226
+Semangka	100g	30	0.6	0.2	7.6	0.4	1	7	0.2	8	USDA 09326
+Alpukat	100g	160	2.0	14.7	8.5	6.7	7	12	0.6	10	USDA 09037
+Durian	100g	147	1.5	5.3	27.1	3.8	2	6	0.4	20	TKPI
+Jeruk nipis	100g	30	0.7	0.2	10.5	2.8	2	33	0.3	30	TKPI
+Strawberry	100g	32	0.7	0.2	7.7	2.0	1	16	0.4	59	USDA 09316
+Blueberry	100g	57	0.7	0.3	14.5	2.4	1	6	0.3	10	USDA 09050
+Nanas	100g	50	0.5	0.1	13.1	1.4	1	13	0.3	48	USDA 09266
+Bawang merah	100g	40	1.1	0.1	9.3	1.7	4	23	0.2	8	USDA 11282
+Bawang putih	100g	149	6.4	0.5	33.1	2.1	17	18	1.7	31	USDA 11215
+Cabai merah	100g	40	1.9	0.4	8.8	1.5	9	14	0.7	144	TKPI
+Jahe	100g	80	1.8	0.8	17.8	2.0	13	16	0.6	5	USDA 11216
+Kunyit	100g	354	7.8	9.9	64.9	21.1	38	182	41.4	25	USDA 02043
+Kemiri	100g	718	7.6	76.0	12.0	1.5	3	3	1.0	0	TKPI
+Ketumbar biji	100g	298	12.4	17.8	52.1	10.4	35	702	16.3	21	USDA 02013
+Merica	100g	251	10.4	3.3	63.9	25.3	20	443	9.7	0	USDA 02030
+Kecap manis	100ml	218	5.0	0.1	50.0	0.5	5600	30	2.0	0	TKPI est.
+Kecap asin	100ml	53	8.1	0.0	5.6	0.1	5637	25	1.5	0	USDA 16123
+Saus sambal	100ml	97	1.5	0.5	20.0	1.5	2000	15	0.5	15	TKPI est.
+Saus tomat	100ml	101	1.7	0.1	24.8	0.5	907	15	0.5	15	USDA 11935
+Terasi udang	100g	120	18.0	3.0	5.0	0.5	7000	300	5.0	0	TKPI est.
+Madu	100g	304	0.3	0.0	82.4	0.2	4	6	0.4	0.5	USDA 19296
+Gula pasir	100g	387	0	0	100	0	0	1	0.1	0	USDA 19335
+Gula kelapa	100g	375	0.5	0.5	95.0	0	40	25	2.0	0	TKPI est.
+Gula aren	100g	368	0.4	0.1	94.0	0	30	20	1.5	0	TKPI est.
+Minyak goreng	100ml	884	0	100	0	0	0	0	0	0	USDA 04044
+Minyak kelapa	100ml	862	0	100	0	0	0	0	0	0	USDA 04047
+Minyak zaitun	100ml	884	0	100	0	0	0	0	0	0	USDA 04053
+Susu sapi segar	100ml	42	3.4	1.0	5.0	0	44	120	0.0	0	USDA 01077
+Susu UHT	100ml	60	3.2	3.2	4.8	0	55	120	0.0	0	TKPI
+Susu kental manis	100g	321	8.0	8.7	54.4	0	100	260	0.2	0	TKPI
+Keju cheddar	100g	403	25.0	33.1	1.3	0	621	721	0.7	0	USDA 01009
+Mentega	100g	717	0.9	81.1	0.1	0	11	24	0.0	0	USDA 01001
+Yogurt plain	100g	59	10.2	0.7	3.6	0	47	110	0.1	0	USDA 01116
+Teh hijau (tanpa gula)	100ml	1	0	0	0.2	0	1	0	0.0	0	USDA 14276
+Kopi hitam (tanpa gula)	100ml	2	0.1	0	0	0	2	0	0.0	0	USDA 14209
+Susu kedelai	100ml	33	2.9	1.6	1.8	0.4	47	25	0.4	0	USDA 16119
+Nugget ayam	100g	290	15.0	19.0	15.0	1.0	680	30	1.0	0	TKPI est.
+Sosis ayam	100g	230	12.0	17.0	5.0	0.5	1100	50	1.5	0	TKPI est.
+Bakso sapi	100g	200	14.0	14.0	5.0	0.5	850	30	2.0	0	TKPI est.
+Sarden kaleng	100g	208	24.6	11.5	0	0	518	350	2.9	0	USDA 15136
+Tuna kaleng	100g	128	27.0	1.0	0	0	396	11	1.0	0	USDA 15126
+Roti tawar	100g	266	9.0	3.2	49.0	2.7	491	151	3.6	0	USDA 07131
+Mentega (Blue Band)	100g	720	0.5	80.0	1.0	0	900	10	0.0	0	TKPI est.
+Bayam (matang)	100g	23	2.9	0.4	3.6	2.2	79	99	2.7	28	USDA 11457
+Wortel (matang)	100g	35	0.8	0.1	8.2	2.4	58	30	0.3	4	USDA 11125
+Kentang (matang)	100g	87	1.9	0.1	20.1	1.8	5	10	0.7	13	USDA 11363
+Tahu goreng	100g	271	17.2	20.2	10.5	1.0	12	176	3.0	0	TKPI
+Tempe goreng	100g	260	18.0	16.0	12.0	1.5	15	95	2.5	0	TKPI est.
+Nasi sorgum	100g	115	3.0	0.5	24.0	2.0	2	5	1.2	0	TKPI est.
+Santan kelapa	100ml	230	2.3	23.8	5.5	0.6	15	16	1.6	1	USDA 12118
+Garam	100g	0	0	0	0	0	38758	24	0.3	0	USDA 02047
+Es batu	100g	0	0	0	0	0	0	0	0	0	N/A

@@ -1,0 +1,201 @@
+bahan_asli	bahan_pengganti	alasan	rasio_pengganti	perbedaan_rasa	perbedaan_gizi	sumber
+Susu sapi	Susu almond	Vegan/laktosa	1:1	Lebih ringan, nutty	Lebih rendah protein, kalori	FDA; Nutritional science
+Susu sapi	Susu oat	Vegan/laktosa	1:1	Creamy, sedikit manis	Serat lebih tinggi	FDA; Nutritional science
+Susu sapi	Susu kedelai	Vegan/laktosa	1:1	Sedikit beany	Protein setara, isoflavon	FDA; Nutritional science
+Susu sapi	Susu kelapa	Vegan/laktosa	1:1	Tropical, rich	Tinggi lemak jenuh	FDA; Nutritional science
+Keju cheddar	Keju vegan	Vegan/alergi dairy	1:1	Mirip tapi kurang umami	Tanpa kolesterol	Nutritional science
+Keju cheddar	Nutritional yeast	Vegan	0.5:1	Cheesy, umami	Tinggi B12, protein	Nutritional science
+Mentega	Margarin	Vegan/alergi dairy	1:1	Mirip	Tanpa kolesterol, lemak trans	FDA
+Mentega	Minyak kelapa	Vegan/alergi dairy	0.75:1	Sedikit kelapa	Lemak jenuh tinggi	Nutritional science
+Mentega	Applesauce	Rendah lemak	0.5:1	Manis, moist	Rendah kalori, tinggi serat	Baking science
+Yogurt	Yogurt kelapa	Vegan/alergi dairy	1:1	Creamy, tropical	Rendah protein	Nutritional science
+Yogurt	Yogurt kedelai	Vegan/alergi dairy	1:1	Sedikit asam	Protein setara	Nutritional science
+Whipped cream	Krim kelapa	Vegan/alergi dairy	1:1	Tropical, rich	Tinggi lemak jenuh	Nutritional science
+Susu kental manis	Santan kental + gula	Vegan/alergi dairy	1:1	Lebih kelapa	Tinggi lemak jenuh	Traditional
+Cream cheese	Tofu cream cheese	Vegan/alergi dairy	1:1	Lebih ringan	Rendah lemak, tinggi protein	Nutritional science
+Es krim susu	Es krim kelapa	Vegan/alergi dairy	1:1	Tropical	Tinggi lemak jenuh	Nutritional science
+Tepung terigu	Tepung beras	Alergi gluten	1:1	Lebih ringan, crispy	Bebas gluten, rendah serat	Baking science
+Tepung terigu	Tepung sorgum	Alergi gluten	1:1	Earthy, nutty	Bebas gluten, tinggi serat	Baking science
+Tepung terigu	Tepung tapioka	Alergi gluten	0.5:1	Chewy, elastic	Bebas gluten, rendah nutrisi	Baking science
+Tepung terigu	Tepung almond	Alergi gluten/keto	1:1	Nutty, moist	Tinggi protein, rendah karbo	Baking science
+Tepung terigu	Tepung maizena	Alergi gluten	0.5:1	Ringan, crispy	Bebas gluten, rendah nutrisi	Baking science
+Tepung terigu	Tepung oat	Alergi gluten	1:1	Chewy, hearty	Tinggi serat	Baking science
+Roti tawar	Roti gluten-free	Alergi gluten	1:1	Lebih crumbly	Bebas gluten	Nutritional science
+Roti tawar	Roti sorgum	Alergi gluten	1:1	Earthy	Bebas gluten, tinggi serat	Nutritional science
+Mie kuning	Rice noodle	Alergi gluten	1:1	Lebih licin, ringan	Bebas gluten	Traditional
+Mie kuning	Sweet potato noodle	Alergi gluten	1:1	Chewy, transparan	Bebas gluten, tinggi serat	Traditional
+Spageti	Rice pasta	Alergi gluten	1:1	Lebih lembut	Bebas gluten	Nutritional science
+Spageti	Corn pasta	Alergi gluten	1:1	Sedikit manis	Bebas gluten	Nutritional science
+Telur (1 butir)	Flax egg (1sdm+3sdm air)	Vegan/alergi telur	1:1	Earthy, binding kurang	Omega-3, serat	Baking science
+Telur (1 butir)	Chia egg (1sdm+3sdm air)	Vegan/alergi telur	1:1	Earthy, gel texture	Omega-3, serat	Baking science
+Telur (1 butir)	Aquafaba (3sdm)	Vegan/alergi telur	1:1	Light, fluffy	Rendah kalori	Baking science
+Telur (1 butir)	Applesauce (60g)	Vegan/alergi telur	1:1	Manis, moist	Rendah lemak, serat	Baking science
+Telur (1 butir)	Pisang (0.5 buah)	Vegan/alergi telur	1:1	Manis, moist	Potassium, serat	Baking science
+Telur (1 butir)	Tahu sutra (60g)	Vegan/alergi telur	1:1	Neutral, protein	Protein tinggi, tanpa kolesterol	Baking science
+Mayonnaise	Mayo vegan	Vegan/alergi telur	1:1	Mirip	Tanpa kolesterol	Nutritional science
+Mayonnaise	Avocado mash	Vegan/alergi telur	1:1	Creamy, hijau	Tinggi lemak sehat, potassium	Nutritional science
+Kacang tanah	Biji bunga matahari	Alergi kacang	1:1	Mirip, earthy	Rendah lemak, tinggi vitamin E	FDA allergen
+Kacang tanah	Biji labu	Alergi kacang	1:1	Nutty, earthy	Tinggi magnesium, zinc	FDA allergen
+Kacang almond	Kacang mete	Alergi tree nut	1:1	Creamy, sweet	Mirip, sedikit kurang vitamin E	FDA allergen
+Kacang almond	Biji bunga matahari	Alergi tree nut	1:1	Earthy	Rendah lemak, tinggi vitamin E	FDA allergen
+Kacang mete	Biji labu	Alergi tree nut	1:1	Earthy, crunchy	Tinggi magnesium, zinc	FDA allergen
+Kacang walnut	Biji bunga matahari	Alergi tree nut	1:1	Earthy	Kurang omega-3	FDA allergen
+Kacang pistachio	Biji labu	Alergi tree nut	1:1	Earthy	Mirip mineral	FDA allergen
+Kacang macadamia	Kacang mete	Alergi tree nut	1:1	Creamy	Mirip lemak	FDA allergen
+Kecap manis	Coconut aminos	Alergi kedelai	1:1	Manis, kurang umami	Rendah natrium, tanpa kedelai	Nutritional science
+Kecap asin	Coconut aminos	Alergi kedelai	1:1	Sedikit manis	Rendah natrium	Nutritional science
+Tempe	Mushroom jerky	Alergi kedelai/vegan	1:1	Umami, chewy	Rendah protein	Nutritional science
+Tempe	Seitan	Alergi kedelai	1:1	Chewy, savory	Tinggi protein (gluten)	Nutritional science
+Tahu	Paneer	Alergi kedelai	1:1	Firm, milky	Tinggi protein, lemak	Nutritional science
+Tahu	Halloumi	Alergi kedelai	1:1	Salty, grillable	Tinggi protein, lemak	Nutritional science
+Susu kedelai	Susu almond	Alergi kedelai	1:1	Nutty	Rendah protein	Nutritional science
+Susu kedelai	Susu oat	Alergi kedelai	1:1	Creamy	Serat lebih tinggi	Nutritional science
+Ikan (protein)	Tahu firm	Vegan/alergi ikan	1:1	Neutral, absorbs flavor	Protein lebih rendah	Nutritional science
+Ikan (protein)	Jamur tiram	Vegan/alergi ikan	1:1	Umami, chewy	Rendah protein, serat tinggi	Nutritional science
+Udang	Jamur tiram	Vegan/alergi shellfish	1:1	Umami, chewy	Rendah protein	Nutritional science
+Udang	Tahu	Vegan/alergi shellfish	1:1	Neutral	Protein lebih rendah	Nutritional science
+Terasi udang	Terasi jamur	Vegan/alergi shellfish	1:1	Umami, earthy	Tanpa alergen shellfish	Traditional
+Sarden kaleng	Tuna kaleng vegan (jackfruit)	Vegan/alergi ikan	1:1	Flaky, savory	Tanpa omega-3 ikan	Nutritional science
+Gula pasir (100g)	Madu (75g)	Rendah GI	0.75:1	Lebih manis, floral	Antioksidan, GI lebih rendah	Nutritional science
+Gula pasir (100g)	Gula kelapa (100g)	Rendah GI	1:1	Karamel, earthy	GI lebih rendah (35)	Nutritional science
+Gula pasir (100g)	Stevia (1g)	Diabetes/zero cal	0.01:1	Sedikit aftertaste	Zero kalori	FDA GRAS
+Gula pasir (100g)	Maple syrup (75g)	Natural	0.75:1	Karamel, woody	Manganese, zinc	Nutritional science
+Gula pasir (100g)	Gula aren (100g)	Traditional	1:1	Karamel, smoky	GI lebih rendah	Traditional
+Gula pasir (100g)	Erythritol (100g)	Diabetes/zero cal	1:1	Sedikit kurang manis	Zero kalori, zero GI	FDA GRAS
+Minyak goreng	Minyak kelapa	Rendah PUFA	1:1	Sedikit kelapa	Tinggi MCT, lemak jenuh	Nutritional science
+Minyak goreng	Minyak zaitun	Jantung sehat	1:1	Fruity, peppery	Tinggi MUFA, antioksidan	FDA health claim
+Minyak goreng	Minyak canola	Rendah lemak jenuh	1:1	Neutral	Tinggi omega-3, MUFA	Nutritional science
+Minyak goreng	Minyak bunga matahari	Rendah lemak jenuh	1:1	Neutral, light	Tinggi vitamin E	Nutritional science
+Minyak goreng	Minyak wijen	Rasa kaya	0.5:1	Nutty, aromatic	Antioksidan, MUFA	Nutritional science
+Mentega (memasak)	Minyak kelapa	Vegan	1:1	Sedikit kelapa	Lemak jenuh tinggi	Nutritional science
+Daging sapi	Tempe	Vegan/kolesterol	1:1	Earthy, umami	Protein lebih rendah, tanpa kolesterol	Nutritional science
+Daging sapi	Tahu firm	Vegan/kolesterol	1:1	Neutral, absorbs flavor	Protein lebih rendah, tanpa kolesterol	Nutritional science
+Daging sapi	Jamur portobello	Vegan/kolesterol	1:1	Meaty, umami	Rendah protein, serat tinggi	Nutritional science
+Daging sapi	Seitan	Vegan/kolesterol	1:1	Chewy, savory	Protein tinggi (gluten)	Nutritional science
+Daging sapi	Black bean burger	Vegan/kolesterol	1:1	Earthy, hearty	Tinggi serat, protein nabati	Nutritional science
+Ayam	Tahu firm	Vegan/alergi	1:1	Neutral, absorbs flavor	Protein lebih rendah	Nutritional science
+Ayam	Tempe	Vegan	1:1	Earthy, umami	Protein setara	Nutritional science
+Ayam	Jamur tiram	Vegan	1:1	Umami, shredable	Rendah protein	Nutritional science
+Daging babi	Tempe	Vegan/halal	1:1	Earthy, umami	Protein lebih rendah	Nutritional science
+Daging kambing	Tahu	Vegan/halal	1:1	Neutral	Protein lebih rendah	Nutritional science
+Santan segar	Santan kotak (Kara)	Praktis	1:1	Mirip, kurang fresh	Mirip lemak	Traditional
+Santan segar	Santan bubuk + air	Praktis	1:1	Sedikit berbeda	Mirip lemak	Traditional
+Kemiri	Kacang mete	Ketersediaan	1:1	Lebih creamy	Mirip lemak	Traditional
+Daun pandan	Vanili bubuk	Ketersediaan	0.5:1	Berbeda aroma	Tanpa klorofil	Traditional
+Daun pandan	Pandan paste	Praktis	0.5:1	Mirip	Ada pewarna	Traditional
+Gula aren	Gula kelapa	Ketersediaan	1:1	Mirip, kurang smoky	Mirip GI	Traditional
+Gula aren	Maple syrup	Ketersediaan	0.75:1	Berbeda aroma	Mirip mineral	Traditional
+Kecap manis	Kecap asin + gula	Ketersediaan	1:1 + gula	Mirip	Lebih tinggi natrium	Traditional
+Terasi	Garam + kaldu jamur	Alergi seafood	1:1	Umami mirip	Tanpa alergen	Traditional
+Asam jawa	Cuka + gula	Ketersediaan	1:1	Asam mirip	Tanpa serat	Traditional
+Sambal segar	Sambal botol	Praktis	1:1	Kurang fresh	Lebih tinggi natrium	Traditional
+Tauco	Pasta miso	Ketersediaan	1:1	Mirip fermented	Mirip probiotik	Traditional
+Petis udang	Kecap manis + kaldu jamur	Alergi seafood	1:1	Mirip umami	Tanpa alergen	Traditional
+Lengkuas	Jahe	Ketersediaan	1:1	Berbeda tapi mirip	Mirip antioksidan	Traditional
+Serai	Jahe + lemon zest	Ketersediaan	1:1	Berbeda aroma	Mirip antioksidan	Traditional
+Kunyit segar	Kunyit bubuk	Praktis	0.5:1	Mirip kurang fresh	Mirip kurkumin	Traditional
+Bawang merah	Bawang bombay	Ketersediaan	1:1	Lebih manis	Mirip quercetin	Traditional
+Daun salam	Bay leaf	Ketersediaan	1:1	Mirip aroma	Mirip antioksidan	Traditional
+Tepung beras	Tepung tapioka	Ketersediaan	1:1	Lebih chewy	Mirip karbo	Traditional
+Tepung terigu (gorengan)	Tepung beras + tapioka	Alergi gluten	0.5:0.5	Lebih crispy	Bebas gluten	Traditional
+Keju mozzarella	Keju vegan mozzarella	Vegan	1:1	Melting kurang baik	Tanpa kolesterol	Nutritional science
+Keju parmesan	Nutritional yeast + garam	Vegan	0.5:1	Umami mirip	B12 tinggi	Nutritional science
+Buttermilk	Susu kedelai + cuka (1sdm)	Vegan	1:1	Asam mirip	Protein setara	Baking science
+Sour cream	Cashew cream + lemon	Vegan	1:1	Asam, creamy	Lemak nabati	Nutritional science
+Krim masak (cooking cream)	Santan kental	Vegan	1:1	Creamy, tropical	Lemak jenuh lebih tinggi	Traditional
+Roti pita	Roti gluten-free pita	Alergi gluten	1:1	Lebih crumbly	Bebas gluten	Nutritional science
+Tortilla gandum	Tortilla jagung	Alergi gluten	1:1	Lebih corn-flavored	Bebas gluten	Traditional
+Breadcrumbs	Tepung roti gluten-free	Alergi gluten	1:1	Mirip crispy	Bebas gluten	Baking science
+Tepung terigu (roux)	Tepung beras (roux)	Alergi gluten	1:1	Lebih ringan	Bebas gluten	Baking science
+Mie instant	Rice noodle	Alergi gluten	1:1	Lebih licin	Bebas gluten	Traditional
+Kwetiau	Rice noodle flat	Alergi gluten	1:1	Mirip	Bebas gluten	Traditional
+Putih telur (meringue)	Aquafaba (3sdm)	Vegan	1:1	Mirip fluffy	Rendah kalori	Baking science
+Kuning telur (custard)	Tahu sutra + kunyit	Vegan	1:1	Creamy, kuning	Protein nabati	Baking science
+Telur dadar	Tahu scramble + kunyit	Vegan	1:1	Mirip texture	Protein nabati	Nutritional science
+Bakso sapi	Bakso jamur	Vegan	1:1	Umami, chewy	Rendah protein	Traditional
+Sosis ayam	Sosis tempe	Vegan	1:1	Earthy	Protein nabati	Traditional
+Nugget ayam	Nugget tempe/tahu	Vegan	1:1	Crispy, savory	Protein nabati	Traditional
+Rendang daging	Rendang jamur	Vegan	1:1	Umami, chewy	Rendah protein	Traditional
+Sate ayam	Sate tempe/jamur	Vegan	1:1	Savory, smoky	Protein nabati	Traditional
+Dendeng sapi	Dendeng jamur	Vegan	1:1	Chewy, smoky	Rendah protein	Traditional
+Ikan teri	Jamur kering + garam	Alergi ikan	1:1	Umami, asin	Tanpa alergen	Traditional
+Cumi-cumi	Jamur tiram strips	Alergi shellfish	1:1	Chewy	Rendah protein	Traditional
+Kepiting	Jamur tiram shred	Alergi shellfish	1:1	Flaky, umami	Rendah protein	Traditional
+Kerang	Jamur shitake	Alergi shellfish	1:1	Umami, meaty	Rendah protein	Traditional
+Madu (memasak)	Gula kelapa + air	Vegan	1:1	Karamel	GI lebih rendah	Nutritional science
+Saus tiram	Saus jamur tiram	Alergi shellfish/vegan	1:1	Umami mirip	Tanpa alergen	Traditional
+Fish sauce	Saus jamur + garam	Alergi ikan/vegan	1:1	Umami, asin	Tanpa alergen	Traditional
+Kecap ikan	Kecap asin + gula	Alergi ikan	1:1	Manis asin	Tanpa alergen	Traditional
+Worcestershire sauce	Saus apel + cuka	Alergi ikan	1:1	Asam, umami	Tanpa alergen	Traditional
+Baking powder	Baking soda + cream of tartar	Ketersediaan	1:1 (0.5+0.5)	Mirip	Sama	Baking science
+Dark chocolate	Cocoa powder + minyak kelapa	Ketersediaan	3:1	Lebih bitter	Kurang gula	Baking science
+Cokelat masak	Cocoa powder + mentega	Ketersediaan	2:1	Lebih bitter	Mirip lemak	Baking science
+Kopi	Chicory root coffee	Kafein	1:1	Earthy, bitter	Tanpa kafein	Nutritional science
+Teh hitam	Teh herbal (chamomile)	Kafein	1:1	Berbeda aroma	Tanpa kafein	Nutritional science
+Susu cokelat	Susu kedelai + cocoa	Vegan	1:1	Mirip	Protein setara	Nutritional science
+Bawang putih	Bawang bubuk	Praktis	0.5:1	Kurang fresh	Mirip allicin	Traditional
+Jahe segar	Jahe bubuk	Praktis	0.5:1	Kurang fresh	Mirip gingerol	Traditional
+Kelapa parut	Kelapa parut kering + air	Praktis	1:1	Kurang fresh	Mirip lemak	Traditional
+Kacang tanah (bumbu)	Biji bunga matahari (bumbu)	Alergi kacang	1:1	Mirip, earthy	Kurang protein	Traditional
+Cabe segar	Cabe bubuk + air	Praktis	0.5:1	Kurang fresh	Mirip capsaicin	Traditional
+Tomat segar	Tomat kaleng/pure	Praktis	1:1	Mirip kurang fresh	Mirip likopen	Traditional
+Santan (gulai)	Susu kedelai + minyak kelapa	Alergi dairy	1:1	Mirip creamy	Tanpa kolesterol	Traditional
+Nasi putih	Nasi sorgum	Diabetes/rendah GI	1:1	Earthy, nutty	GI lebih rendah, tinggi serat	Nutritional science
+Nasi putih	Nasi merah	Diabetes/rendah GI	1:1	Nuttier, chewier	GI lebih rendah, tinggi serat	Nutritional science
+Nasi putih	Nasi kembang kol	Keto/rendah karbo	1:1	Berbeda texture	Rendah kalori 80%	Nutritional science
+Nasi putih	Quinoa	Protein tinggi	1:1	Nutty, fluffy	Protein lengkap	Nutritional science
+Mie instant	Zucchini noodle	Rendah karbo	1:1	Berbeda texture	Rendah kalori	Nutritional science
+Kentang goreng	Ubi jalar goreng	Rendah GI	1:1	Lebih manis	GI lebih rendah, vitamin A	Nutritional science
+Kerupuk	Kerupuk kulit jamur	Vegan	1:1	Crispy	Rendah kalori	Nutritional science
+Minyak jelantah	Minyak baru	Kesehatan	1:1	Lebih fresh	Tanpa PAH karsinogenik	WHO; EFSA
+Gula pasir (baking)	Madu (baking)	Rendah GI	0.75:1	Moist, manis	Antioksidan	Baking science
+Tepung terigu (thickener)	Maizena (thickener)	Alergi gluten	0.5:1	Mirip	Bebas gluten	Baking science
+Susu bubuk	Susu kedelai bubuk	Vegan/alergi dairy	1:1	Sedikit beany	Protein setara	Nutritional science
+Wijen (taburan)	Biji bunga matahari	Alergi sesame	1:1	Earthy	Vitamin E tinggi	FDA allergen
+Tahini	Sunflower seed butter	Alergi sesame	1:1	Earthy, creamy	Mirip lemak sehat	FDA allergen
+Peanut butter	Sunflower seed butter	Alergi kacang	1:1	Earthy, creamy	Vitamin E, tanpa alergen	FDA allergen
+Peanut butter	Almond butter	Alergi kacang tanah	1:1	Nutty, creamy	Lebih tinggi vitamin E	FDA allergen
+Kecap manis (marinasi)	Coconut aminos + gula kelapa	Alergi soy	1:1	Manis asin mirip	Tanpa kedelai	Nutritional science
+Bumbu kacang (gado-gado)	Bumbu biji bunga matahari	Alergi kacang	1:1	Earthy, creamy	Tanpa alergen kacang	Traditional
+Selai kacang	Selai biji bunga matahari	Alergi kacang	1:1	Earthy	Tanpa alergen	Nutritional science
+Granola (dengan kacang)	Granola (tanpa kacang, biji)	Alergi kacang	1:1	Crunchy	Tanpa alergen	Nutritional science
+Pesto (kacang pinus)	Pesto (biji bunga matahari)	Alergi tree nut	1:1	Nutty, herby	Tanpa alergen	Nutritional science
+Saus kacang (satay)	Saus biji bunga matahari	Alergi kacang	1:1	Creamy, nutty	Tanpa alergen kacang	Traditional
+Saus tomat	Saus tomat homemade	Praktis	1:1	Lebih fresh	Tanpa pengawet	Traditional
+Mayonnaise	Greek yogurt	Rendah lemak	1:1	Asam, creamy	Protein tinggi, rendah lemak	Nutritional science
+Sour cream	Greek yogurt	Rendah lemak	1:1	Asam mirip	Protein tinggi	Nutritional science
+Mentega (olesan)	Alpukat tumbuk	Rendah lemak jenuh	1:1	Creamy, hijau	Lemak tak jenuh, potassium	Nutritional science
+Gula (minuman)	Stevia cair	Diabetes	2-3 tetes	Sedikit aftertaste	Zero kalori	FDA GRAS
+Gula (minuman)	Madu	Natural	1sdm/2sdm gula	Floral, manis	Antioksidan	Nutritional science
+Es krim	Frozen yogurt	Rendah lemak	1:1	Lebih asam	Protein lebih tinggi	Nutritional science
+Es krim	Nice cream (pisang beku)	Vegan	1:1	Manis, creamy	Tanpa susu, serat tinggi	Nutritional science
+Soda	Sparkling water + buah	Rendah gula	1:1	Fruity, bubbly	Zero gula tambahan	Nutritional science
+Jus buah kemasan	Jus buah segar	Rendah gula	1:1	Lebih fresh	Tanpa pengawet, serat	Nutritional science
+Cokelat susu	Dark chocolate 70%	Rendah gula	1:1	Lebih bitter	Antioksidan tinggi	Nutritional science
+Keripik kentang	Keripik ubi jalar	Rendah GI	1:1	Lebih manis	Vitamin A, GI lebih rendah	Nutritional science
+Margarin (memasak)	Minyak zaitun	Jantung sehat	1:1	Fruity	MUFA tinggi	FDA health claim
+Minyak sawit	Minyak kelapa	Rendah PUFA	1:1	Sedikit kelapa	MCT tinggi	Nutritional science
+Garam dapur	Garam himalaya	Rendah natrium	1:1	Mirip, mineral	84 trace minerals	Nutritional science
+Garam dapur	Garam laut	Natural	1:1	Mirip, mineral	Trace minerals	Nutritional science
+Cuka putih	Cuka apel	Natural	1:1	Lebih fruity	Probiotik	Nutritional science
+Cuka masak	Air jeruk nipis	Natural	1:1	Asam, citrus	Vitamin C	Traditional
+Vetsin (MSG)	Kaldu jamur bubuk	Natural umami	1:1	Umami mirip	Tanpa MSG	Traditional
+Bumbu instan	Bumbu racik homemade	Tanpa MSG	1:1	Lebih fresh	Tanpa pengawet	Traditional
+Kornet kaleng	Daging cincang segar	Fresh	1:1	Lebih fresh	Tanpa pengawet, natrium	Nutritional science
+Sarden kaleng	Ikan segar goreng	Fresh	1:1	Lebih fresh	Omega-3 lebih tinggi	Nutritional science
+Susu kental manis (kopi)	Susu UHT + sedikit gula	Rendah gula	1:1	Lebih ringan	Protein lebih tinggi	Nutritional science
+Tepung panko	Tepung roti biasa	Ketersediaan	1:1	Kurang crispy	Mirip	Baking science
+Corn starch (pengental)	Tepung tapioka	Ketersediaan	1:1	Mirip	Mirip karbo	Baking science
+Heavy cream	Evaporated milk	Rendah lemak	1:1	Lebih ringan	Rendah lemak	Baking science
+Butter (cookies)	Coconut oil (cookies)	Vegan	1:1	Sedikit kelapa	Lemak jenuh	Baking science
+Brown sugar	Gula kelapa + molasses	Ketersediaan	1:1	Karamel mirip	GI lebih rendah	Baking science
+Honey (marinasi)	Maple syrup (marinasi)	Vegan	1:1	Berbeda aroma	Mirip gula alami	Nutritional science
+Fish sauce (masakan Asia)	Soy sauce + nori flakes	Alergi ikan	1:1	Umami, oceanic	Tanpa alergen ikan	Traditional
+Oyster sauce	Mushroom sauce	Alergi shellfish/vegan	1:1	Umami mirip	Tanpa alergen	Traditional
+Shrimp paste (terasi)	Fermented bean paste	Alergi shellfish	0.5:1	Umami, earthy	Tanpa alergen	Traditional
+Anchovy (teri)	Dried mushroom	Alergi ikan/vegan	1:1	Umami	Tanpa alergen	Traditional
+Crab paste	Mushroom paste	Alergi shellfish	1:1	Umami	Tanpa alergen	Traditional
+Lobster	King oyster mushroom	Alergi shellfish/vegan	1:1	Meaty, umami	Rendah protein	Nutritional science
+Scallop	Tofu cube	Alergi shellfish/vegan	1:1	Soft, mild	Protein nabati	Nutritional science
+Squid (cumi)	Konjac noodle strip	Alergi shellfish/vegan	1:1	Chewy	Zero kalori	Nutritional science
+Mussels	Shiitake mushroom	Alergi shellfish/vegan	1:1	Umami, chewy	Rendah protein	Nutritional science

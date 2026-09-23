@@ -12,7 +12,6 @@ import {
   Check, 
   Flame, 
   Wheat, 
-  DollarSign, 
   Play,
   Volume2
 } from 'lucide-react';
@@ -45,20 +44,9 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   onPublish,
   isPublishing = false,
 }) => {
-  const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
-  const [ingredientsTab, setIngredientsTab] = useState<'takaran' | 'belanja'>('takaran');
-
-  const formatRupiah = (amount: number) => {
-    return `Rp ${(amount * portionMultiplier).toLocaleString('id-ID')}`;
-  };
-
-  const totalCalculatedCost = recipe.ingredients.reduce(
-    (sum, ing) => sum + ing.estimatedPrice * portionMultiplier,
-    0
-  );
 
   const handleSaveClick = () => {
     onToggleSave(recipe);
@@ -83,7 +71,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name} (${formatRupiah(i.estimatedPrice)})`)
+      .map((i) => `- ${i.name}`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -159,104 +147,20 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </div>
       )}
 
-      {/* BAHAN-BAHAN Breakdown with tabs */}
+      {/* BAHAN-BAHAN List */}
       <div className="space-y-2 bg-white rounded-2xl p-4 border border-[#e2e3e1] shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-xs font-bold text-[#424843] uppercase tracking-wider">
-              BAHAN-BAHAN
-            </h3>
-            {/* Tab toggle */}
-            <div className="flex items-center bg-[#f4f4f2] rounded-full border border-[#e2e3e1] overflow-hidden">
-              <button
-                onClick={() => setIngredientsTab('takaran')}
-                className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                  ingredientsTab === 'takaran'
-                    ? 'bg-[#163422] text-white'
-                    : 'text-[#727972] hover:text-[#424843]'
-                }`}
-              >
-                Takaran
-              </button>
-              <button
-                onClick={() => setIngredientsTab('belanja')}
-                className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                  ingredientsTab === 'belanja'
-                    ? 'bg-[#163422] text-white'
-                    : 'text-[#727972] hover:text-[#424843]'
-                }`}
-              >
-                Daftar Belanja
-              </button>
-            </div>
-          </div>
-          
-          {/* Stepper Porsi */}
-          <div className="flex items-center gap-1.5 bg-[#f4f4f2] px-2 py-0.5 rounded-full border border-[#e2e3e1]">
-            <span className="text-[11px] font-bold text-[#727972]">Porsi:</span>
-            <button
-              onClick={() => setPortionMultiplier((p) => Math.max(1, p - 1))}
-              className="w-5 h-5 rounded-full bg-white text-[#163422] font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#e2e3e1]"
-            >
-              -
-            </button>
-            <span className="text-xs font-bold text-[#163422] px-1">{portionMultiplier}x</span>
-            <button
-              onClick={() => setPortionMultiplier((p) => Math.min(5, p + 1))}
-              className="w-5 h-5 rounded-full bg-[#163422] text-white font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#2d4b37]"
-            >
-              +
-            </button>
-          </div>
-        </div>
+        <h3 className="text-xs font-bold text-[#424843] uppercase tracking-wider">
+          BAHAN-BAHAN
+        </h3>
 
-        {ingredientsTab === 'takaran' ? (
-          /* Takaran view: name + amount only, no price */
-          <ul className="space-y-1.5 pt-1">
-            {recipe.ingredients.map((ing, idx) => (
-              <li key={idx} className="flex items-center justify-between text-sm sm:text-base text-[#1A1C1B] gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#163422] flex-shrink-0" />
-                  <span>{ing.name}</span>
-                </div>
-                {ing.amount && (
-                  <span className="font-semibold text-xs text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
-                    {ing.amount}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          /* Daftar Belanja view: name + amount + price table */
-          <div className="pt-1">
-            <table className="w-full text-xs sm:text-sm">
-              <thead>
-                <tr className="border-b border-[#e2e3e1]">
-                  <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Bahan</th>
-                  <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Jumlah</th>
-                  <th className="text-right font-bold text-[#424843] pb-1.5">Harga</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recipe.ingredients.map((ing, idx) => (
-                  <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
-                    <td className="py-1.5 pr-2 text-[#1A1C1B]">{ing.name}</td>
-                    <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                    <td className="py-1.5 text-right font-semibold text-[#163422]">{formatRupiah(ing.estimatedPrice)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="pt-2 border-t border-[#f4f4f2] flex justify-between items-center text-xs text-[#424843]">
-          <span>Total Estimasi Belanja:</span>
-          <span className="font-bold text-sm text-[#163422]">
-            {formatRupiah(recipe.estimatedCost)}
-          </span>
-        </div>
+        <ul className="space-y-1.5 pt-1">
+          {recipe.ingredients.map((ing, idx) => (
+            <li key={idx} className="flex items-center gap-2 text-sm sm:text-base text-[#1A1C1B]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#163422] flex-shrink-0" />
+              <span>{ing.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Nutrisi Unggulan Card matching mockup */}

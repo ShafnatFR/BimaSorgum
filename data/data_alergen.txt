@@ -1,0 +1,345 @@
+nama_bahan	alergen_gluten	alergen_dairy	alergen_nuts	alergen_soy	alergen_eggs	alergen_fish	alergen_shellfish	alergen_sesame	tipe_alergen	sumber
+Beras Premium	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Medium	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras SPHP	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Kualitas Bawah I	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Kualitas Bawah II	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Bulog	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Ayam Ras	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Ayam Kampung	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Sapi Murni	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Sapi Has Dalam	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Kerbau Segar (Lokal)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Kerbau Beku (Impor)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Kambing	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Bebek	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Telur Ayam Ras	0	0	0	0	1	0	0	0	contains	BPOM RI & Kemenkes RI
+Telur Ayam Kampung	0	0	0	0	1	0	0	0	contains	BPOM RI & Kemenkes RI
+Telur Bebek	0	0	0	0	1	0	0	0	contains	BPOM RI & Kemenkes RI
+Telur Puyuh	0	0	0	0	1	0	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Kembung	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Tongkol	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Bandeng	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Teri Asin (Kering)	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Lele	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Nila	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Patin	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Mas	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Udang Vaname Segar	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Udang Windu	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Cumi-cumi	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Kepiting	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Kerang Darah	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Gula Pasir	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Pasir Lokal/Curah	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Kelapa	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Aren	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Goreng Kemasan	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Goreng Curah	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Kita	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Kelapa Tradisional	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Zaitun (extra virgin)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Terigu Curah	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Terigu Kemasan	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Tapioka/Kanji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Beras	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Maizena	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Sorgum	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kedelai Biji Kering	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kedelai Impor	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kedelai Lokal	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Garam Konsumsi	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Garam Dapur (bata)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jagung Tk. Peternak	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jagung Manis	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Kental Manis Kaleng	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Segar (sapi)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu UHT (Indomilk)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tahu Putih	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tahu Sutra	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tempe	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bayam	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kangkung	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Wortel	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kentang	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kol (Kubis)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sawi Hijau	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sawi Putih	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Terong	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Buncis	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Panjang	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tomat	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mentimun	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Paprika	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Brokoli	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kembang Kol	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Labu Siam	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pare	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daun Singkong	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kemangi	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Seledri	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daun Bawang	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jamur Tiram	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jamur Kuping	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Selada	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Baby Kailan	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pisang Raja	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pisang Ambon	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jeruk Mandarin	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jeruk Nipis	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Apel Fuji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Apel Malang	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mangga Harum Manis	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pepaya	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Semangka	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Melon	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Anggur	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Alpukat	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Durian (Musang King)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Nanas	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Salak	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Rambutan	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jambu Biji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Strawberry	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Blueberry	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bawang Merah (bumbu)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bawang Putih (bumbu)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cabai Merah Besar (bumbu)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cabai Rawit Merah (bumbu)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jahe	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kunyit	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Lengkuas	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Serai	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kemiri	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ketumbar Biji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jintan Biji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pala Biji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Merica Biji	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cengkeh	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kayu Manis	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daun Salam	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daun Jeruk	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daun Pandan	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Tanah	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Merah (kering)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Hijau	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Mete (mentah)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Wijen	0	0	0	0	0	0	0	1	contains	BPOM RI & Kemenkes RI
+Kecap Manis (Bango 275ml)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kecap Asin (ABC 620ml)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Saus Sambal (ABC 335ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Saus Tomat (Del Monte 340ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Saus Tiram (Saori 275ml)	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Terasi Udang	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Petis Udang	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Tauco	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Asam Jawa	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Madu (lokal)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Indomie Goreng (isi 5)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mie Sedaap Goreng (isi 5)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Supermi (isi 5)	1	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Bihun Jagung	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kwetiau Basah	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Roti Tawar (loaf)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mentega (Blue Band)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Margarin (Palmia)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kopi Bubuk (Kapal Api)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kopi Instan (Nescafe)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Teh Celup (Sariwangi)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Teh Hijau (Tong Tji)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Teh Hijau Celup (Sariwangi)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cokelat Bubuk (Tango)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Milo (kotak 240ml)	1	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sirup Marjan (460ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Sirup ABC (520ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Sarden Kaleng (ABC 155g)	1	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Tuna Kaleng (Ayam Brand 170g)	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Kornet Sapi (pronas 198g)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Kacang Kaleng (baked beans)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Nugget Ayam (So Good 400g)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Sosis Ayam (So Nice 300g)	1	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Bakso Sapi (冻结 500g)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Daging Cincang Beku 500g	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Pandan Wangi	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Merah	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Hitam	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras Ketan	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Daging Sapi Slice (untuk shabu)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ayam Fillet Dada	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ayam Fillet Paha	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Kakap Merah	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Tuna Steak	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Salmon Fillet	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Tenggiri	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Dori Fillet	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Ikan Gabus	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Kangkung Darat	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Petai	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jengkol	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Singkong	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ubi Jalar	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ubi Ungu	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kelapa (butir)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Santan Kelapa Segar	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Santan Kotak (Kara 200ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Santan Bubuk (Kara 200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kecap Manis (ABC 275ml)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kecap Manis (Bango 600ml)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Saos Sambal (Indofood 340ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Saos Tomat (ABC 340ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Bumbu Instan (Royco)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Bumbu Instan (Masako)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Vetsin (Ajinomoto 100g)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Tepung Roti (Panko)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Bumbu (Sajiku 80g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Baking Powder	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Baking Soda	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ragi Fermipan 11g	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Vanili Bubuk (Butterfly)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Halus	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Maizena (Maizena 250g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Tapioka (Rose Brand 500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Bubuk (Dancow 400g)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Kental Manis (Frisian Flag)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju Cheddar (Kraft 170g)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Yogurt (Cimory 250ml)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Whipped Cream (Anchor 250ml)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Biji sorgum	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Beras sorgum	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Santan kelapa (segar)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ragi (Fermipan)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Vanili bubuk (butterfly brand)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bubuk kakao (coklat bubuk)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu UHT (Indomilk Full Cream)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju cheddar (Kraft)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju mozzarella	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak kelapa (tradisional)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bubuk kopi (robusta)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kurma (Ajwa/Medjool)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Es batu kristal	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sambal (ABC botol 135ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kentang hijau (for toxicity data)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ikan salmon (fillet)	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Zaitun (Borges 500ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Wijen (500ml)	0	0	0	0	0	0	0	1	contains	BPOM RI & Kemenkes RI
+Minyak Canola (500ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Minyak Bunga Matahari (500ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cuka Masak (500ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Garam Laut (250g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Garam Himalaya (250g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kunyit Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ketumbar Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jintan Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Merica Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pala Bubuk (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kayu Manis Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bawang Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cabe Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Paprika Bubuk (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Oregano Kering (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Basil Kering (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Thyme Kering (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Rosemary Kering (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cengkeh Bubuk (25g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bunga Lawang/Pekak (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kapulaga (50g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tauco (300g)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kecap Asin (Kikkoman 150ml)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mustard (Heinz 250ml)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Terasi (ABC 100g)	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Petis Madura (250g)	0	0	0	0	0	0	1	0	contains	BPOM RI & Kemenkes RI
+Supermi Ayam Bawang (isi 5)	1	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Mi Telur (Bihun Juhi 250g)	1	0	0	0	1	0	0	0	contains	BPOM RI & Kemenkes RI
+Bihun Jagung (250g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kwetiau Kering (250g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Spageti (Barilla 500g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Makaroni (500g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Udon Kering (200g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Rice Noodle (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sarden ABC (155g)	1	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Tuna Ayam Brand (170g)	0	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Kornet Pronas (198g)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Kacang Kaleng Baked Beans	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Jamur Kaleng (champignon 400g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Almond (250g)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Walnut (250g)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Pistachio (250g)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Macadamia (250g)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kacang Tanah (500g)	0	0	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Wijen Putih (200g)	0	0	0	0	0	0	0	1	contains	BPOM RI & Kemenkes RI
+Wijen Hitam (200g)	0	0	0	0	0	0	0	1	contains	BPOM RI & Kemenkes RI
+Biji Bunga Matahari (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Biji Labu (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Chia Seed (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Flaxseed (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Bubuk Kakao (Tulip 100g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Dark Cooking Chocolate (250g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cokelat Masak Compound (250g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Aren (250g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Gula Batu (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kopi Bubuk Robusta (500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kopi Instan Kapal Api (sachet)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kopi Instan Torabika (sachet)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Teh Celup Sariwangi (25s)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Teh Hijau Tong Tji (25s)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Matcha Bubuk (50g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cokelat Bubuk Milo (240ml)	1	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cokelat Bubuk Tango (sachet)	1	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sirup Marjan Lemon (460ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Sirup ABC Cocopandan (520ml)	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Kurma Ajwa (500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kurma Medjool (500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kismis (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cranberry Kering (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Nugget Ayam So Good (400g)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Sosis So Nice (300g)	1	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Bakso Sapi (500g beku)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Tempura (500g beku)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Dumpling Ayam (500g beku)	1	0	0	0	1	0	0	0	may_contain	analisis komposisi produk
+Fish Fillet (500g beku)	1	0	0	0	0	1	0	0	contains	BPOM RI & Kemenkes RI
+Tahu Sutra (kotak 250g)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tempe (papan 400g)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Oncom (papan 200g)	0	0	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Quinoa (500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Oat (Quaker 500g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Barley (500g)	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Millet (500g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Almond (1L)	0	1	1	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Oat (1L)	1	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Kedelai (1L)	0	1	0	1	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju Parmesan (100g)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cream Cheese (200g)	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mozzarella (200g)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pisang Tanduk	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mangga Gedong Gincu	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Salak Pondoh	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Nanas Madu	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Belimbing	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kedondong	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Markisa	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Sirsak	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Buah Naga	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Kiwi	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Pear (apel Korea)	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Peach	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Plum	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Ceri	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tomat Cherry	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Baby Corn	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Baby Carrot	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Asparagus	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Zucchini	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Buncis Import	0	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Tepung Gandum Utuh	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Roti Gandum	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Mie Instan Kuah	1	0	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Cornflakes	0	0	0	0	0	0	0	0	may_contain	analisis komposisi produk
+Granola	1	0	1	0	0	0	0	1	contains	BPOM RI & Kemenkes RI
+Susu Skim Bubuk	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Susu Evaporasi	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Butter Unsalted	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju Gouda	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Keju Edam	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Krim Masak	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Es Krim Vanilla	0	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
+Es Krim Cokelat	1	1	0	0	0	0	0	0	contains	BPOM RI & Kemenkes RI
