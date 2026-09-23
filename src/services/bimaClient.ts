@@ -50,6 +50,8 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
     const lines = buffer.split('\n');
     buffer = lines.pop() || '';
     for (const line of lines) {
+      // Skip SSE comments (heartbeat keepalive from backend)
+      if (line.startsWith(':')) continue;
       if (!line.startsWith('data: ')) continue;
       const payload = line.slice(6).trim();
       if (payload === '[DONE]') continue;
@@ -111,8 +113,9 @@ export async function bimaChat(
       const payload: Record<string, unknown> = { message };
   if (history && history.length) payload.history = history;
 
-  // 🔧 Client-side timeout: 180s (matches Vercel proxy maxDuration)
-  const CLIENT_TIMEOUT_MS = 180_000;
+  // 🔧 Client-side timeout: 300s (5 min) — matches backend LLM timeout.
+  // Heartbeat SSE comments from backend keep the connection alive through proxies.
+  const CLIENT_TIMEOUT_MS = 300_000;
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), CLIENT_TIMEOUT_MS);
 
