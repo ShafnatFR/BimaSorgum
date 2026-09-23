@@ -397,10 +397,8 @@ export default function App() {
     setIsGenerating(true);
     setTypingStatusText('Sedang menganalisis kandungan nutrisi sorgum...');
     
-    const userPromptText = `Rekomendasi resep ${wizardData.dishCategory.replace('_', ' ')} untuk ${
-      wizardData.targetConsumers.join(', ')
-    } dengan budget Rp ${wizardData.budgetPerPortion.toLocaleString('id-ID')}${
-      wizardData.prepTimeLimit ? ` dan waktu persiapan ${wizardData.prepTimeLimit.toLowerCase()}` : ''
+    const userPromptText = `Rekomendasi resep ${wizardData.dishCategory.replace('_', ' ')}${
+      wizardData.prepTimeLimit ? ` dengan waktu persiapan ${wizardData.prepTimeLimit.toLowerCase()}` : ''
     }`;
 
     try {

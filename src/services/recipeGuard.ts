@@ -33,6 +33,9 @@ export function isRefusal(parsed: Record<string, any> | null | undefined): { ref
 /** Ingredient keyword -> realistic minimum price (IDR) per standard portion. */
 export interface PremiumFloor { match: RegExp; min: number; label: string }
 
+// Global minimum price for ALL ingredients (warung minimum purchase unit)
+export const GLOBAL_MINIMUM_PRICE = 500;
+
 const PREMIUM_PRICE_FLOOR: Array<PremiumFloor> = [
   { match: /salmon/i, min: 8000, label: 'salmon' },
   { match: /wagyu/i, min: 15000, label: 'wagyu' },
@@ -94,6 +97,11 @@ export function realisticCost(ingredients: Array<{ name?: string; estimatedPrice
   for (const ing of ingredients) {
     const name = ing.name || '';
     let price = Number(ing.estimatedPrice) || 0;
+    // Apply global minimum (warung minimum purchase unit)
+    if (price < GLOBAL_MINIMUM_PRICE) {
+      price = GLOBAL_MINIMUM_PRICE;
+    }
+    // Apply premium floor for specific ingredients
     for (const floor of PREMIUM_PRICE_FLOOR) {
       if (floor.match.test(name) && price < floor.min) {
         price = floor.min;

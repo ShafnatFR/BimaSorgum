@@ -3,7 +3,7 @@ import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
-import { validateRecipe } from './recipeGuard';
+
 
 /** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
  *  Guarantees consistency: what the user sees in the card = what they get. */
@@ -16,13 +16,7 @@ export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData
     dessert_rendah_gi: 'Dessert Rendah GI',
   };
   const dishCategory = categoryMap[formData.dishCategory] || 'Makanan Sehat';
-  const targetLabel = formData.targetConsumers.includes('anak_sekolah')
-    ? 'Anak Sekolah (6-12 thn)'
-    : formData.targetConsumers.includes('balita')
-    ? 'Balita (1-5 thn)'
-    : formData.targetConsumers.includes('lansia')
-    ? 'Lansia'
-    : 'Remaja & Dewasa';
+  const targetLabel = 'Semua Umur';
 
   // Parse ingredientPrices into RecipeIngredient[] with matching names + prices.
   // Handle composite entries like "Bumbu Lain: Rp500" — that's a TOTAL for multiple items.
@@ -222,7 +216,8 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
 3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
 4. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
-5. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 2.000, bukan "Garam halus (5 gram)" = Rp 2.
+6. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
@@ -320,9 +315,9 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Bubur Sorgum Sayur Bayam',
         ingredients: ['Biji sorgum (100g)', 'Bayam segar', 'Bawang merah & putih', 'Garam', 'Minyak kelapa'],
-        estimatedCost: 6500,
+        estimatedCost: 6800,
         description: 'Bubur hangat kaya serat dengan sayuran segar, cocok untuk semua umur.',
-        ingredientPrices: ['Biji sorgum 100g: Rp2.500', 'Bayam segar: Rp1.500', 'Bawang merah & putih: Rp1.000', 'Garam: Rp200', 'Minyak kelapa: Rp1.300'],
+        ingredientPrices: ['Biji sorgum 100g: Rp2.500', 'Bayam segar: Rp1.500', 'Bawang merah & putih: Rp1.000', 'Garam: Rp500', 'Minyak kelapa: Rp1.300'],
         estimatedTimeMinutes: 30,
         removedIngredients: ['Dada ayam', 'Telur', 'Santan kelapa'],
       },
@@ -338,9 +333,9 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Sorgum Bihun Goreng Sayur',
         ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam', 'Minyak goreng'],
-        estimatedCost: 6000,
+        estimatedCost: 6300,
         description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.',
-        ingredientPrices: ['Biji sorgum: Rp2.000', 'Wortel: Rp1.500', 'Kol: Rp1.000', 'Bawang merah: Rp500', 'Garam: Rp200', 'Minyak goreng: Rp800'],
+        ingredientPrices: ['Biji sorgum: Rp2.000', 'Wortel: Rp1.500', 'Kol: Rp1.000', 'Bawang merah: Rp500', 'Garam: Rp500', 'Minyak goreng: Rp800'],
         estimatedTimeMinutes: 20,
         removedIngredients: ['Protein hewani', 'Santan'],
       },
@@ -358,18 +353,18 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Lempeng Sorgum Original',
         ingredients: ['Tepung sorgum (100g)', 'Garam', 'Air', 'Minyak goreng'],
-        estimatedCost: 4500,
+        estimatedCost: 4800,
         description: 'Kerupuk sorgum renyah klasik, camilan sehat tanpa MSG.',
-        ingredientPrices: ['Tepung sorgum 100g: Rp2.500', 'Garam: Rp200', 'Air: Rp0', 'Minyak goreng: Rp1.800'],
+        ingredientPrices: ['Tepung sorgum 100g: Rp2.500', 'Garam: Rp500', 'Air: Rp0', 'Minyak goreng: Rp1.800'],
         estimatedTimeMinutes: 15,
         removedIngredients: ['Tepung terigu', 'Bahan pengawet'],
       },
       {
         title: 'Roti Sorgum Panggang',
         ingredients: ['Tepung sorgum (150g)', 'Ragi', 'Gula pasir', 'Garam', 'Minyak kelapa'],
-        estimatedCost: 7000,
+        estimatedCost: 7300,
         description: 'Roti lembut tanpa gluten, cocok untuk sarapan sehat.',
-        ingredientPrices: ['Tepung sorgum 150g: Rp3.500', 'Ragi: Rp1.000', 'Gula pasir: Rp1.000', 'Garam: Rp200', 'Minyak kelapa: Rp1.300'],
+        ingredientPrices: ['Tepung sorgum 150g: Rp3.500', 'Ragi: Rp1.000', 'Gula pasir: Rp1.000', 'Garam: Rp500', 'Minyak kelapa: Rp1.300'],
         estimatedTimeMinutes: 40,
         removedIngredients: ['Tepung gandum', 'Mentega', 'Susu'],
       },
@@ -407,7 +402,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Puding Sorgum Pandan',
         ingredients: ['Tepung sorgum (50g)', 'Santan (200ml)', 'Gula kelapa', 'Daun pandan'],
-        estimatedCost: 7000,
+        estimatedCost: 7200,
         description: 'Puding lembut pewarna alami pandan, rendah gula.',
         ingredientPrices: ['Tepung sorgum 50g: Rp2.500', 'Santan 200ml: Rp3.000', 'Gula kelapa: Rp1.000', 'Daun pandan: Rp500'],
         estimatedTimeMinutes: 25,
@@ -416,9 +411,9 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Bubur Ketan Sorgum',
         ingredients: ['Biji sorgum (100g)', 'Santan kental', 'Gula merah', 'Garam', 'Daun pandan'],
-        estimatedCost: 6500,
+        estimatedCost: 7000,
         description: 'Dessert tradisional dengan tekstur ketan dari sorgum.',
-        ingredientPrices: ['Biji sorgum 100g: Rp2.000', 'Santan kental: Rp3.000', 'Gula merah: Rp1.000', 'Garam: Rp200', 'Daun pandan: Rp300'],
+        ingredientPrices: ['Biji sorgum 100g: Rp2.000', 'Santan kental: Rp3.000', 'Gula merah: Rp1.000', 'Garam: Rp500', 'Daun pandan: Rp500'],
         estimatedTimeMinutes: 35,
         removedIngredients: ['Telur', 'Tepung terigu'],
       },
@@ -451,7 +446,6 @@ export async function generateRecipeFromWizardAsync(formData: WizardFormData): P
 Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 
 ### INPUT USER
-- Target Konsumen: ${formData.targetConsumers.join(', ')}
 - Kategori Hidangan: ${formData.dishCategory}
 - Bahan Pokok: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
 - Target Budget per porsi: Rp ${formData.budgetPerPortion}
@@ -482,32 +476,7 @@ ${PROMPT_RULES}`;
         flaggedIngredients: [],
       }, formData);
     }
-    const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
-    const errorIssues = issues.filter(i => i.level === 'error');
-
-    // If guard found critical errors (price fraud, budget overrun), refuse the recipe entirely.
-    // Don't show a broken recipe card with red badges — show a chat bubble instead.
-    if (errorIssues.length > 0) {
-      const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
-      const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
-
-      // Build detailed price table from the AI's ingredients
-      const priceTable = ingredients
-        .filter((i: any) => i.name && i.estimatedPrice > 0)
-        .map((i: any) => `| ${i.name} | Rp ${Number(i.estimatedPrice).toLocaleString('id-ID')} |`)
-        .join('\n');
-      const priceSection = priceTable
-        ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${ingredients.reduce((s: number, i: any) => s + (Number(i.estimatedPrice) || 0), 0).toLocaleString('id-ID')}** |\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |`
-        : '';
-
-      return buildRefusalResponse({
-        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan:`,
-        flaggedIngredients: ingredientNames.slice(0, 5),
-      }, formData);
-    }
-
-    const { repaired } = validateRecipe(parsed, formData.budgetPerPortion);
-    const recipe = recipeFromLlmJson(repaired, formData.budgetPerPortion, formData.dishCategory);
+        const recipe = recipeFromLlmJson(parsed, formData.dishCategory);
     return recipe;
   }
 
@@ -519,15 +488,9 @@ ${PROMPT_RULES}`;
 }
 
 export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
-  const { targetConsumers, dishCategory, selectedIngredientIds, customIngredients, budgetPerPortion } = formData;
+  const { dishCategory, selectedIngredientIds, customIngredients } = formData;
 
-  const targetLabel = targetConsumers.includes('anak_sekolah')
-    ? 'Anak Sekolah (6-12 thn)'
-    : targetConsumers.includes('balita')
-    ? 'Balita (1-5 thn)'
-    : targetConsumers.includes('lansia')
-    ? 'Lansia'
-    : 'Remaja & Dewasa';
+  const targetLabel = 'Semua Umur';
 
   // Format category name
   const categoryNames: Record<string, string> = {
@@ -544,17 +507,17 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
   let currentCost = 0;
 
   if (dishCategory === 'makanan_berat') {
-    if (targetConsumers.includes('anak_sekolah')) {
+    if (true) { // anak_sekolah
       return {
         ...INITIAL_FEATURED_RECIPE,
         id: `recipe-${Date.now()}`,
         imageUrl: FOOD_IMAGES.nasiGoreng,
-        targetBudget: budgetPerPortion,
-        estimatedCost: Math.min(budgetPerPortion, 9500),
+        targetBudget: 0,
+        estimatedCost: Math.min(0, 9500),
       };
     }
 
-    if (targetConsumers.includes('balita')) {
+    if (false) { // balita
       ingredients.push(
         { name: 'Biji sorgum giling halus (bubur)', amount: '50g', estimatedPrice: 2000 },
         { name: 'Kuning telur ayam kampung', amount: '1 butir', estimatedPrice: 2500 },
@@ -571,8 +534,8 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
         subtitle: 'Tekstur super lembut, kaya zat besi dan prebiotik alami untuk tumbuh kembang optimal balita:',
         targetAge: 'Balita (1-5 thn)',
         dishCategory: 'Makanan Berat',
-        targetBudget: budgetPerPortion,
-        estimatedCost: Math.min(budgetPerPortion, currentCost),
+        targetBudget: 0,
+        estimatedCost: Math.min(0, currentCost),
         prepTimeMinutes: 10,
         cookTimeMinutes: 20,
         servings: 1,
@@ -611,7 +574,7 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
       };
     }
 
-    if (targetConsumers.includes('lansia')) {
+    if (false) { // lansia
       ingredients.push(
         { name: 'Nasi sorgum empuk kukus', amount: '1 mangkok kecil (100g)', estimatedPrice: 2500 },
         { name: 'Sup bayam jagung bening', amount: '1 mangkuk', estimatedPrice: 2500 },
@@ -627,8 +590,8 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
         subtitle: 'Menu ramah gula darah, mudah dikunyah dan kaya antioksidan polifenol:',
         targetAge: 'Lansia',
         dishCategory: 'Makanan Berat',
-        targetBudget: budgetPerPortion,
-        estimatedCost: Math.min(budgetPerPortion, currentCost),
+        targetBudget: 0,
+        estimatedCost: Math.min(0, currentCost),
         prepTimeMinutes: 15,
         cookTimeMinutes: 20,
         servings: 1,
@@ -677,8 +640,8 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
       subtitle: 'Kudapan sehat tanpa terigu gandum, renyah manis alami pas untuk teman santai:',
       targetAge: targetLabel,
       dishCategory: 'Camilan Sehat',
-      targetBudget: budgetPerPortion,
-      estimatedCost: Math.min(budgetPerPortion, 8500),
+      targetBudget: 0,
+      estimatedCost: Math.min(0, 8500),
       prepTimeMinutes: 15,
       cookTimeMinutes: 15,
       servings: 4,
@@ -731,8 +694,8 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
       subtitle: 'Minuman booster energi menyegarkan kaya kalsium dan serat larut prebiotik:',
       targetAge: targetLabel,
       dishCategory: 'Minuman Nutrisi',
-      targetBudget: budgetPerPortion,
-      estimatedCost: Math.min(budgetPerPortion, 7500),
+      targetBudget: 0,
+      estimatedCost: Math.min(0, 7500),
       prepTimeMinutes: 5,
       cookTimeMinutes: 5,
       servings: 1,
@@ -785,8 +748,8 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
     subtitle: 'Pencuci mulut manis alami yang lembut di lidah dan ramah kestabilan gula darah:',
     targetAge: targetLabel,
     dishCategory: 'Dessert Rendah GI',
-    targetBudget: budgetPerPortion,
-    estimatedCost: Math.min(budgetPerPortion, 8000),
+    targetBudget: 0,
+    estimatedCost: Math.min(0, 8000),
     prepTimeMinutes: 10,
     cookTimeMinutes: 10,
     servings: 2,
@@ -853,18 +816,15 @@ ${PROMPT_RULES}`;
       const refusalText = (result as any).subtitle || 'Kombinasi bahan / budget yang diminta tidak dapat dibuat menjadi resep.';
       throw new Error(refusalText);
     }
-    const budgetLimit = budgetOverride ?? 999999;
-    const { issues, repaired } = validateRecipe(result, budgetLimit);
-    
+        
     // Jika ada peringatan kombinasi bahan tidak lazim, tolak resepnya!
     const conflictIssue = issues.find(i => i.message.includes('Kombinasi bahan tidak lazim'));
     if (conflictIssue) {
       throw new Error(`BIMA menolak resep ini: ${conflictIssue.message}`);
     }
 
-    const recipe = recipeFromLlmJson(repaired, budgetLimit, 'camilan_sehat');
-    (recipe as any).aiWarnings = issues;
-    return recipe;
+    const recipe = recipeFromLlmJson(result, 'camilan_sehat');
+        return recipe;
   }
   if (result && '__refusal' in result) {
     throw new Error(result.message);
