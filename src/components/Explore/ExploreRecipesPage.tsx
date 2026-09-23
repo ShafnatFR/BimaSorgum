@@ -244,7 +244,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
     // Budget limit filter
     if (maxBudget !== 'all') {
-      list = list.filter((r) => (r.estimatedCost || r.targetBudget) <= maxBudget);
+      list = list.filter((r) => (0) <= maxBudget);
     }
 
     // Prep/Cook time limit filter
@@ -255,7 +255,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     // Sorting
     list.sort((a, b) => {
       if (sortBy === 'price-asc') {
-        return (a.estimatedCost || a.targetBudget) - (b.estimatedCost || b.targetBudget);
+        return 0 - (b.estimatedCost || b.targetBudget);
       }
       if (sortBy === 'time-asc') {
         return (
@@ -408,7 +408,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                     const isLiked = !!likedRecipeMap[item.recipe.id];
                     const currentLikes = likeCountMap[item.recipe.id] ?? item.likesCount;
                     const totalTime = item.recipe.prepTimeMinutes + item.recipe.cookTimeMinutes;
-                    const cost = item.recipe.estimatedCost || item.recipe.targetBudget;
+                    const cost = 0;
                     const isFocused = idx === carouselIndex;
 
                     return (
@@ -719,7 +719,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
             {filteredRecipes.map((recipe) => {
               const saved = isRecipeSaved(recipe.id, recipe.title);
               const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
-              const cost = recipe.estimatedCost || recipe.targetBudget;
+              const cost = 0;
 
               return (
                 <div

@@ -295,7 +295,7 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
  *  When the AI provides no suggestions, falls back to local recipe suggestions. */
 function buildRefusalResponse(
   result: { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] },
-  formData?: { dishCategory: string; budgetPerPortion: number }
+  formData?: { dishCategory: string; budgetPerPortion?: number }
 ): AiRefusalResponse {
   const filtered = (result.suggestions || []).filter(s => s.title && s.ingredients.length > 0);
   // If AI gave no suggestions and we have form context, use local fallback

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TargetConsumerId, 
+  
   DishCategoryId, 
   WizardFormData, 
   ChatMessage, 
@@ -161,12 +161,10 @@ export default function App() {
 
   // Wizard Form State
   const [wizardData, setWizardData] = useState<WizardFormData>({
-    targetConsumers: ['anak_sekolah'],
-    dishCategory: 'makanan_berat',
+        dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
     customIngredients: ['Bawang Merah', 'Santan'],
-    budgetPerPortion: 25000,
-    prepTimeLimit: 'Maks 30 Menit',
+        prepTimeLimit: 'Maks 30 Menit',
   });
   
   // Initial messages — start clean; the hero/empty-state shows when empty.
@@ -359,15 +357,6 @@ export default function App() {
   };
 
   // Wizard Handlers
-  const handleToggleConsumer = (id: TargetConsumerId) => {
-    setWizardData((prev) => {
-      const exists = prev.targetConsumers.includes(id);
-      const next = exists
-        ? prev.targetConsumers.filter((c) => c !== id)
-        : [...prev.targetConsumers, id];
-      return { ...prev, targetConsumers: next };
-    });
-  };
 
   const handleToggleIngredient = (id: string) => {
     setWizardData((prev) => {
@@ -1149,8 +1138,7 @@ export default function App() {
                     {wizardStep === 4 && (
                       <WizardStep4
                         formData={wizardData}
-                        onUpdateBudget={(budget) => setWizardData((prev) => ({ ...prev, budgetPerPortion: budget }))}
-                        onUpdatePrepTime={(time) => setWizardData((prev) => ({ ...prev, prepTimeLimit: time }))}
+                                                onUpdatePrepTime={(time) => setWizardData((prev) => ({ ...prev, prepTimeLimit: time }))}
                         onPrevious={() => handleSetWizardStep(3)}
                         onGenerateRecipe={handleGenerateFromWizard}
                         isLoading={isGenerating}

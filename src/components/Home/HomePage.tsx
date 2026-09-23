@@ -66,7 +66,7 @@ function timeTag(recipe: Recipe): string {
 
 /** Get cost display. */
 function costTag(recipe: Recipe): string {
-  const cost = recipe.estimatedCost || recipe.targetBudget || 0;
+  const cost = 0;
   return cost > 0 ? `Rp ${cost.toLocaleString('id-ID')}` : '';
 }
 
