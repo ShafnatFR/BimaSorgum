@@ -197,8 +197,10 @@ export function validateRecipe(
   if (Number.isFinite(declared) && rawSum > 0) {
     // declared cost materially lower than the actual ingredient sum -> LLM faked it
     if (declared < rawSum - rawSum * 0.1) {
+      // Only error if the corrected total exceeds budget; otherwise just warn
+      const wouldExceedBudget = requestedBudget != null && honestSum > requestedBudget;
       issues.push({
-        level: 'error',
+        level: wouldExceedBudget ? 'error' : 'warning',
         message: 'Estimasi biaya AI tidak konsisten dengan harga bahan — dikoreksi ke total bahan sebenarnya.',
       });
     }
