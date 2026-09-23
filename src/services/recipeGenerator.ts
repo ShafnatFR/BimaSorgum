@@ -221,8 +221,8 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, harga bahan, konversi satuan, dan perhitungan gram dari dokumen tersebut. Gunakan harga dari dokumen (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
 2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
 3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
-4. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
-5. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+4. HARGA REALISTIS & MATEMATIKA: Anda WAJIB menghitung harga secara MATEMATIS berdasarkan harga di [DOKUMEN REFERENSI] (sebagian besar per kg atau per liter). Hitung proporsinya secara akurat! Contoh: Jika Biji Sorgum harganya 25000/kg (Rp25 per gram), dan Anda memakai 50 gram, maka harganya HARUS 1250. JANGAN MENGARANG HARGA. Anda WAJIB mencantumkan jumlah spesifik (misal: "Bawang merah (80 gram)") pada nama bahan agar masuk akal.
+5. KALKULASI: \`estimatedCost\` HARUS SAMA PERSIS dengan penjumlahan seluruh \`estimatedPrice\`.
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
