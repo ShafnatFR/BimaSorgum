@@ -70,13 +70,32 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
     const msg = `**Resep Ditolak (Skor Kelayakan: ${validationData.score}/100)**\n\nResep ini dinilai belum layak dipraktikkan karena:\n${reasons}\n\n*Sistem AI BIMA telah memblokir resep ini demi keamanan dan kenyamanan.*`;
     return msg;
   }
+  // perlu_perbaikan: recipe needs fixes — append warnings to the response
+  if (validationData && validationData.verdict === 'perlu_perbaikan' && validationData.issues?.length) {
+    const warnings = validationData.issues
+      .filter((i: any) => i.severity === 'sedang' || i.severity === 'berat')
+      .map((i: any) => `- **${i.aspect}**: ${i.fix || i.problem}`)
+      .join('
+');
+    if (warnings) {
+      full += `
+
+---
+
+### Catatan Verifikasi (Skor ${validationData.score}/100)
+${warnings}`;
+    }
+  }
 
   // The backend appends metadata after the recipe JSON, which would break JSON.parse
   // (e.g. ""summary": "", "reviewer_ran": false, ..." after the closing brace).
   // Extract only the first complete JSON object.
   const trimmedFull = full.trim();
-  if (trimmedFull.startsWith('{')) {
-    const clean = extractFirstJson(trimmedFull);
+  // 🔧 Search for JSON anywhere in the text (LLM may return prose before JSON)
+  const firstBrace = trimmedFull.indexOf('{');
+  if (firstBrace !== -1) {
+    const jsonCandidate = trimmedFull.substring(firstBrace);
+    const clean = extractFirstJson(jsonCandidate);
     try {
       // If the LLM hallucinated a JSON wrapper { "type": "text", "text": "..." }
       const parsedClean = JSON.parse(clean);
