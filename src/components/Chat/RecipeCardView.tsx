@@ -65,12 +65,15 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     });
   }).map(id => getIngredientDisplayName(id));
 
-  const formatRupiah = (amount: number) => {
-    return `Rp ${(amount * portionMultiplier).toLocaleString('id-ID')}`;
+  // Per-porsi base: divide full recipe cost by servings
+  const perPorsiFactor = recipe.servings > 0 ? recipe.servings : 1;
+  const formatRupiah = (fullRecipeAmount: number) => {
+    const perPorsi = fullRecipeAmount / perPorsiFactor;
+    return `Rp ${(perPorsi * portionMultiplier).toLocaleString('id-ID')}`;
   };
 
   const totalCalculatedCost = recipe.ingredients.reduce(
-    (sum, ing) => sum + ing.estimatedPrice * portionMultiplier,
+    (sum, ing) => sum + (ing.estimatedPrice / perPorsiFactor) * portionMultiplier,
     0
   );
 
