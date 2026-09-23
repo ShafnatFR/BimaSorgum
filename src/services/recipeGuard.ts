@@ -34,7 +34,52 @@ export function isRefusal(parsed: Record<string, any> | null | undefined): { ref
 export interface PremiumFloor { match: RegExp; min: number; label: string }
 
 // Global minimum price for ALL ingredients (warung minimum purchase unit)
-export const GLOBAL_MINIMUM_PRICE = 500;
+export const GLOBAL_MINIMUM_PRICE = 1500;
+
+// Per-ingredient minimum warung prices (realistic minimum purchase units)
+// These override GLOBAL_MINIMUM_PRICE when the ingredient matches
+const WARUNG_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> = [
+  // Bumbu dasar
+  { match: /garam/i, min: 2000, label: 'garam (1 bungkus kecil)' },
+  { match: /merica/i, min: 3000, label: 'merica (1 sachet)' },
+  { match: /gula\s*(pasir|putih)/i, min: 3500, label: 'gula pasir (1/4 kg)' },
+  { match: /gula\s*(merah|jawa|aren)/i, min: 3000, label: 'gula merah (1/4 kg)' },
+  { match: /minyak\s*(goreng|kelapa|sayur)/i, min: 5000, label: 'minyak (500ml)' },
+  { match: /kecap\s*manis/i, min: 3000, label: 'kecap manis (1 sachet)' },
+  // Bawang & bumbu segar
+  { match: /bawang\s*merah/i, min: 3000, label: 'bawang merah (1/4 kg)' },
+  { match: /bawang\s*putih/i, min: 3000, label: 'bawang putih (1/4 kg)' },
+  { match: /cabai|cabe/i, min: 4000, label: 'cabai (1/4 kg)' },
+  { match: /jahe/i, min: 2000, label: 'jahe (100g)' },
+  { match: /kunyit/i, min: 2000, label: 'kunyit (100g)' },
+  { match: /lengkuas/i, min: 2000, label: 'lengkuas (100g)' },
+  { match: /serai/i, min: 1500, label: 'serai (3 batang)' },
+  { match: /daun\s*(salam|jeruk|pandan)/i, min: 1500, label: 'daun (1 ikat)' },
+  // Sayuran
+  { match: /bayam/i, min: 2000, label: 'bayam (1 ikat)' },
+  { match: /kangkung/i, min: 2000, label: 'kangkung (1 ikat)' },
+  { match: /wortel/i, min: 3000, label: 'wortel (1/4 kg)' },
+  { match: /kol|kubis/i, min: 3000, label: 'kol (1/4 kg)' },
+  { match: /tomat/i, min: 2000, label: 'tomat (3 buah)' },
+  // Protein
+  { match: /telur\s*ayam/i, min: 2500, label: 'telur ayam (1 butir)' },
+  { match: /tahu/i, min: 2000, label: 'tahu (3 potong)' },
+  { match: /tempe/i, min: 2000, label: 'tempe (1 papan kecil)' },
+  // Sorgum & tepung
+  { match: /tepung\s*sorgum/i, min: 8000, label: 'tepung sorgum (250g)' },
+  { match: /biji\s*sorgum|beras\s*sorgum/i, min: 6000, label: 'biji sorgum (250g)' },
+  // Santan & susu
+  { match: /santan/i, min: 3000, label: 'santan (200ml)' },
+  { match: /susu\s*(UHT|cair|segar)/i, min: 4000, label: 'susu UHT (200ml)' },
+];
+
+/** Get the realistic minimum price for an ingredient from warung lookup. */
+export function getWarungFloor(name: string): number | null {
+  for (const entry of WARUNG_PRICE_FLOOR) {
+    if (entry.match.test(name)) return entry.min;
+  }
+  return null;
+}
 
 const PREMIUM_PRICE_FLOOR: Array<PremiumFloor> = [
   { match: /salmon/i, min: 8000, label: 'salmon' },
@@ -97,11 +142,15 @@ export function realisticCost(ingredients: Array<{ name?: string; estimatedPrice
   for (const ing of ingredients) {
     const name = ing.name || '';
     let price = Number(ing.estimatedPrice) || 0;
-    // Apply global minimum (warung minimum purchase unit)
-    if (price < GLOBAL_MINIMUM_PRICE) {
+    // 1. Check warung lookup table (highest priority)
+    const warungPrice = getWarungFloor(name);
+    if (warungPrice !== null && price < warungPrice) {
+      price = warungPrice;
+    } else if (price < GLOBAL_MINIMUM_PRICE) {
+      // 2. Fallback to global minimum for unknown ingredients
       price = GLOBAL_MINIMUM_PRICE;
     }
-    // Apply premium floor for specific ingredients
+    // 3. Apply premium floor for expensive ingredients
     for (const floor of PREMIUM_PRICE_FLOOR) {
       if (floor.match.test(name) && price < floor.min) {
         price = floor.min;

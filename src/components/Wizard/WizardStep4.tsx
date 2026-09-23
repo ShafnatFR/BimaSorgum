@@ -102,17 +102,17 @@ export const WizardStep4: React.FC<WizardStep4Props> = ({
               <input
                 id="budget-slider"
                 type="range"
-                min="5000"
+                min="15000"
                 max="25000"
                 step="500"
-                value={Math.min(Math.max(formData.budgetPerPortion, 5000), 25000)}
+                value={Math.min(Math.max(formData.budgetPerPortion, 15000), 25000)}
                 onChange={(e) => selectBudget(Number(e.target.value))}
                 className="w-full h-2.5 bg-[#afcfa9]/40 rounded-lg appearance-none cursor-pointer focus:outline-none"
               />
             </div>
             <div className="flex justify-between items-center text-xs font-medium text-[#727972] mt-2">
-              <span>Rp 5.000</span>
               <span>Rp 15.000</span>
+              <span>Rp 20.000</span>
               <span>Rp 25.000</span>
             </div>
           </div>

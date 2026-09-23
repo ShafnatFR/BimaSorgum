@@ -3,7 +3,7 @@ import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
-import { validateRecipe, GLOBAL_MINIMUM_PRICE } from './recipeGuard';
+import { validateRecipe, GLOBAL_MINIMUM_PRICE, getWarungFloor } from './recipeGuard';
 
 /** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
  *  Guarantees consistency: what the user sees in the card = what they get. */
@@ -214,9 +214,9 @@ const UNPAYLOAD_JSON_SCHEMA = `{
 const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, harga bahan, konversi satuan, dan perhitungan gram dari dokumen tersebut. Gunakan harga dari dokumen (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
 2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
-3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp5.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
+3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp15.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
 4. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
-5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 2.000, bukan "Garam halus (5 gram)" = Rp 2.
+5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 1.500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50, Rp 500 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 8.000, bukan "Garam halus (5 gram)" = Rp 2.
 6. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
 
 ### FORMAT OUTPUT
@@ -315,27 +315,27 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Bubur Sorgum Sayur Bayam',
         ingredients: ['Biji sorgum (100g)', 'Bayam segar', 'Bawang merah & putih', 'Garam', 'Minyak kelapa'],
-        estimatedCost: 6800,
+        estimatedCost: 21000,
         description: 'Bubur hangat kaya serat dengan sayuran segar, cocok untuk semua umur.',
-        ingredientPrices: ['Biji sorgum 100g: Rp2.500', 'Bayam segar: Rp1.500', 'Bawang merah & putih: Rp1.000', 'Garam: Rp500', 'Minyak kelapa: Rp1.300'],
+        ingredientPrices: ['Biji sorgum 100g: Rp6.000', 'Bayam segar: Rp2.000', 'Bawang merah & putih: Rp6.000', 'Garam: Rp2.000', 'Minyak kelapa: Rp5.000'],
         estimatedTimeMinutes: 30,
         removedIngredients: ['Dada ayam', 'Telur', 'Santan kelapa'],
       },
       {
         title: 'Nasi Sorgum Tahu Tempe',
         ingredients: ['Beras sorgum (150g)', 'Tahu goreng', 'Tempe goreng', 'Bawang putih', 'Kecap'],
-        estimatedCost: 8000,
+        estimatedCost: 16000,
         description: 'Nasi sorgum gurih lauk tahu tempe — protein nabati lengkap.',
-        ingredientPrices: ['Beras sorgum 150g: Rp3.500', 'Tahu goreng: Rp2.000', 'Tempe goreng: Rp1.500', 'Bawang putih: Rp500', 'Kecap: Rp500'],
+        ingredientPrices: ['Beras sorgum 150g: Rp6.000', 'Tahu goreng: Rp2.000', 'Tempe goreng: Rp2.000', 'Bawang putih: Rp3.000', 'Kecap: Rp3.000'],
         estimatedTimeMinutes: 25,
         removedIngredients: ['Daging ayam', 'Sayuran hijau premium'],
       },
       {
         title: 'Sorgum Bihun Goreng Sayur',
         ingredients: ['Biji sorgum rebus', 'Wortel', 'Kol', 'Bawang merah', 'Garam', 'Minyak goreng'],
-        estimatedCost: 6300,
+        estimatedCost: 22000,
         description: 'Gorengan sorgum dengan sayuran renyah, praktis dan bergizi.',
-        ingredientPrices: ['Biji sorgum: Rp2.000', 'Wortel: Rp1.500', 'Kol: Rp1.000', 'Bawang merah: Rp500', 'Garam: Rp500', 'Minyak goreng: Rp800'],
+        ingredientPrices: ['Biji sorgum: Rp6.000', 'Wortel: Rp3.000', 'Kol: Rp3.000', 'Bawang merah: Rp3.000', 'Garam: Rp2.000', 'Minyak goreng: Rp5.000'],
         estimatedTimeMinutes: 20,
         removedIngredients: ['Protein hewani', 'Santan'],
       },
@@ -344,7 +344,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Cookies Sorgum Cokelat',
         ingredients: ['Tepung sorgum (120g)', 'Gula kelapa', 'Minyak kelapa', 'Bubuk kakao'],
-        estimatedCost: 7500,
+        estimatedCost: 24500,
         description: 'Kudapan renyah tanpa terigu, manis alami dari gula kelapa.',
         ingredientPrices: ['Tepung sorgum 120g: Rp3.000', 'Gula kelapa: Rp1.500', 'Minyak kelapa: Rp1.500', 'Bubuk kakao: Rp1.500'],
         estimatedTimeMinutes: 30,
@@ -353,18 +353,18 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Lempeng Sorgum Original',
         ingredients: ['Tepung sorgum (100g)', 'Garam', 'Air', 'Minyak goreng'],
-        estimatedCost: 4800,
+        estimatedCost: 15000,
         description: 'Kerupuk sorgum renyah klasik, camilan sehat tanpa MSG.',
-        ingredientPrices: ['Tepung sorgum 100g: Rp2.500', 'Garam: Rp500', 'Air: Rp0', 'Minyak goreng: Rp1.800'],
+        ingredientPrices: ['Tepung sorgum 100g: Rp8.000', 'Garam: Rp2.000', 'Air: Rp0', 'Minyak goreng: Rp5.000'],
         estimatedTimeMinutes: 15,
         removedIngredients: ['Tepung terigu', 'Bahan pengawet'],
       },
       {
         title: 'Roti Sorgum Panggang',
         ingredients: ['Tepung sorgum (150g)', 'Ragi', 'Gula pasir', 'Garam', 'Minyak kelapa'],
-        estimatedCost: 7300,
+        estimatedCost: 21500,
         description: 'Roti lembut tanpa gluten, cocok untuk sarapan sehat.',
-        ingredientPrices: ['Tepung sorgum 150g: Rp3.500', 'Ragi: Rp1.000', 'Gula pasir: Rp1.000', 'Garam: Rp500', 'Minyak kelapa: Rp1.300'],
+        ingredientPrices: ['Tepung sorgum 150g: Rp8.000', 'Ragi: Rp3.000', 'Gula pasir: Rp3.500', 'Garam: Rp2.000', 'Minyak kelapa: Rp5.000'],
         estimatedTimeMinutes: 40,
         removedIngredients: ['Tepung gandum', 'Mentega', 'Susu'],
       },
@@ -373,7 +373,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Susu Sorgum Kurma',
         ingredients: ['Tepung sorgum sangrai (30g)', 'Kurma (3 butir)', 'Air hangat'],
-        estimatedCost: 5500,
+        estimatedCost: 17500,
         description: 'Minuman hangat kaya magnesium dan serat, pemanis alami dari kurma.',
         ingredientPrices: ['Tepung sorgum sangrai 30g: Rp2.000', 'Kurma 3 butir: Rp2.500', 'Air hangat: Rp0', 'Gula: Rp1.000'],
         estimatedTimeMinutes: 10,
@@ -382,7 +382,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Sorgum Milkshake Vanila',
         ingredients: ['Tepung sorgum (30g)', 'Susu UHT (200ml)', 'Gula kelapa', 'Vanili'],
-        estimatedCost: 7500,
+        estimatedCost: 18500,
         description: 'Minuman creamy segar dengan aroma vanila, tinggi kalsium.',
         ingredientPrices: ['Tepung sorgum 30g: Rp2.000', 'Susu UHT 200ml: Rp3.500', 'Gula kelapa: Rp1.000', 'Vanili: Rp1.000'],
         estimatedTimeMinutes: 10,
@@ -391,7 +391,7 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Es Sorgum Jeruk Nipis',
         ingredients: ['Air sorgum (200ml)', 'Jeruk nipis', 'Gula pasir', 'Es batu'],
-        estimatedCost: 5000,
+        estimatedCost: 13000,
         description: 'Minuman segar dengan vitamin C, cocok untuk cuaca panas.',
         ingredientPrices: ['Air sorgum 200ml: Rp1.500', 'Jeruk nipis: Rp1.500', 'Gula pasir: Rp1.000', 'Es batu: Rp1.000'],
         estimatedTimeMinutes: 5,
@@ -402,25 +402,25 @@ function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSugg
       {
         title: 'Puding Sorgum Pandan',
         ingredients: ['Tepung sorgum (50g)', 'Santan (200ml)', 'Gula kelapa', 'Daun pandan'],
-        estimatedCost: 7200,
+        estimatedCost: 16000,
         description: 'Puding lembut pewarna alami pandan, rendah gula.',
-        ingredientPrices: ['Tepung sorgum 50g: Rp2.500', 'Santan 200ml: Rp3.000', 'Gula kelapa: Rp1.000', 'Daun pandan: Rp500'],
+        ingredientPrices: ['Tepung sorgum 50g: Rp8.000', 'Santan 200ml: Rp3.000', 'Gula kelapa: Rp3.500', 'Daun pandan: Rp1.500'],
         estimatedTimeMinutes: 25,
         removedIngredients: ['Telur', 'Susu', 'Gula pasir'],
       },
       {
         title: 'Bubur Ketan Sorgum',
         ingredients: ['Biji sorgum (100g)', 'Santan kental', 'Gula merah', 'Garam', 'Daun pandan'],
-        estimatedCost: 7000,
+        estimatedCost: 15500,
         description: 'Dessert tradisional dengan tekstur ketan dari sorgum.',
-        ingredientPrices: ['Biji sorgum 100g: Rp2.000', 'Santan kental: Rp3.000', 'Gula merah: Rp1.000', 'Garam: Rp500', 'Daun pandan: Rp500'],
+        ingredientPrices: ['Biji sorgum 100g: Rp6.000', 'Santan kental: Rp3.000', 'Gula merah: Rp3.000', 'Garam: Rp2.000', 'Daun pandan: Rp1.500'],
         estimatedTimeMinutes: 35,
         removedIngredients: ['Telur', 'Tepung terigu'],
       },
       {
         title: 'Sorgum Flan Karamel',
         ingredients: ['Tepung sorgum (40g)', 'Susu (200ml)', 'Gula pasir', 'Telur (1 butir)'],
-        estimatedCost: 8500,
+        estimatedCost: 18000,
         description: 'Flan sutra karamel yang elegan, rendah indeks glikemik.',
         ingredientPrices: ['Tepung sorgum 40g: Rp2.000', 'Susu 200ml: Rp3.500', 'Gula pasir: Rp1.500', 'Telur 1 butir: Rp1.500'],
         estimatedTimeMinutes: 30,
@@ -485,18 +485,20 @@ ${PROMPT_RULES}`;
       const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
       const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
 
-      // Build detailed price table — apply GLOBAL_MINIMUM_PRICE to show corrected prices
+      // Build detailed price table — apply warung lookup or GLOBAL_MINIMUM_PRICE
       const priceTable = ingredients
         .filter((i: any) => i.name && i.estimatedPrice > 0)
         .map((i: any) => {
           const rawPrice = Number(i.estimatedPrice) || 0;
-          const correctedPrice = Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
+          const warungPrice = getWarungFloor(i.name || '');
+          const correctedPrice = warungPrice !== null ? Math.max(rawPrice, warungPrice) : Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
           return `| ${i.name} | Rp ${correctedPrice.toLocaleString('id-ID')} |`;
         })
         .join('\n');
       const correctedTotal = ingredients.reduce((s: number, i: any) => {
         const rawPrice = Number(i.estimatedPrice) || 0;
-        return s + Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
+        const warungPrice = getWarungFloor(i.name || '');
+        return s + (warungPrice !== null ? Math.max(rawPrice, warungPrice) : Math.max(rawPrice, GLOBAL_MINIMUM_PRICE));
       }, 0);
       const priceSection = priceTable
         ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${correctedTotal.toLocaleString('id-ID')}** |\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |`
