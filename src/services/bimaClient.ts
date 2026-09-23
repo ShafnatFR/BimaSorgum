@@ -75,8 +75,7 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
     const warnings = validationData.issues
       .filter((i: any) => i.severity === 'sedang' || i.severity === 'berat')
       .map((i: any) => `- **${i.aspect}**: ${i.fix || i.problem}`)
-      .join('
-');
+      .join('\n');
     if (warnings) {
       full += `
 

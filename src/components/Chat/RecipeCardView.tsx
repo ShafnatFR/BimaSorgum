@@ -46,12 +46,22 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   isPublished = false,
   onPublish,
   isPublishing = false,
+  inputIngredientNames = [],
 }) => {
   const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [ingredientsTab, setIngredientsTab] = useState<'takaran' | 'belanja'>('takaran');
+
+  // Compute which user-selected ingredients were NOT used in the final recipe
+  const unusedIngredients = inputIngredientNames.filter(name => {
+    const lower = name.toLowerCase();
+    return !recipe.ingredients.some(ri => {
+      const riLower = ri.name.toLowerCase();
+      return riLower.includes(lower) || lower.includes(riLower.split(' ')[0].split('(')[0]);
+    });
+  });
 
   const formatRupiah = (amount: number) => {
     return `Rp ${(amount * portionMultiplier).toLocaleString('id-ID')}`;
