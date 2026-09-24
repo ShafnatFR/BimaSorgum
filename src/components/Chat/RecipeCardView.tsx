@@ -240,7 +240,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
             </button>
             <span className="text-xs font-bold text-[#163422] px-1">{portionMultiplier}x</span>
             <button
-              onClick={() => setPortionMultiplier((p) => Math.min(5, p + 1))}
+              onClick={() => setPortionMultiplier((p) => p + 1)}
               className="w-5 h-5 rounded-full bg-[#163422] text-white font-bold text-xs shadow-xs flex items-center justify-center hover:bg-[#2d4b37]"
             >
               +
