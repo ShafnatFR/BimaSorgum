@@ -914,6 +914,13 @@ ${PROMPT_RULES}`;
     }
     const { issues, repaired } = validateRecipe(result, budgetOverride || 0);
 
+    // Jika ada error (budget overrun, harga tidak konsisten), tolak resepnya!
+    const errorIssues = issues.filter(i => i.level === 'error');
+    if (errorIssues.length > 0) {
+      const errorMsgs = errorIssues.map(i => i.message).join('; ');
+      throw new Error(`Resep ditolak: ${errorMsgs}`);
+    }
+
     // Jika ada peringatan kombinasi bahan tidak lazim, tolak resepnya!
     const conflictIssue = issues.find(i => i.message.includes('Kombinasi bahan tidak lazim'));
     if (conflictIssue) {
