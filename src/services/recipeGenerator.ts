@@ -306,19 +306,24 @@ const JSON_PREFILL = `
 Tulis LANJUTAN objek JSON di bawah ini saja — tanpa penjelasan, tanpa markdown code block:
 {"title": "`;
 
-/** Call the LLM up to 3 times; retries on empty/bad JSON AND on prose responses. */
+/** Call the LLM up to 3 format attempts; retries on empty/bad JSON and on prose.
+ *  Transient infrastructure failures (502/503/504/524/network) get their own fast
+ *  retry budget so a Cloudflare/origin hiccup does not surface as a hard error. */
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   let lastProseResponse: string | null = null;
   let timeouts = 0;
+  let transientRetries = 0;
+  let formatAttempts = 0; // attempts that actually returned an answer (JSON or prose)
 
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const prefilled = attempt === 2;
-    const attemptPrompt = attempt === 0 ? prompt
+  while (formatAttempts < 3) {
+    const prefilled = formatAttempts >= 2;
+    const attemptPrompt = formatAttempts === 0 ? prompt
       : prefilled ? prompt + JSON_ONLY_REMINDER + JSON_PREFILL
       : prompt + JSON_ONLY_REMINDER;
     try {
       const result = await bimaChat(attemptPrompt, [], { useRag: false, stream: true });
-      if (!result || !result.response) continue;
+      if (!result || !result.response) { formatAttempts++; continue; }
 
       const responseText = result.response;
       // With the prefill the completion starts INSIDE the object, so re-attach '{'.
@@ -348,23 +353,33 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
         return parsed;
       }
 
-      // No JSON found — save prose for potential refusal after retries; the next
-      // attempt adds a JSON-only reminder (and then the prefill).
+      // No JSON found — save prose for the final refusal, then force JSON on the
+      // next attempt (JSON-only reminder, then the prefill).
       const trimmed = responseText.trim();
       if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
+      formatAttempts++;
     } catch (err) {
       const rejMsg = err instanceof Error ? err.message : String(err);
-      // HTTP-level failures are fatal — retrying cannot help.
-      if (/422|504|502|524/.test(rejMsg)) throw err;
+      // Request-shaped failures: retrying cannot help.
+      if (/\b(401|403|405|413|422|429)\b/.test(rejMsg)) throw err;
       // A timeout gets exactly one more attempt: the backend occasionally stalls
       // before its first token, but two 170s waits is the ceiling we accept.
       if (/timeout/i.test(rejMsg)) {
         timeouts++;
         if (timeouts >= 2) throw err;
+        formatAttempts++;
         continue;
       }
-      // Backend error text / empty body: retry (the next attempt adds the
-      // JSON-only reminder, and the last one adds the JSON prefill).
+      // Transient gateway/origin failure (Cloudflare 502/504 HTML page, ECONNRESET):
+      // retry quickly WITHOUT consuming a format attempt.
+      if (/\b(500|502|503|504|520|521|522|523|524)\b/.test(rejMsg) || /fetch failed|ECONNRESET|socket hang up|network/i.test(rejMsg)) {
+        transientRetries++;
+        if (transientRetries > 4) throw err;
+        await sleep(2000 * transientRetries);
+        continue;
+      }
+      // Backend error text / empty body: counts as a format attempt.
+      formatAttempts++;
     }
   }
 
