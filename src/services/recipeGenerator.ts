@@ -586,8 +586,36 @@ ${PROMPT_RULES}`;
     const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
     const errorIssues = issues.filter(i => i.level === 'error');
 
-    // If guard found critical errors (price fraud, budget overrun), refuse the recipe entirely.
-    // Don't show a broken recipe card with red badges — show a chat bubble instead.
+    // If guard found critical errors (price fraud, budget overrun), give the model ONE
+    // repair round with the exact validator feedback before refusing: the LLM usually
+    // overshoots the budget only slightly and fixes it when told the numbers.
+    // Don't show a broken recipe card with red badges — a still-failing recipe becomes
+    // a chat bubble instead.
+    if (errorIssues.length > 0) {
+      const feedback = errorIssues.map(i => `- ${i.message}`).join('\n');
+      const repairPrompt = `${prompt}
+
+### KOREKSI WAJIB DARI VALIDATOR SISTEM
+Resep sebelumnya DITOLAK karena:
+${feedback}
+
+Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya PER PORSI (total estimatedPrice ÷ servings ≤ Target Budget per porsi). Cara yang benar: kurangi gramasi/jumlah bahan, ganti bahan mahal dengan bahan murah dari Bahan Pokok, atau perbesar jumlah porsi secara wajar bila adonannya memang banyak. Jangan mengulangi pelanggaran yang sama.`;
+
+      const repairedAttempt = await generateWithRetry(repairPrompt);
+      if (repairedAttempt && '__refusal' in repairedAttempt) {
+        // The AI itself says it cannot fit — use its own explanation.
+        return buildRefusalResponse(repairedAttempt as { message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] }, formData);
+      }
+      const repairedParsed = repairedAttempt as Record<string, any> | null;
+      if (repairedParsed && repairedParsed.title && Array.isArray(repairedParsed.ingredients) && repairedParsed.ingredients.length > 0) {
+        const second = validateRecipe(repairedParsed, formData.budgetPerPortion);
+        if (!second.issues.some(i => i.level === 'error')) {
+          return recipeFromLlmJson(second.repaired, formData.budgetPerPortion, formData.dishCategory);
+        }
+      }
+      // Repair round failed too — keep the original refusal explanation.
+    }
+
     if (errorIssues.length > 0) {
       const ingredientNames = ingredients.map((i: any) => i.name || '').filter(Boolean);
       const errorDetail = errorIssues.map(i => `- ${i.message}`).join('\n');
