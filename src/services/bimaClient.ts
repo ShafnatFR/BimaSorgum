@@ -42,6 +42,9 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
   let full = '';
   let buffer = '';
   let validationData: any = null;
+  let lastContentTime = Date.now();
+  const NO_CONTENT_TIMEOUT_MS = 60_000; // Fail fast if no content for 60s
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const { done, value } = await reader.read();
@@ -55,10 +58,15 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
       if (payload === '[DONE]') continue;
       try {
         const obj = JSON.parse(payload);
-        if (obj.delta) full += obj.delta;
-        if (obj.response) full = obj.response;
+        if (obj.delta) { full += obj.delta; lastContentTime = Date.now(); }
+        if (obj.response) { full = obj.response; lastContentTime = Date.now(); }
         if (obj.validation) validationData = obj.validation;
       } catch { /* ignore malformed line */ }
+    }
+    // Fail fast: if no recipe content after 60s, abort (backend stuck on heartbeats)
+    if (!full && Date.now() - lastContentTime > NO_CONTENT_TIMEOUT_MS) {
+      reader.cancel();
+      throw new Error('BIMA AI timeout: tidak ada konten resep setelah 60 detik.');
     }
   }
   
