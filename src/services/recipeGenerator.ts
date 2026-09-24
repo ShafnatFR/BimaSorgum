@@ -173,6 +173,19 @@ function generateSuggestionSteps(_title: string, category: string, ingredients: 
 /** Build a Recipe object from a parsed LLM JSON, tolerating missing fields. */
 function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, fallbackCategory: string): Recipe {
   const title = parsed.title || 'Resep Sorgum Spesial';
+
+  // Clean ingredient names: extract gramasi from name into amount field
+  const rawIngredients = Array.isArray(parsed.ingredients) ? parsed.ingredients : [];
+  const cleanedIngredients = rawIngredients.map((ing: any) => {
+    const parsed_g = parseGramasi(ing.name || '');
+    return {
+      name: parsed_g.cleanName || ing.name,
+      amount: ing.amount || parsed_g.amount,
+      estimatedPrice: ing.estimatedPrice,
+      ...(ing.notes ? { notes: ing.notes } : {}),
+    };
+  });
+
   return {
     id: `recipe-ai-${Date.now()}`,
     slug: slugify(title),
@@ -185,7 +198,7 @@ function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, 
     prepTimeMinutes: parsed.prepTimeMinutes ?? 10,
     cookTimeMinutes: parsed.cookTimeMinutes ?? 15,
     servings: parsed.servings ?? 1,
-    ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+    ingredients: cleanedIngredients,
     nutritionHighlight: parsed.nutritionHighlight || {
       title: 'Nutrisi Unggulan',
       description: 'Tinggi serat dan gizi, bebas gluten.',

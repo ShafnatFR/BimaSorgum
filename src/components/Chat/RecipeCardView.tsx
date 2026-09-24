@@ -65,32 +65,14 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     });
   }).map(id => getIngredientDisplayName(id));
 
-  // Per-porsi base: divide full recipe cost by servings
 
-  // Fixed-cost ingredients (bumbu/rempah/dapur): bought once, last many servings.
-  // These should NOT scale linearly with portion multiplier.
-  const FIXED_COST_PATTERNS = /garam|merica|lada|bawang|minyak\s*goreng|minyak\s*kelapa|daun\s*(pandan|salam|jeruk)|baking\s*powder|soda\s*kue|vanili|kayu\s*manis|serai|lengkuas|jahe|kunyit|gula\s*(pasir|merah)|kecap|sambal|saus/i;
-
-  /** Price for an ingredient at current portion multiplier.
-   *  Fixed-cost (bumbu/rempah): always show base price (buy once, use many times).
-   *  Consumable (tepung/telur/santan): scale with portion multiplier. */
-  const calcIngredientPrice = (ing: { name: string; estimatedPrice: number }) => {
-    if (FIXED_COST_PATTERNS.test(ing.name)) {
-      return ing.estimatedPrice; // fixed: always the same regardless of multiplier
-    }
-    return ing.estimatedPrice * portionMultiplier; // consumable: scale up
-  };
-
-  // Total cost = sum of all ingredient display prices
-  const totalCalculatedCost = recipe.ingredients.reduce(
-    (sum, ing) => sum + calcIngredientPrice(ing),
-    0
-  );
+  // Total Estimasi Belanja = biaya belanja di warung (TIDAK berubah saat porsi ditambah)
+  const totalCalculatedCost = recipe.estimatedCost;
 
   // Total servings when multiplied
   const totalServings = recipe.servings * portionMultiplier;
 
-  // Per-porsi = total / total servings
+  // Harga per porsi = total / total servings (makin banyak porsi = makin murah)
   const perPorsiCost = Math.round(totalCalculatedCost / totalServings);
 
   const formatRupiah = (amount: number) => {
@@ -120,7 +102,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name} (${formatRupiah(calcIngredientPrice(i))})`)
+      .map((i) => `- ${i.name} (${formatRupiah(i.estimatedPrice)})`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -297,7 +279,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
                   <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
                     <td className="py-1.5 pr-2 text-[#1A1C1B]">{ing.name}</td>
                     <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                    <td className="py-1.5 text-right font-semibold text-[#163422]">{`Rp ${calcIngredientPrice(ing).toLocaleString('id-ID')}`}</td>
+                    <td className="py-1.5 text-right font-semibold text-[#163422]">{`Rp ${ing.estimatedPrice.toLocaleString('id-ID')}`}</td>
                   </tr>
                 ))}
               </tbody>
