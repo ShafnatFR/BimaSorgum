@@ -94,9 +94,15 @@ type Outcome =
   | 'PASS_RECIPE' | 'PASS_REFUSAL_AI'
   | 'FAIL_TIMEOUT' | 'FAIL_GENERIC_FALLBACK' | 'FAIL_NONJSON_PROSE'
   | 'FAIL_BACKEND_ERROR' | 'FAIL_BLOCKED_REVIEWER' | 'FAIL_GUARD_BUDGET'
-  | 'FAIL_EMPTY_INGREDIENTS' | 'FAIL_THROWN' | 'FAIL_UNKNOWN';
+  | 'FAIL_EMPTY_INGREDIENTS' | 'FAIL_THROWN' | 'FAIL_BACKEND_DOWN' | 'FAIL_UNKNOWN';
 
-const FAILS: Outcome[] = ['FAIL_TIMEOUT', 'FAIL_GENERIC_FALLBACK', 'FAIL_NONJSON_PROSE', 'FAIL_BACKEND_ERROR', 'FAIL_BLOCKED_REVIEWER', 'FAIL_GUARD_BUDGET', 'FAIL_EMPTY_INGREDIENTS', 'FAIL_THROWN', 'FAIL_UNKNOWN'];
+const FAILS: Outcome[] = ['FAIL_TIMEOUT', 'FAIL_GENERIC_FALLBACK', 'FAIL_NONJSON_PROSE', 'FAIL_BACKEND_ERROR', 'FAIL_BLOCKED_REVIEWER', 'FAIL_GUARD_BUDGET', 'FAIL_EMPTY_INGREDIENTS', 'FAIL_THROWN', 'FAIL_BACKEND_DOWN', 'FAIL_UNKNOWN'];
+
+/** Every request died at the edge (Cloudflare 502/530…) — the origin was unreachable,
+ *  which is an infrastructure outage, not a pipeline bug. */
+function isInfraOutage(statuses: number[], outcome: Outcome) {
+  return (outcome === 'FAIL_THROWN' || outcome === 'FAIL_GENERIC_FALLBACK') && statuses.length > 0 && statuses.every(s => s === 0 || s >= 500);
+}
 
 function classify(result: any, err: any, raws: string[]): { outcome: Outcome; detail: string } {
   const allRaw = raws.join('\n');
@@ -160,7 +166,12 @@ async function runOne(cfg: Cfg) {
   const attempts = store.attempts;
   const durationMs = Date.now() - t0;
   const raws = attempts.map(a => a.raw);
-  const { outcome, detail } = classify(result, err, raws);
+  const statuses = attempts.map(a => a.status);
+  let { outcome, detail } = classify(result, err, raws);
+  if (isInfraOutage(statuses, outcome as Outcome)) {
+    outcome = 'FAIL_BACKEND_DOWN' as Outcome;
+    detail = `semua percobaan gagal di edge (HTTP ${statuses.join(', ')}) — origin tidak bisa dihubungi`;
+  }
   const { verdict, score } = extractValidation(raws);
   return {
     label: cfg.label, mode: cfg.mode || 'wizard', dishCategory: cfg.dishCategory,
@@ -182,6 +193,25 @@ async function main() {
   const active = filter.length ? [...CONFIGS, ...CHAT_CONFIGS].filter(c => filter.includes(c.label)) : [...CONFIGS, ...CHAT_CONFIGS];
   const queue = Array.from({ length: RUNS_PER_CONFIG }, () => active).flat();
   const results: any[] = [];
+
+  // Preflight: without a reachable origin every config fails at the edge and the run
+  // is worthless. Wait up to ~4 minutes for the backend to answer.
+  for (let i = 0; i < 8; i++) {
+    let st = 0;
+    try {
+      const r = await realFetch(BASE + '/bima-api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Stream': 'false' },
+        body: JSON.stringify({ message: 'ping' }),
+      });
+      st = r.status;
+      try { await r.body?.cancel(); } catch { /* ignore */ }
+    } catch { st = 0; }
+    if (st >= 200 && st < 500) { console.log(`preflight: backend OK (HTTP ${st})`); break; }
+    console.log(`preflight: backend HTTP ${st} — tunggu 30s (${i + 1}/8)`);
+    await new Promise((r) => setTimeout(r, 30_000));
+  }
+
   const workers = Array.from({ length: PARALLEL }, async () => {
     while (queue.length) {
       const cfg = queue.shift()!;
@@ -193,6 +223,7 @@ async function main() {
   await Promise.all(workers);
 
   const failures = results.filter(r => FAILS.includes(r.outcome));
+  const infraOutage = failures.length > 0 && failures.every(f => f.outcome === 'FAIL_BACKEND_DOWN');
   const report = {
     startedAt: started.toISOString(),
     finishedAt: new Date().toISOString(),
@@ -200,6 +231,7 @@ async function main() {
     total: results.length,
     passed: results.length - failures.length,
     failed: failures.length,
+    infraOutage,
     failureCounts: failures.reduce((acc: Record<string, number>, f) => ({ ...acc, [f.outcome]: (acc[f.outcome] || 0) + 1 }), {}),
     failures,
     results,
@@ -211,9 +243,10 @@ async function main() {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify(report, null, 1));
   fs.writeFileSync(OUT.replace(/\.json$/, '.md'), renderMarkdown(report));
-  console.log(`\nRESULT: ${report.passed}/${report.total} pass, ${report.failed} fail ${JSON.stringify(report.failureCounts)}`);
+  console.log(`\nRESULT: ${report.passed}/${report.total} pass, ${report.failed} fail ${JSON.stringify(report.failureCounts)}${infraOutage ? ' [BACKEND/ORIGIN DOWN — infra, bukan bug kode]' : ''}`);
   console.log('report:', OUT);
-  if (report.failed > 0) process.exitCode = 1;
+  if (infraOutage) process.exitCode = 3;
+  else if (report.failed > 0) process.exitCode = 1;
 }
 
 function renderMarkdown(rep: any) {
