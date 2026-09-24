@@ -67,13 +67,31 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   // Per-porsi base: divide full recipe cost by servings
   const perPorsiFactor = recipe.servings > 0 ? recipe.servings : 1;
+
+  // Fixed-cost ingredients (bumbu/rempah/dapur): bought once, last many servings.
+  // These should NOT scale linearly with portion multiplier.
+  const FIXED_COST_PATTERNS = /garam|merica|lada|bawang|minyak\s*goreng|minyak\s*kelapa|daun\s*(pandan|salam|jeruk)|baking\s*powder|soda\s*kue|vanili|kayu\s*manis|serai|lengkuas|jahe|kunyit|gula\s*(pasir|merah)|kecap|sambal|saus/i;
+
+  /** Calculate the scaled price for an ingredient.
+   *  - Consumable ingredients (tepung, telur, santan, madu, daging, sayur): scale with portions
+   *  - Fixed-cost ingredients (bumbu, rempah, minyak, daun): only charge once per recipe batch */
+  const calcIngredientPrice = (ing: { name: string; estimatedPrice: number }) => {
+    const basePrice = ing.estimatedPrice / perPorsiFactor; // per-serving base
+    if (FIXED_COST_PATTERNS.test(ing.name)) {
+      // Fixed cost: charge base price regardless of portion multiplier
+      // The user already bought the whole pack/unit
+      return basePrice;
+    }
+    // Consumable: scale with portions
+    return basePrice * portionMultiplier;
+  };
+
   const formatRupiah = (fullRecipeAmount: number) => {
-    const perPorsi = fullRecipeAmount / perPorsiFactor;
-    return `Rp ${(perPorsi * portionMultiplier).toLocaleString('id-ID')}`;
+    return `Rp ${calcIngredientPrice({ name: '', estimatedPrice: fullRecipeAmount }).toLocaleString('id-ID')}`;
   };
 
   const totalCalculatedCost = recipe.ingredients.reduce(
-    (sum, ing) => sum + (ing.estimatedPrice / perPorsiFactor) * portionMultiplier,
+    (sum, ing) => sum + calcIngredientPrice(ing),
     0
   );
 
@@ -277,7 +295,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
                   <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
                     <td className="py-1.5 pr-2 text-[#1A1C1B]">{ing.name}</td>
                     <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                    <td className="py-1.5 text-right font-semibold text-[#163422]">{formatRupiah(ing.estimatedPrice)}</td>
+                    <td className="py-1.5 text-right font-semibold text-[#163422]">{`Rp ${calcIngredientPrice(ing).toLocaleString('id-ID')}`}</td>
                   </tr>
                 ))}
               </tbody>
