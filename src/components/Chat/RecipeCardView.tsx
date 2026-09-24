@@ -66,15 +66,16 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   }).map(id => getIngredientDisplayName(id));
 
 
-  // Total Estimasi Belanja = biaya warung (tetap, tidak berubah)
-  const totalCalculatedCost = recipe.estimatedCost;
+  // Harga per porsi = naik sebanding porsi
+  const basePerPorsi = Math.round(recipe.estimatedCost / recipe.servings);
+  const perPorsiCost = basePerPorsi * portionMultiplier;
+
+  // Total Estimasi Belanja = naik saat per porsi melebihi total batch saat ini
+  // Logic: beli 1 batch = estimatedCost. Jika per porsi > total, butuh batch tambahan.
+  const totalCalculatedCost = recipe.estimatedCost * Math.ceil(perPorsiCost / recipe.estimatedCost);
 
   // Total servings = servings × multiplier
   const totalServings = recipe.servings * portionMultiplier;
-
-  // Harga per porsi = naik sebanding porsi (kalau bikin 2x, bayar 2x per porsi)
-  const basePerPorsi = Math.round(recipe.estimatedCost / recipe.servings);
-  const perPorsiCost = basePerPorsi * portionMultiplier;
 
   const formatRupiah = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
