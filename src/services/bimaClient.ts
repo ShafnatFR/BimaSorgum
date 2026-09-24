@@ -67,10 +67,10 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
         if (obj.validation) validationData = obj.validation;
       } catch { /* ignore malformed line */ }
     }
-    // Fail fast: if no recipe content after 60s, abort (backend stuck on heartbeats)
+    // Backstop only: abort if the backend stays silent past NO_CONTENT_TIMEOUT_MS.
     if (!full && Date.now() - lastContentTime > NO_CONTENT_TIMEOUT_MS) {
       reader.cancel();
-      throw new Error('BIMA AI timeout: tidak ada konten resep setelah 60 detik.');
+      throw new Error(`BIMA AI timeout: tidak ada konten resep setelah ${NO_CONTENT_TIMEOUT_MS / 1000} detik.`);
     }
   }
   
