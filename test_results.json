@@ -1,0 +1,217 @@
+[
+  {
+    "scenario": "S01 — Minuman Nutrisi, Budget 100k, Semua Bahan",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum\" Rp 2.100 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Sayuran Hijau\" Rp 1.500 (min Rp 2.000)",
+      "HARGA TERLALU RENDAH: \"Telur Ayam\" Rp 1.500 (min Rp 2.500)",
+      "HARGA TERLALU RENDAH: \"Santan\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Madu\" Rp 1.600 (min Rp 10.000)",
+      "HARGA TERLALU RENDAH: \"Minyak Kelapa\" Rp 1.500 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Garam & Merica\" Rp 1.500 (min Rp 2.000)",
+      "LOGIKA: minuman tapi ada bahan solid (ayam/tempe/tahu) tanpa konteks smoothie"
+    ],
+    "summary": {
+      "title": "Warm Sorghum-Leafy Green Nutri-Drink",
+      "servings": 1,
+      "totalCost": 12700,
+      "perPorsi": 12700,
+      "ingredientCount": 8,
+      "stepCount": 5
+    },
+    "hadCorrections": true,
+    "correctedTotal": 34000
+  },
+  {
+    "scenario": "S02 — Makanan Berat, Budget 15k, Sedikit Bahan",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Biji Sorgum Putih (dicuci & dikukus)\" Rp 3.000 (min Rp 6.000)",
+      "HARGA TERLALU RENDAH: \"Minyak Goreng (untuk menumis)\" Rp 1.800 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus & Merica Bubuk (campuran bumbu)\" Rp 1.500 (min Rp 2.000)",
+      "COST MISMATCH: total bahan Rp 13.275 vs declared Rp 13.475"
+    ],
+    "summary": {
+      "title": "Nasi Sorgum Kukus dengan Oseng Bumbu Bawang Merah dan Saus Santan Gurih",
+      "servings": 2,
+      "totalCost": 13475,
+      "perPorsi": 6738,
+      "ingredientCount": 5,
+      "stepCount": 4
+    },
+    "hadCorrections": true,
+    "correctedTotal": 19975
+  },
+  {
+    "scenario": "S03 — Camilan Sehat, Budget 25k",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (100 gram | 100%)\" Rp 2.400 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Gula Pasir (60 gram | 60%)\" Rp 1.500 (min Rp 3.500)",
+      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni (30 gram | 30%)\" Rp 1.500 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus (1 gram | 1%)\" Rp 1.500 (min Rp 2.000)"
+    ],
+    "summary": {
+      "title": "Kukis Sorgum-Telur Minum Kopi/Teh Siang Hari",
+      "servings": 4,
+      "totalCost": 10420,
+      "perPorsi": 2605,
+      "ingredientCount": 5,
+      "stepCount": 4
+    },
+    "hadCorrections": true,
+    "correctedTotal": 22020
+  },
+  {
+    "scenario": "S04 — Dessert Rendah GI, Budget 20k",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (100 gram)\" Rp 2.500 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Gula Merah (100 gram)\" Rp 2.000 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus (2 gram)\" Rp 1.500 (min Rp 2.000)"
+    ],
+    "summary": {
+      "title": "Puding Sorgum Pandan Gula Merah Rendah GI",
+      "servings": 4,
+      "totalCost": 12600,
+      "perPorsi": 3150,
+      "ingredientCount": 6,
+      "stepCount": 5
+    },
+    "hadCorrections": true,
+    "correctedTotal": 19600
+  },
+  {
+    "scenario": "S05 — Minuman Nutrisi, Budget 10k (ketat)",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (50 gram)\" Rp 1.500 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Santan Kelapa Tua (100 ml)\" Rp 2.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Madu Murni (20 gram)\" Rp 3.000 (min Rp 10.000)"
+    ],
+    "summary": {
+      "title": "Bubur Susu Sorgum-Pandan Madu",
+      "servings": 1,
+      "totalCost": 10000,
+      "perPorsi": 10000,
+      "ingredientCount": 5,
+      "stepCount": 4
+    },
+    "hadCorrections": true,
+    "correctedTotal": 24000
+  },
+  {
+    "scenario": "S06 — Makanan Berat, Budget 50k, Bahan Lengkap",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Biji Sorgum Sosoh (19% massa kering)\" Rp 2.500 (min Rp 6.000)",
+      "HARGA TERLALU RENDAH: \"Wortel (19% massa kering)\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Bawang Putih (6% massa aromatik)\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni (pelengkap lemak)\" Rp 1.500 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Kecap Manis (penyedap gurih-manis)\" Rp 2.000 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus (pendense rasa)\" Rp 1.500 (min Rp 2.000)",
+      "HARGA TERLALU RENDAH: \"Merica Bubuk (pengawet aroma)\" Rp 1.500 (min Rp 3.000)",
+      "COST MISMATCH: total bahan Rp 25.400 vs declared Rp 26.400"
+    ],
+    "summary": {
+      "title": "Nasi Goreng Sorgum Unggulan Ayam & Sayur Hijau",
+      "servings": 1,
+      "totalCost": 26400,
+      "perPorsi": 26400,
+      "ingredientCount": 11,
+      "stepCount": 5
+    },
+    "hadCorrections": true,
+    "correctedTotal": 38400
+  },
+  {
+    "scenario": "S07 — Camilan Sehat, Budget 5k (sangat ketat)",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung sorgum putih\" Rp 2.500 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Garam halus\" Rp 1.500 (min Rp 2.000)",
+      "HARGA TERLALU RENDAH: \"Air matang\" Rp 0 (min Rp 1.500)",
+      "ZERO PRICE: \"Air matang\" harga Rp 0",
+      "HARGA TERLALU RENDAH: \"Minyak sayur\" Rp 75 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Merica bubuk\" Rp 25 (min Rp 3.000)",
+      "COST MISMATCH: total bahan Rp 4.100 vs declared Rp 3.100"
+    ],
+    "summary": {
+      "title": "Keripik Sorgum Panggang Gurih",
+      "servings": 2,
+      "totalCost": 3100,
+      "perPorsi": 1550,
+      "ingredientCount": 5,
+      "stepCount": 4
+    },
+    "hadCorrections": true,
+    "correctedTotal": 19500
+  },
+  {
+    "scenario": "S08 — Dessert, Budget 30k, Premium",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih\" Rp 5.250 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Madu Murni\" Rp 3.600 (min Rp 10.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus\" Rp 1.500 (min Rp 2.000)"
+    ],
+    "summary": {
+      "title": "Puding Susu Sorgum-Pandan (Low-GI Custard)",
+      "servings": 4,
+      "totalCost": 19850,
+      "perPorsi": 4963,
+      "ingredientCount": 6,
+      "stepCount": 6
+    },
+    "hadCorrections": true,
+    "correctedTotal": 29400
+  },
+  {
+    "scenario": "S09 — Minuman, Budget 50k, Bahan Aneh (sayur+protein di minuman)",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Biji Sorgum Putih Utuh (150 gram)\" Rp 3.750 (min Rp 6.000)",
+      "HARGA TERLALU RENDAH: \"Telur Ayam (50 gram)\" Rp 1.600 (min Rp 2.500)",
+      "HARGA TERLALU RENDAH: \"Bawang Putih Mentah (50 gram)\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus (5 gram)\" Rp 1.500 (min Rp 2.000)",
+      "HARGA TERLALU RENDAH: \"Merica Bubuk Halus (5 gram)\" Rp 1.500 (min Rp 3.000)",
+      "COST MISMATCH: total bahan Rp 17.850 vs declared Rp 19.850"
+    ],
+    "summary": {
+      "title": "Smoothie Gurih Sorgum Hijau Berprotein",
+      "servings": 2,
+      "totalCost": 19850,
+      "perPorsi": 9925,
+      "ingredientCount": 9,
+      "stepCount": 5
+    },
+    "hadCorrections": true,
+    "correctedTotal": 24500
+  },
+  {
+    "scenario": "S10 — Makanan Berat, Budget 100k (longgar)",
+    "status": "FAIL",
+    "issues": [
+      "HARGA TERLALU RENDAH: \"Biji Sorgum (berat kering)\" Rp 3.750 (min Rp 6.000)",
+      "HARGA TERLALU RENDAH: \"Tepung Sorgum (pengental)\" Rp 1.500 (min Rp 8.000)",
+      "HARGA TERLALU RENDAH: \"Wortel\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Bawang Merah Iris\" Rp 1.500 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Santan Kelapa Sedikit Asam\" Rp 2.250 (min Rp 3.000)",
+      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni\" Rp 1.500 (min Rp 5.000)",
+      "HARGA TERLALU RENDAH: \"Garam Halus\" Rp 1.500 (min Rp 2.000)",
+      "HARGA TERLALU RENDAH: \"Merica Bubuk\" Rp 1.500 (min Rp 3.000)",
+      "COST MISMATCH: total bahan Rp 29.500 vs declared Rp 30.500"
+    ],
+    "summary": {
+      "title": "Sup Kuning Sorgum Ayam Telur Spesial",
+      "servings": 4,
+      "totalCost": 30500,
+      "perPorsi": 7625,
+      "ingredientCount": 11,
+      "stepCount": 5
+    },
+    "hadCorrections": true,
+    "correctedTotal": 47500
+  }
+]

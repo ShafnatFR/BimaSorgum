@@ -5,6 +5,23 @@ import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
 import { validateRecipe, GLOBAL_MINIMUM_PRICE, getWarungFloor } from './recipeGuard';
 
+/** Parse gramasi from ingredient name string.
+ *  "Tepung Sorgum (150g)" → { cleanName: "Tepung Sorgum", amount: "150g" }
+ *  "Madu Murni (40ml): Rp2.600" → { cleanName: "Madu Murni", amount: "40ml" }
+ *  "Telur Ayam (1 butir)" → { cleanName: "Telur Ayam", amount: "1 butir" }
+ *  "Garam Halus" → { cleanName: "Garam Halus", amount: "" }
+ */
+function parseGramasi(raw: string): { cleanName: string; amount: string } {
+  // Remove price suffix like ": Rp2.600" or ": Rp 2.600"
+  const noPrice = raw.replace(/:\s*rp\s*[\d.,]+/i, '').trim();
+  // Extract parenthetical gramasi: (150g), (1 butir ±60 gram), (2 sachet ±30 gram)
+  const match = noPrice.match(/^(.+?)\s*\(([^)]+)\)\s*$/);
+  if (match) {
+    return { cleanName: match[1].trim(), amount: match[2].trim() };
+  }
+  return { cleanName: noPrice.trim(), amount: '' };
+}
+
 /** Build a complete Recipe directly from a RecipeSuggestion — no AI call needed.
  *  Guarantees consistency: what the user sees in the card = what they get. */
 export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData: WizardFormData): Recipe {
@@ -48,9 +65,11 @@ export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData
 
     if (price > 0) {
       matchedTotal += price;
-      ingredients.push({ name: ing, amount: '', estimatedPrice: price });
+      const parsed = parseGramasi(ing);
+      ingredients.push({ name: parsed.cleanName, amount: parsed.amount, estimatedPrice: price });
     } else {
-      ingredients.push({ name: ing, amount: '', estimatedPrice: 0 });
+      const parsed = parseGramasi(ing);
+      ingredients.push({ name: parsed.cleanName, amount: parsed.amount, estimatedPrice: 0 });
       unmatchedIndices.push(idx);
     }
   }
