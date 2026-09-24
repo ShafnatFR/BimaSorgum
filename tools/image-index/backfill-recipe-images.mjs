@@ -55,7 +55,15 @@ R.setImageUsage(usage);
 
 const updates = [];
 let matched = 0;
+let kept = 0;
+const force = process.argv.includes('--force');
 for (const r of rows) {
+  // idempoten: resep yang sudah punya foto + kunci dibiarkan apa adanya,
+  // supaya menjalankan ulang skrip ini tidak mengacak foto resep yang sudah terbit.
+  if (!force && r.image_key && r.image_url) {
+    kept++;
+    continue;
+  }
   const out = R.resolveMenuImage(r.title || '', r.dish_category || undefined, r.slug || r.id);
   if (!out.url) continue;
   if (out.matched) matched++;
@@ -65,6 +73,7 @@ for (const r of rows) {
   updates.push([r.id, out.url, out.imageKey, (out.credit || '').slice(0, 200), (out.page || '').slice(0, 300)]);
 }
 console.log('cocok ke menu indeks:', matched, `(${((matched / rows.length) * 100).toFixed(1)}%)`);
+console.log('sudah terisi (dilewati):', kept);
 console.log('baris yang perlu diupdate:', updates.length);
 if (dry) process.exit(0);
 
