@@ -298,19 +298,32 @@ const JSON_ONLY_REMINDER = `
 ### KOREKSI FORMAT (WAJIB)
 Jawaban sebelumnya TIDAK valid karena bukan JSON. Balas ULANG hanya dengan SATU objek JSON sesuai skema di atas — tanpa kalimat pembuka, tanpa penjelasan, tanpa markdown code block, tanpa teks apa pun sebelum '{' atau setelah '}'.`;
 
+/** Final-attempt trick: leave the prompt open inside the JSON object so the model
+ *  must continue in JSON instead of writing a prose analysis ("## Konsep Produk"). */
+const JSON_PREFILL = `
+
+### MULAI JSON SEKARANG
+Tulis LANJUTAN objek JSON di bawah ini saja — tanpa penjelasan, tanpa markdown code block:
+{"title": "`;
+
 /** Call the LLM up to 3 times; retries on empty/bad JSON AND on prose responses. */
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
   let lastProseResponse: string | null = null;
   let timeouts = 0;
-  let strictFormat = false;
 
   for (let attempt = 0; attempt < 3; attempt++) {
+    const prefilled = attempt === 2;
+    const attemptPrompt = attempt === 0 ? prompt
+      : prefilled ? prompt + JSON_ONLY_REMINDER + JSON_PREFILL
+      : prompt + JSON_ONLY_REMINDER;
     try {
-      const result = await bimaChat(strictFormat ? prompt + JSON_ONLY_REMINDER : prompt, [], { useRag: false, stream: true });
+      const result = await bimaChat(attemptPrompt, [], { useRag: false, stream: true });
       if (!result || !result.response) continue;
 
       const responseText = result.response;
-      const parsed = extractJsonFromLlm(responseText);
+      // With the prefill the completion starts INSIDE the object, so re-attach '{'.
+      const parsed = extractJsonFromLlm(responseText)
+        || (prefilled ? extractJsonFromLlm('{' + responseText.trim()) : null);
 
       if (parsed) {
         const status = String((parsed as any).status || '').toLowerCase();
@@ -335,11 +348,10 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
         return parsed;
       }
 
-      // No JSON found — save prose for potential refusal after retries, then
-      // force JSON on the next attempt instead of resending the same prompt.
+      // No JSON found — save prose for potential refusal after retries; the next
+      // attempt adds a JSON-only reminder (and then the prefill).
       const trimmed = responseText.trim();
       if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
-      strictFormat = true;
     } catch (err) {
       const rejMsg = err instanceof Error ? err.message : String(err);
       // HTTP-level failures are fatal — retrying cannot help.
@@ -349,11 +361,10 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
       if (/timeout/i.test(rejMsg)) {
         timeouts++;
         if (timeouts >= 2) throw err;
-        strictFormat = true;
         continue;
       }
-      // Backend error text / empty body: retry with the stricter format prompt.
-      strictFormat = true;
+      // Backend error text / empty body: retry (the next attempt adds the
+      // JSON-only reminder, and the last one adds the JSON prefill).
     }
   }
 
