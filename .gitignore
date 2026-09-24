@@ -10,3 +10,7 @@ coverage/
 
 # Supabase CLI local state
 supabase/.temp/
+
+# artefak build skrip indeks gambar
+tools/image-index/.resolver.mjs
+tools/image-index/resolver-test-result.json
