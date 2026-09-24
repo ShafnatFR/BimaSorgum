@@ -330,7 +330,10 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
       if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
     } catch (err) {
       const rejMsg = err instanceof Error ? err.message : String(err);
-      if (rejMsg.includes('422') || rejMsg.includes('504') || rejMsg.includes('502') || rejMsg.includes('524')) throw err;
+      // Fatal: no point retrying — do NOT swallow these into the generic
+      // "AI tidak memberikan respons yang valid" case.
+      // A timeout retry would burn another 150s and blow past the proxy cap.
+      if (/timeout|422|504|502|524/i.test(rejMsg)) throw err;
     }
   }
 

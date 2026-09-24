@@ -43,7 +43,11 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
   let buffer = '';
   let validationData: any = null;
   let lastContentTime = Date.now();
-  const NO_CONTENT_TIMEOUT_MS = 60_000; // Fail fast if no content for 60s
+  // Backend time-to-first-token is 80–100s for wizard prompts (RAG retrieval +
+  // reviewer pass run BEFORE the first token is emitted), so the old 60s cap
+  // aborted replies that were still coming. Must stay below the Vercel proxy
+  // upstream cap (175s) / this client's 180s fetch cap.
+  const NO_CONTENT_TIMEOUT_MS = 150_000;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
