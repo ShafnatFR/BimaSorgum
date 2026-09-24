@@ -36,6 +36,51 @@ export interface PremiumFloor { match: RegExp; min: number; label: string }
 // Global minimum price for ALL ingredients (warung minimum purchase unit)
 export const GLOBAL_MINIMUM_PRICE = 1500;
 
+// Global maximum price cap per single ingredient.
+// If the LLM hallucinates an absurd price (e.g. Rp 366,667 for tepung sorgum),
+// cap it at this value before the budget check runs.
+export const GLOBAL_MAXIMUM_PRICE = 50000;
+
+// Per-ingredient maximum prices — realistic ceiling for a single standard purchase.
+// Overrides GLOBAL_MAXIMUM_PRICE when the ingredient matches.
+// These are generous upper bounds (2-3x normal retail) to avoid false positives.
+const WARUNG_PRICE_CEILING: Array<{ match: RegExp; max: number }> = [
+  // Bumbu dasar
+  { match: /garam/i, max: 5000 },
+  { match: /merica/i, max: 8000 },
+  { match: /gula/i, max: 12000 },
+  { match: /minyak/i, max: 18000 },
+  { match: /kecap/i, max: 8000 },
+  // Bawang & bumbu segar
+  { match: /bawang/i, max: 10000 },
+  { match: /cabai|cabe/i, max: 15000 },
+  { match: /jahe|kunyit|lengkuas/i, max: 6000 },
+  { match: /serai/i, max: 5000 },
+  { match: /daun/i, max: 5000 },
+  // Sayuran
+  { match: /bayam|kangkung/i, max: 6000 },
+  { match: /wortel|kol|kubis/i, max: 10000 },
+  { match: /tomat/i, max: 8000 },
+  // Protein
+  { match: /telur/i, max: 30000 },
+  { match: /tahu|tempe/i, max: 8000 },
+  { match: /ayam/i, max: 35000 },
+  { match: /daging/i, max: 50000 },
+  { match: /ikan|salmon|tuna/i, max: 40000 },
+  { match: /udang/i, max: 40000 },
+  // Sorgum & tepung
+  { match: /tepung\s*sorgum/i, max: 20000 },
+  { match: /biji\s*sorgum|beras\s*sorgum/i, max: 15000 },
+  // Santan & susu
+  { match: /santan/i, max: 10000 },
+  { match: /susu/i, max: 15000 },
+  // Lainnya
+  { match: /madu/i, max: 35000 },
+  { match: /kurma/i, max: 25000 },
+  { match: /keju/i, max: 25000 },
+  { match: /alpukat/i, max: 15000 },
+];
+
 // Per-ingredient minimum warung prices (realistic minimum purchase units)
 // These override GLOBAL_MINIMUM_PRICE when the ingredient matches
 const WARUNG_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> = [
@@ -77,6 +122,14 @@ const WARUNG_PRICE_FLOOR: Array<{ match: RegExp; min: number; label: string }> =
 export function getWarungFloor(name: string): number | null {
   for (const entry of WARUNG_PRICE_FLOOR) {
     if (entry.match.test(name)) return entry.min;
+  }
+  return null;
+}
+
+/** Get the realistic maximum price for an ingredient — caps LLM hallucinations. */
+export function getWarungCeiling(name: string): number | null {
+  for (const entry of WARUNG_PRICE_CEILING) {
+    if (entry.match.test(name)) return entry.max;
   }
   return null;
 }
@@ -136,13 +189,14 @@ export function detectIngredientConflicts(ingredientNames: string[]): string[] {
   return hits;
 }
 
-/** Apply a realistic minimum price to each ingredient and re-sum the cost. */
+/** Apply a realistic minimum price to each ingredient and re-sum the cost.
+ *  Also caps prices at a ceiling to catch LLM hallucinations (e.g. Rp 366k for tepung sorgum). */
 export function realisticCost(ingredients: Array<{ name?: string; estimatedPrice?: number }>): number {
   let total = 0;
   for (const ing of ingredients) {
     const name = ing.name || '';
     let price = Number(ing.estimatedPrice) || 0;
-    // 1. Check warung lookup table (highest priority)
+    // 1. Check warung lookup table (highest priority) — floor
     const warungPrice = getWarungFloor(name);
     if (warungPrice !== null && price < warungPrice) {
       price = warungPrice;
@@ -156,6 +210,12 @@ export function realisticCost(ingredients: Array<{ name?: string; estimatedPrice
         price = floor.min;
         break;
       }
+    }
+    // 4. CEILING: cap hallucinated prices at a realistic maximum
+    const ceiling = getWarungCeiling(name);
+    const effectiveCeiling = ceiling !== null ? ceiling : GLOBAL_MAXIMUM_PRICE;
+    if (price > effectiveCeiling) {
+      price = effectiveCeiling;
     }
     total += price;
   }
@@ -189,10 +249,29 @@ export function validateRecipe(
     });
   }
 
-  // 2) Price integrity
+  // 2) Price integrity — detect hallucinated prices (capped by ceiling)
   const rawSum = ingredients.reduce((s, i) => s + (Number(i.estimatedPrice) || 0), 0);
   const honestSum = realisticCost(ingredients);
   const declared = Number(parsed.estimatedCost);
+
+  // Check which ingredients had hallucinated prices (capped by ceiling)
+  const hallucinatedNames: string[] = [];
+  for (const ing of ingredients) {
+    const name = ing.name || '';
+    const price = Number(ing.estimatedPrice) || 0;
+    const ceiling = getWarungCeiling(name);
+    const effectiveCeiling = ceiling !== null ? ceiling : GLOBAL_MAXIMUM_PRICE;
+    if (price > effectiveCeiling) {
+      hallucinatedNames.push(`${name} (Rp ${price.toLocaleString('id-ID')} → Rp ${effectiveCeiling.toLocaleString('id-ID')})`);
+    }
+  }
+
+  if (hallucinatedNames.length > 0) {
+    issues.push({
+      level: 'warning',
+      message: `Harga bahan dikoreksi (terlalu tinggi dari AI): ${hallucinatedNames.join(', ')}.`,
+    });
+  }
 
   if (Number.isFinite(declared) && rawSum > 0) {
     // declared cost materially lower than the actual ingredient sum -> LLM faked it
@@ -214,9 +293,26 @@ export function validateRecipe(
     });
   }
 
-  // Repair: force estimatedCost = honest ingredient sum
+  // Repair: force estimatedCost = honest ingredient sum, and cap individual prices
   if (ingredients.length > 0) {
-    repaired.estimatedCost = honestSum;
+    // Cap each ingredient's price at its ceiling
+    const repairedIngredients = ingredients.map((ing: any) => {
+      const name = ing.name || '';
+      let price = Number(ing.estimatedPrice) || 0;
+      const warungFloor = getWarungFloor(name);
+      const premiumFloor = getPremiumFloor(name);
+      // Apply floor
+      if (warungFloor !== null && price < warungFloor) price = warungFloor;
+      else if (price < GLOBAL_MINIMUM_PRICE) price = GLOBAL_MINIMUM_PRICE;
+      if (premiumFloor && price < premiumFloor.min) price = premiumFloor.min;
+      // Apply ceiling
+      const ceiling = getWarungCeiling(name);
+      const effectiveCeiling = ceiling !== null ? ceiling : GLOBAL_MAXIMUM_PRICE;
+      if (price > effectiveCeiling) price = effectiveCeiling;
+      return { ...ing, estimatedPrice: price };
+    });
+    repaired.ingredients = repairedIngredients;
+    repaired.estimatedCost = repairedIngredients.reduce((s: number, i: any) => s + (Number(i.estimatedPrice) || 0), 0);
     repaired.targetBudget = requestedBudget ?? parsed.targetBudget;
   }
 
