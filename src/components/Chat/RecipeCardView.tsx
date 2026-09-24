@@ -66,14 +66,15 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   }).map(id => getIngredientDisplayName(id));
 
 
-  // Total Estimasi Belanja = naik sebanding porsi (butuh lebih banyak bahan)
-  const totalCalculatedCost = recipe.estimatedCost * portionMultiplier;
+  // Total Estimasi Belanja = biaya warung (tetap, tidak berubah)
+  const totalCalculatedCost = recipe.estimatedCost;
 
   // Total servings = servings × multiplier
   const totalServings = recipe.servings * portionMultiplier;
 
-  // Harga per porsi = tetap (tidak berubah saat multiplier naik)
-  const perPorsiCost = Math.round(recipe.estimatedCost / recipe.servings);
+  // Harga per porsi = naik sebanding porsi (kalau bikin 2x, bayar 2x per porsi)
+  const basePerPorsi = Math.round(recipe.estimatedCost / recipe.servings);
+  const perPorsiCost = basePerPorsi * portionMultiplier;
 
   const formatRupiah = (amount: number) => {
     return `Rp ${amount.toLocaleString('id-ID')}`;
@@ -279,7 +280,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
                   <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
                     <td className="py-1.5 pr-2 text-[#1A1C1B]">{ing.name}</td>
                     <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                    <td className="py-1.5 text-right font-semibold text-[#163422]">{`Rp ${(ing.estimatedPrice * portionMultiplier).toLocaleString('id-ID')}`}</td>
+                    <td className="py-1.5 text-right font-semibold text-[#163422]">{`Rp ${ing.estimatedPrice.toLocaleString('id-ID')}`}</td>
                   </tr>
                 ))}
               </tbody>
