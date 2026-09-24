@@ -43,11 +43,12 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
   let buffer = '';
   let validationData: any = null;
   let lastContentTime = Date.now();
-  // Backend time-to-first-token is 80–100s for wizard prompts (RAG retrieval +
-  // reviewer pass run BEFORE the first token is emitted), so the old 60s cap
-  // aborted replies that were still coming. Must stay below the Vercel proxy
-  // upstream cap (175s) / this client's 180s fetch cap.
-  const NO_CONTENT_TIMEOUT_MS = 150_000;
+  // Backend time-to-first-token is 80–130s for wizard prompts (RAG retrieval +
+  // reviewer pass run BEFORE the first token is emitted): measured p75 114s and
+  // max 128s over 30 runs, so the old 60s cap aborted replies that were still
+  // coming and the 150s cap left only ~20s of headroom. 170s keeps headroom while
+  // staying under the Vercel-proxy upstream cap (175s) and this client's 180s.
+  const NO_CONTENT_TIMEOUT_MS = 170_000;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -191,6 +192,12 @@ export async function bimaChat(
   }
   if (/tidak ada teks respons/i.test(response)) {
     throw new Error('BIMA AI backend failed to produce a response (empty text).');
+  }
+  // The backend sometimes streams its own Python error text as if it were the
+  // answer (e.g. "Server AI gagal merespons: 'str' object has no attribute 'put'").
+  // Throw so generateWithRetry retries instead of rendering that string to the user.
+  if (/^\s*Server AI gagal merespons/i.test(response) || /object has no attribute/i.test(response)) {
+    throw new Error(`BIMA AI backend error: ${response.trim().slice(0, 200)}`);
   }
   return { response, sources, model: modelUsed };
 }
