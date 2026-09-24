@@ -1,0 +1,154 @@
+[
+  {
+    "name": "P1-01-Minuman-AllBahan-100k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, sayuran hijau, protein ayam telur, Bawang Merah, Santan, Bawang Putih, Kecap Manis, Tahu, Tempe, Wortel, Minyak Kelapa, Madu, Daun Pandan",
+    "budget": 100000,
+    "time": "Maks 30 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-02-Dessert-BahanAneh",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Bawang Putih, Kecap Manis, Tempe, Tahu, Wortel, Sayuran Hijau",
+    "budget": 30000,
+    "time": "Maks 30 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-03-Camilan-BudgetKetat",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Garam",
+    "budget": 5000,
+    "time": "Maks 15 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-04-MakanBerat-Lengkap",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, tepung sorgum, protein ayam telur, sayuran hijau, Bawang Merah, Santan, Wortel, Minyak Kelapa",
+    "budget": 50000,
+    "time": "Maks 45 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-05-Minuman-Sederhana",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 15000,
+    "time": "Maks 15 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-06-Camilan-Standard",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu, Santan",
+    "budget": 25000,
+    "time": "Maks 30 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-07-Dessert-Standard",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah, Daun Pandan",
+    "budget": 20000,
+    "time": "Maks 30 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P1-08-MakanBerat-Sedikit",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Santan",
+    "budget": 15000,
+    "time": "Maks 30 Menit",
+    "phase": "phase1"
+  },
+  {
+    "name": "P2-MB-5k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 5000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MB-15k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 15000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MB-50k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 50000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MB-100k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 100000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-CS-5k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 5000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-CS-15k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 15000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-CS-50k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 50000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-CS-100k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 100000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MN-5k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 5000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MN-15k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 15000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  },
+  {
+    "name": "P2-MN-50k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 50000,
+    "time": "Maks 30 Menit",
+    "phase": "phase2"
+  }
+]

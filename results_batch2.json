@@ -1,0 +1,978 @@
+[
+  {
+    "name": "P2-MN-100k",
+    "status": "FAIL",
+    "time": 157972,
+    "pass": false,
+    "issues": [
+      "FLOOR",
+      "ZERO_PRICE"
+    ],
+    "title": "Minuman Kental Sorgum-Santan Manis",
+    "llmServings": 1,
+    "estServings": 1,
+    "rawTotal": 4610,
+    "corrTotal": 24500,
+    "perPorsi": 4610,
+    "corrPP": 24500,
+    "ingCount": 5,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (50 gram / 100% bobot tepung)",
+        "amount": "50 gram",
+        "rawPrice": 1500,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Santan Kental (60 ml / -)",
+        "amount": "60 ml",
+        "rawPrice": 1500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Madu Murni (20 ml / 40% bobot tepung)",
+        "amount": "20 ml",
+        "rawPrice": 1600,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Air Putih (300 ml / -)",
+        "amount": "300 ml",
+        "rawPrice": 0,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR",
+          "ZERO"
+        ]
+      },
+      {
+        "name": "Garam Halus (1 gram / 2% bobot tepung)",
+        "amount": "1 gram",
+        "rawPrice": 10,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P2-DG-5k",
+    "status": "FAIL",
+    "time": 150686,
+    "pass": false,
+    "issues": [
+      "OVER_BUDGET",
+      "FLOOR"
+    ],
+    "title": "Puding Santan Sorgum Gula Merah Rendah GI",
+    "llmServings": 4,
+    "estServings": 4,
+    "rawTotal": 19590,
+    "corrTotal": 23840,
+    "perPorsi": 4898,
+    "corrPP": 5960,
+    "ingCount": 4,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (150 gram)",
+        "amount": "150 gram",
+        "rawPrice": 3750,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Santan Kelapa (380 ml)",
+        "amount": "380 ml",
+        "rawPrice": 7600,
+        "correctedPrice": 7600,
+        "flags": []
+      },
+      {
+        "name": "Gula Merah (28 gram)",
+        "amount": "28 gram",
+        "rawPrice": 5040,
+        "correctedPrice": 5040,
+        "flags": []
+      },
+      {
+        "name": "Daun Pandan (16 gram)",
+        "amount": "16 gram",
+        "rawPrice": 3200,
+        "correctedPrice": 3200,
+        "flags": []
+      }
+    ]
+  },
+  {
+    "name": "P2-DG-15k",
+    "status": "PARSE_FAIL",
+    "time": 151464,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P2-DG-50k",
+    "status": "PARSE_FAIL",
+    "time": 155815,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P2-DG-100k",
+    "status": "PARSE_FAIL",
+    "time": 144651,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P3-MB-Simple",
+    "status": "FAIL",
+    "time": 138962,
+    "pass": false,
+    "issues": [
+      "FLOOR",
+      "ZERO_PRICE"
+    ],
+    "title": "Sorgum Pilaf Cepat Aja (Gurih Sayur & Telur)",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 7370,
+    "corrTotal": 29500,
+    "perPorsi": 3685,
+    "corrPP": 14750,
+    "ingCount": 10,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Biji Sorgum utuh (80 gram)",
+        "amount": "80 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 6000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Dada ayam fillet (50 gram)",
+        "amount": "50 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 2000,
+        "flags": []
+      },
+      {
+        "name": "Telur ayam (60 gram)",
+        "amount": "60 gram",
+        "rawPrice": 1680,
+        "correctedPrice": 2500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Minyak goreng curah (15 ml)",
+        "amount": "15 ml",
+        "rawPrice": 210,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang merah iris (10 gram)",
+        "amount": "10 gram",
+        "rawPrice": 350,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang putih geprek (5 gram)",
+        "amount": "5 gram",
+        "rawPrice": 150,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Wortel serut (30 gram)",
+        "amount": "30 gram",
+        "rawPrice": 360,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Brokoli cincang (20 gram)",
+        "amount": "20 gram",
+        "rawPrice": 500,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam meja (2 gram)",
+        "amount": "2 gram",
+        "rawPrice": 120,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Air bersih (250 ml)",
+        "amount": "250 ml",
+        "rawPrice": 0,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR",
+          "ZERO"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P3-CS-Simple",
+    "status": "FAIL",
+    "time": 151077,
+    "pass": false,
+    "issues": [
+      "FLOOR"
+    ],
+    "title": "Camilan Sorgum Renyah Cokelat",
+    "llmServings": 2,
+    "estServings": 2,
+    "rawTotal": 16200,
+    "corrTotal": 23700,
+    "perPorsi": 8100,
+    "corrPP": 11850,
+    "ingCount": 7,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (200 gram)",
+        "amount": "200 gram",
+        "rawPrice": 2400,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Tepung Tapioka (80 gram)",
+        "amount": "80 gram",
+        "rawPrice": 1600,
+        "correctedPrice": 1600,
+        "flags": []
+      },
+      {
+        "name": "Gula Halus (100 gram)",
+        "amount": "100 gram",
+        "rawPrice": 1600,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Margarin (70 gram)",
+        "amount": "70 gram",
+        "rawPrice": 2100,
+        "correctedPrice": 2100,
+        "flags": []
+      },
+      {
+        "name": "Telur Ayam (2 butir/100 gram)",
+        "amount": "2 butir",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": []
+      },
+      {
+        "name": "Garam Halus (2 gram)",
+        "amount": "2 gram",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Ekstrak Cokelat (10 gram)",
+        "amount": "10 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 2000,
+        "flags": []
+      }
+    ]
+  },
+  {
+    "name": "P3-MN-Simple",
+    "status": "PARSE_FAIL",
+    "time": 363829,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P3-MB-Medium",
+    "status": "FAIL",
+    "time": 124063,
+    "pass": false,
+    "issues": [
+      "FLOOR"
+    ],
+    "title": "Kerupuk Ringan Sorgum Gurih",
+    "llmServings": 4,
+    "estServings": 4,
+    "rawTotal": 10185,
+    "corrTotal": 21000,
+    "perPorsi": 2546,
+    "corrPP": 5250,
+    "ingCount": 5,
+    "stepCount": 3,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (halus)",
+        "amount": "150 gram",
+        "rawPrice": 3750,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang Merah (dicincang sangat halus)",
+        "amount": "50 gram",
+        "rawPrice": 1500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Telur Ayam (ukuran besar)",
+        "amount": "60 gram",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": []
+      },
+      {
+        "name": "Minyak Kelapa Murni (cair)",
+        "amount": "80 gram",
+        "rawPrice": 1920,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam Dapur Halus",
+        "amount": "3 gram",
+        "rawPrice": 15,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P3-CS-Medium",
+    "status": "FAIL",
+    "time": 118580,
+    "pass": false,
+    "issues": [
+      "FLOOR"
+    ],
+    "title": "Kukis Sorgum Medok Santan & Madu",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 17400,
+    "corrTotal": 30500,
+    "perPorsi": 8700,
+    "corrPP": 15250,
+    "ingCount": 5,
+    "stepCount": 3,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (100 gram)",
+        "amount": "100 gram",
+        "rawPrice": 3000,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Telur Ayam Buras (1 butir ±60 gram)",
+        "amount": "60 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 2500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Madu Murni (60 gram)",
+        "amount": "60 gram",
+        "rawPrice": 2400,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Santan Kelapa (50 ml)",
+        "amount": "50 ml",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": []
+      },
+      {
+        "name": "Minyak Kelapa Virgine (20 ml)",
+        "amount": "20 ml",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": []
+      }
+    ]
+  },
+  {
+    "name": "P3-MN-Medium",
+    "status": "FAIL",
+    "time": 140695,
+    "pass": false,
+    "issues": [
+      "OVER_BUDGET",
+      "FLOOR",
+      "ZERO_PRICE"
+    ],
+    "title": "Minuman Nutrisi Sorgum Madu-Pandan",
+    "llmServings": 1,
+    "estServings": 1,
+    "rawTotal": 2195,
+    "corrTotal": 26000,
+    "perPorsi": 2195,
+    "corrPP": 26000,
+    "ingCount": 6,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung sorgum",
+        "amount": "25 gram",
+        "rawPrice": 600,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Air putih",
+        "amount": "300 ml",
+        "rawPrice": 0,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR",
+          "ZERO"
+        ]
+      },
+      {
+        "name": "Santan kental",
+        "amount": "50 gram",
+        "rawPrice": 900,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Madu hutan",
+        "amount": "15 gram",
+        "rawPrice": 525,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Daun pandan wangi",
+        "amount": "10 gram",
+        "rawPrice": 120,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam dapur halus",
+        "amount": "1 gram",
+        "rawPrice": 50,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P3-MB-Complex",
+    "status": "PARSE_FAIL",
+    "time": 139719,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P3-CS-Complex",
+    "status": "FAIL",
+    "time": 172332,
+    "pass": false,
+    "issues": [
+      "FLOOR"
+    ],
+    "title": "Pancake Sorgum Hijau Pandan",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 9905,
+    "corrTotal": 39500,
+    "perPorsi": 4953,
+    "corrPP": 19750,
+    "ingCount": 9,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum Halus (100 gram)",
+        "amount": "100% basis tepung",
+        "rawPrice": 2500,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Telur Ayam Utuh (50 gram)",
+        "amount": "50% dari tepung",
+        "rawPrice": 1800,
+        "correctedPrice": 2500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Santan Kental (80 ml)",
+        "amount": "80% dari tepung",
+        "rawPrice": 1200,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Madu Murni (10 gram)",
+        "amount": "10% dari tepung",
+        "rawPrice": 650,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Minyak Kelapa Organik (15 gram)",
+        "amount": "15% dari tepung",
+        "rawPrice": 420,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang Merah Dijajah (5 gram)",
+        "amount": "5% dari tepung",
+        "rawPrice": 160,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang Putih Dihaluskan (5 gram)",
+        "amount": "5% dari tepung",
+        "rawPrice": 160,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam Halus (1.5 gram)",
+        "amount": "1.5% dari tepung",
+        "rawPrice": 15,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Daun Pandan (5 gram)",
+        "amount": "5% dari tepung",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": []
+      }
+    ]
+  },
+  {
+    "name": "P3-MN-Complex",
+    "status": "FAIL",
+    "time": 186984,
+    "pass": false,
+    "issues": [
+      "OVER_BUDGET",
+      "FLOOR"
+    ],
+    "title": "Minuman Hangat Sorgum-Santan Kaya Protein",
+    "llmServings": 1,
+    "estServings": 1,
+    "rawTotal": 13025,
+    "corrTotal": 36500,
+    "perPorsi": 13025,
+    "corrPP": 36500,
+    "ingCount": 8,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (sangrai ringan)",
+        "amount": "50 gram (100% basis tepung)",
+        "rawPrice": 1750,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Santan Kelapa Muda (100% murni)",
+        "amount": "200 ml (400% dari berat tepung)",
+        "rawPrice": 2000,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Madu Murni (natural, bukan pemanis buatan)",
+        "amount": "45 gram (90% dari berat tepung)",
+        "rawPrice": 2925,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Telur Ayam Kampung (ambil kuning saja)",
+        "amount": "1 butir (~20 gram | 40% dari berat tepung)",
+        "rawPrice": 4000,
+        "correctedPrice": 4000,
+        "flags": []
+      },
+      {
+        "name": "Daun Pandan wangi (dihancurkan & disaring)",
+        "amount": "15 gram (30% dari berat tepung)",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": []
+      },
+      {
+        "name": "Bawang Merah (disangrai utuh untuk kaldu pembuang, TIDAK DIMAKAN)",
+        "amount": "5 gram (10% dari berat tepung)",
+        "rawPrice": 150,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Minyak Kelapa Murni (VCO)",
+        "amount": "15 ml (30% dari berat tepung)",
+        "rawPrice": 675,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "1 gram (2% dari berat tepung)",
+        "rawPrice": 25,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P3-MB-Weird",
+    "status": "PARSE_FAIL",
+    "time": 118354,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P3-CS-Weird",
+    "status": "FAIL",
+    "time": 133997,
+    "pass": false,
+    "issues": [
+      "FLOOR"
+    ],
+    "title": "Cookies Sorgum Tempe Pedas Gurih",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 5080,
+    "corrTotal": 24500,
+    "perPorsi": 2540,
+    "corrPP": 12250,
+    "ingCount": 7,
+    "stepCount": 3,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (80 gram | 80% tepung)",
+        "amount": "80 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Tepung Tapioka (20 gram | 20% tepung)",
+        "amount": "20 gram",
+        "rawPrice": 300,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Tempe Putih (60 gram)",
+        "amount": "60 gram",
+        "rawPrice": 900,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang Putih (15 gram)",
+        "amount": "15 gram",
+        "rawPrice": 600,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Kecap Manis (20 gram)",
+        "amount": "20 gram",
+        "rawPrice": 400,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Minyak Goreng (25 gram)",
+        "amount": "25 ml",
+        "rawPrice": 875,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam Halus (1 gram)",
+        "amount": "1 gram",
+        "rawPrice": 5,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P3-DG-Weird",
+    "status": "PARSE_FAIL",
+    "time": 152480,
+    "issues": [
+      "PARSE_FAIL"
+    ],
+    "title": "(no JSON)"
+  },
+  {
+    "name": "P4-MB-MinBudget",
+    "status": "FAIL",
+    "time": 141422,
+    "pass": false,
+    "issues": [
+      "OVER_BUDGET",
+      "FLOOR"
+    ],
+    "title": "Bubur Sorgum Gurih",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 2875,
+    "corrTotal": 19500,
+    "perPorsi": 1438,
+    "corrPP": 9750,
+    "ingCount": 5,
+    "stepCount": 5,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (90 gram)",
+        "amount": "90 gram",
+        "rawPrice": 1800,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Beras Pulen (30 gram)",
+        "amount": "30 gram",
+        "rawPrice": 420,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Minyak Goreng (15 ml)",
+        "amount": "15 ml",
+        "rawPrice": 225,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Bawang Merah (12 gram)",
+        "amount": "12 gram",
+        "rawPrice": 420,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam (2 gram)",
+        "amount": "2 gram",
+        "rawPrice": 10,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "P4-CS-MinBudget",
+    "status": "FAIL",
+    "time": 125868,
+    "pass": false,
+    "issues": [
+      "OVER_BUDGET",
+      "FLOOR",
+      "ZERO_PRICE"
+    ],
+    "title": "Keripik Renyah Tepung Sorgum",
+    "llmServings": 1,
+    "estServings": 2,
+    "rawTotal": 2160,
+    "corrTotal": 16500,
+    "perPorsi": 1080,
+    "corrPP": 8250,
+    "ingCount": 4,
+    "stepCount": 4,
+    "hasNutrition": true,
+    "details": [
+      {
+        "name": "Tepung Sorgum (100 gram)",
+        "amount": "100 gram",
+        "rawPrice": 1800,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ]
+      },
+      {
+        "name": "Garam Halus (2 gram)",
+        "amount": "2 gram",
+        "rawPrice": 0,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR",
+          "ZERO"
+        ]
+      },
+      {
+        "name": "Air Panas (60 ml)",
+        "amount": "60 ml",
+        "rawPrice": 0,
+        "correctedPrice": 1500,
+        "flags": [
+          "FLOOR",
+          "ZERO"
+        ]
+      },
+      {
+        "name": "Minyak Goreng (15 ml)",
+        "amount": "15 ml",
+        "rawPrice": 360,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ]
+      }
+    ]
+  }
+]

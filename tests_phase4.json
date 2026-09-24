@@ -1,0 +1,86 @@
+[
+  {
+    "name": "P4-MB-MinBudget",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Garam",
+    "budget": 3000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P4-CS-MinBudget",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Garam",
+    "budget": 3000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-MN-MinBudget",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Air",
+    "budget": 3000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-DG-MinBudget",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan",
+    "budget": 3000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P4-MB-MaxBudget",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, protein ayam telur, sayuran hijau, Bawang Merah, Santan, Wortel, Minyak Kelapa, Madu",
+    "budget": 200000,
+    "time": "Maks 45 Menit"
+  },
+  {
+    "name": "P4-CS-MaxBudget",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu, Santan, Daun Pandan",
+    "budget": 200000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P4-MN-MaxBudget",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu, Daun Pandan, Telur ayam",
+    "budget": 200000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-DG-MaxBudget",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Madu, Santan, Telur ayam, Daun Pandan, Minyak Kelapa",
+    "budget": 200000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P4-MB-MinTime",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Garam",
+    "budget": 25000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-CS-MinTime",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Garam",
+    "budget": 15000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-MN-MinTime",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan",
+    "budget": 10000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P4-DG-MinTime",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah",
+    "budget": 15000,
+    "time": "Maks 15 Menit"
+  }
+]

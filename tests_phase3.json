@@ -1,0 +1,86 @@
+[
+  {
+    "name": "P3-MB-Simple",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Garam",
+    "budget": 20000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-CS-Simple",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Garam",
+    "budget": 15000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P3-MN-Simple",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Air",
+    "budget": 10000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P3-MB-Medium",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Telur ayam, Minyak Kelapa, Garam",
+    "budget": 30000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-CS-Medium",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Madu, Santan, Minyak Kelapa",
+    "budget": 25000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-MN-Medium",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu, Daun Pandan",
+    "budget": 15000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P3-MB-Complex",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, tepung sorgum, protein ayam telur, sayuran hijau, Bawang Merah, Bawang Putih, Santan, Wortel, Minyak Kelapa, Kecap Manis, Garam",
+    "budget": 50000,
+    "time": "Maks 45 Menit"
+  },
+  {
+    "name": "P3-CS-Complex",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu, Santan, Bawang Merah, Bawang Putih, Garam, Daun Pandan",
+    "budget": 30000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-MN-Complex",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu, Daun Pandan, Telur ayam, Bawang Merah, Minyak Kelapa",
+    "budget": 25000,
+    "time": "Maks 15 Menit"
+  },
+  {
+    "name": "P3-MB-Weird",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Madu, Santan, Daun Pandan, Gula Merah",
+    "budget": 30000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-CS-Weird",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Bawang Putih, Kecap Manis, Tempe",
+    "budget": 20000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P3-DG-Weird",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Telur ayam, Bawang Merah, Wortel, Sayuran Hijau, Tempe, Tahu",
+    "budget": 30000,
+    "time": "Maks 30 Menit"
+  }
+]

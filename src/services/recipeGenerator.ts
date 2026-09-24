@@ -290,59 +290,56 @@ ${RECIPE_JSON_SCHEMA}
 JIKA RESEP DITOLAK (Melanggar aturan 1 atau 2):
 ${UNPAYLOAD_JSON_SCHEMA}`;
 
-/** One attempt at calling the LLM. Returns parsed JSON, or a refusal marker with the raw text. */
-async function tryGenerate(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
-  const result = await bimaChat(prompt, [], { useRag: false, stream: true }); // stream=true agar tidak kena Cloudflare 524 timeout
-  if (!result || !result.response) return null;
-  const responseText = result.response;
-
-  const parsed = extractJsonFromLlm(responseText); // 🔧 sekarang ada auto-repair truncated JSON
-  if (parsed) {
-    const status = String((parsed as any).status || '').toLowerCase();
-    // 🔧 Detect structured unpayload response from the new prompt format
-    if (status === 'unpayload' || status === 'ditolak' || status === 'rejected' || status === 'refused') {
-      const msg = (parsed as any).message || (parsed as any).subtitle || '';
-      const suggestions = Array.isArray((parsed as any).suggestions)
-        ? (parsed as any).suggestions.map((s: any) => ({
-            title: s.title || '',
-            ingredients: Array.isArray(s.ingredients) ? s.ingredients : [],
-            estimatedCost: Number(s.estimatedCost) || 0,
-            description: s.description || '',
-            ingredientPrices: Array.isArray(s.ingredientPrices) ? s.ingredientPrices : undefined,
-            estimatedTimeMinutes: Number(s.estimatedTimeMinutes) || undefined,
-            removedIngredients: Array.isArray(s.removedIngredients) ? s.removedIngredients : undefined,
-          }))
-        : [];
-      const flaggedIngredients = Array.isArray((parsed as any).flaggedIngredients)
-        ? (parsed as any).flaggedIngredients
-        : [];
-      if (msg) return { __refusal: true, message: msg, suggestions, flaggedIngredients };
-    }
-    return parsed;
-  }
-
-  // LLM declined with a prose explanation instead of JSON — surface it.
-  const msg = responseText.trim();
-  if (msg) {
-    const looksLikeJson = /^\s*[\[{]/.test(msg) || /```json|"estimatedPrice"|"ingredients"|"metadata"/.test(msg);
-    if (looksLikeJson) return null;
-    return { __refusal: true, message: msg };
-  }
-  return null;
-}
-
-/** Call the LLM up to 2 times; retries once on empty/bad JSON. */
+/** Call the LLM up to 3 times; retries on empty/bad JSON AND on prose responses. */
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
-  for (let attempt = 0; attempt < 2; attempt++) {
+  let lastProseResponse: string | null = null;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const parsed = await tryGenerate(prompt);
-      if (parsed) return parsed;
+      const result = await bimaChat(prompt, [], { useRag: false, stream: true });
+      if (!result || !result.response) continue;
+
+      const responseText = result.response;
+      const parsed = extractJsonFromLlm(responseText);
+
+      if (parsed) {
+        const status = String((parsed as any).status || '').toLowerCase();
+        if (status === 'unpayload' || status === 'ditolak' || status === 'rejected' || status === 'refused') {
+          const refMsg = (parsed as any).message || (parsed as any).subtitle || '';
+          const suggestions = Array.isArray((parsed as any).suggestions)
+            ? (parsed as any).suggestions.map((s: any) => ({
+                title: s.title || '',
+                ingredients: Array.isArray(s.ingredients) ? s.ingredients : [],
+                estimatedCost: Number(s.estimatedCost) || 0,
+                description: s.description || '',
+                ingredientPrices: Array.isArray(s.ingredientPrices) ? s.ingredientPrices : undefined,
+                estimatedTimeMinutes: Number(s.estimatedTimeMinutes) || undefined,
+                removedIngredients: Array.isArray(s.removedIngredients) ? s.removedIngredients : undefined,
+              }))
+            : [];
+          const flaggedIngredients = Array.isArray((parsed as any).flaggedIngredients)
+            ? (parsed as any).flaggedIngredients
+            : [];
+          if (refMsg) return { __refusal: true, message: refMsg, suggestions, flaggedIngredients };
+        }
+        return parsed;
+      }
+
+      // No JSON found — save prose for potential refusal after retries
+      const trimmed = responseText.trim();
+      if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
     } catch (err) {
-      // 422 = Guard rejected the recipe outright. Do NOT retry - it is a definitive verdict.
-      // 504/502/524 = Backend timed out or crashed. Retrying will just hang the user longer.
       const rejMsg = err instanceof Error ? err.message : String(err);
       if (rejMsg.includes('422') || rejMsg.includes('504') || rejMsg.includes('502') || rejMsg.includes('524')) throw err;
     }
+  }
+
+  // All retries exhausted — if we got prose, return it as a refusal (truncated)
+  if (lastProseResponse) {
+    const truncated = lastProseResponse.length > 800
+      ? lastProseResponse.substring(0, 800) + '...\n\n*(Resep tidak dapat dihasilkan dalam format yang benar. Silakan coba lagi.)*'
+      : lastProseResponse;
+    return { __refusal: true, message: truncated };
   }
   return null;
 }

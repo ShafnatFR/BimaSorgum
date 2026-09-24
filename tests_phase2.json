@@ -1,0 +1,114 @@
+[
+  {
+    "name": "P2-MB-5k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 5000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MB-15k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 15000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MB-50k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 50000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MB-100k",
+    "cat": "makanan_berat",
+    "ing": "biji sorgum, Bawang Merah, Wortel, Minyak Kelapa, Telur ayam",
+    "budget": 100000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-CS-5k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 5000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-CS-15k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 15000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-CS-50k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 50000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-CS-100k",
+    "cat": "camilan_sehat",
+    "ing": "tepung sorgum, Telur ayam, Minyak Kelapa, Madu",
+    "budget": 100000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MN-5k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 5000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MN-15k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 15000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MN-50k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 50000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-MN-100k",
+    "cat": "minuman_nutrisi",
+    "ing": "tepung sorgum, Santan, Madu",
+    "budget": 100000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-DG-5k",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah, Daun Pandan",
+    "budget": 5000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-DG-15k",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah, Daun Pandan",
+    "budget": 15000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-DG-50k",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah, Daun Pandan",
+    "budget": 50000,
+    "time": "Maks 30 Menit"
+  },
+  {
+    "name": "P2-DG-100k",
+    "cat": "dessert_rendah_gi",
+    "ing": "tepung sorgum, Santan, Gula Merah, Daun Pandan",
+    "budget": 100000,
+    "time": "Maks 30 Menit"
+  }
+]
