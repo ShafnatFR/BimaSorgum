@@ -1,6 +1,4 @@
-data: {"sources": [{"docId": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "docName": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "documentName": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "chunkId": "43", "chunkIndex": 43, "page": null, "section": null, "text": "Frias, J., Giacomino, S., Peñas, E.,\n\nPellegrino, N., Ferreyra, V., Apro, N.,\n\nCarrión, O. O., & Vidal -Valverde, C.\n\n(2011). Assessment of the nutritional\n\nquality of raw and extruded Pisum\n\nsativum L. var. laguna seeds. Lwt,\n\n44(5), 1303– 1308.\n\nhttps://doi.org/10.1016/j.lwt.2010.12.02\n\n5\n\nGunawan, A., Pranata, F. S., & Swasti, Y.\n\nR. (2021). Kualitas muffin dengan\n\nkombinasi tepung sorgum ( Sorghum\n\nbicolor ) dan tepung kacang merah (\n\nPhaseolus vulgaris ) the quality of\n\nmuffin with a combination of sorghum\n\nflour (Sorghum bicolor) and red bean\n\nflour (Phaseolus vulgaris). Jurnal\n\nteknolog", "excerpt": "Frias, J., Giacomino, S., Peñas, E.,\n\nPellegrino, N., Ferreyra, V., Apro, N.,\n\nCarrión, O. O., & Vidal -Valverde, C.\n\n(2011). Assessment of the nutritional\n\nquality of raw and extruded Pisum\n\nsativum L. var. laguna seeds. Lwt,\n\n44(5), 1303– 1308.\n\nhttps://doi.org/10.1016/j.lwt.2010.12.02\n\n5\n\nGunawan, A., Pranata, F. S., & Swasti, Y.\n\nR. (2021). Kualitas muffin dengan\n\nkombinasi tepung sorgum ( Sorghum\n\nbicolor ) dan tepung kacang merah (\n\nPhaseolus vulgaris ) the quality of\n\nmuffin with a combination of sorghum\n\nflour (Sorghum bicolor) and red bean\n\nflour (Phaseolus vulgaris). Jurnal\n\nteknolog", "score": 0.0192}, {"docId": "1538-13-5005-1-10-20260104.pdf", "docName": "1538-13-5005-1-10-20260104.pdf", "documentName": "1538-13-5005-1-10-20260104.pdf", "chunkId": "71", "chunkIndex": 71, "page": null, "section": null, "text": "Saputra, H., Dr. Vonny Setiaries Johan, S.TP., M ., & Rahmayuni, S.P., M. S. (2016).\n\nPembuatanroti Manis Dari Tepung Komposit (Tepung Terigu, Pati Sagu, Tepung\n\nUbi Jalar Ungu). JOM FAPERTA, 3(2), 1–11.\n\nSibanda, T., Ncube, T., & Ngoromani, N. (2015). Rheological Properties and Bread\n\nMaking Quality of White Grain Sorghum -Wheat Flour Composites. 5(4), 176–182.\n\nhttps://doi.org/10.5923/j.food.20150504.03\n\nSingh, V., & Prabhat, S. (2024). Effect of sorghum pre ‑ processing ( roasting and\n\ngermination ) on the replacement level and quality of sorghum ‑ wheat bread : bread\n\ncharacteristics , dig", "excerpt": "Saputra, H., Dr. Vonny Setiaries Johan, S.TP., M ., & Rahmayuni, S.P., M. S. (2016).\n\nPembuatanroti Manis Dari Tepung Komposit (Tepung Terigu, Pati Sagu, Tepung\n\nUbi Jalar Ungu). JOM FAPERTA, 3(2), 1–11.\n\nSibanda, T., Ncube, T., & Ngoromani, N. (2015). Rheological Properties and Bread\n\nMaking Quality of White Grain Sorghum -Wheat Flour Composites. 5(4), 176–182.\n\nhttps://doi.org/10.5923/j.food.20150504.03\n\nSingh, V., & Prabhat, S. (2024). Effect of sorghum pre ‑ processing ( roasting and\n\ngermination ) on the replacement level and quality of sorghum ‑ wheat bread : bread\n\ncharacteristics , dig", "score": 0.0149}, {"docId": "Teknologi Budidaya Sorgum.pdf", "docName": "Teknologi Budidaya Sorgum.pdf", "documentName": "Teknologi Budidaya Sorgum.pdf", "chunkId": "176", "chunkIndex": 176, "page": null, "section": null, "text": "sesuai dengan pola hidup masyarakat saat ini yang ingin serba praktis.\n\nKonsumen menyukai atau mengkonsumsi produk pangan yang bersifat\n\ninstan atau cepat saji (ready to use atau ready to eat) dan memiliki nilai\n\nfungsional bagi kesehatan.\n\nProduk olahan sorgum yang memiliki prospek untuk\n\ndikembangkan pada masa mendatang adalah produk olah berbentuk\n\nproduk instan, antara lain nasi instan, bubur instan atau sejenis sereal\n\n53\n\nTeknologi Budidaya Sorgum\n\nPetunjuk Teknis\n\nsiap santap yang biasa dikonsumsi untuk sarapan pagi ( breakfast\n\ncereals), dimana produk -produk tersebut lebih mudah untuk", "excerpt": "sesuai dengan pola hidup masyarakat saat ini yang ingin serba praktis.\n\nKonsumen menyukai atau mengkonsumsi produk pangan yang bersifat\n\ninstan atau cepat saji (ready to use atau ready to eat) dan memiliki nilai\n\nfungsional bagi kesehatan.\n\nProduk olahan sorgum yang memiliki prospek untuk\n\ndikembangkan pada masa mendatang adalah produk olah berbentuk\n\nproduk instan, antara lain nasi instan, bubur instan atau sejenis sereal\n\n53\n\nTeknologi Budidaya Sorgum\n\nPetunjuk Teknis\n\nsiap santap yang biasa dikonsumsi untuk sarapan pagi ( breakfast\n\ncereals), dimana produk -produk tersebut lebih mudah untuk", "score": 0.0139}, {"docId": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "docName": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "documentName": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "chunkId": "34", "chunkIndex": 34, "page": null, "section": null, "text": "- lemak tak jenuh tunggal\n\n- (monounsaturated fats juga disebut MUFA) dan asam\n\n- lemak tak jenuh ganda atau jamak\n\n- .\n\n- Di bawah ini diuraikan penjelasan mengenai manfaat Asam lemak tak jenuh jamak/ganda (Poly unsaturated fatty acids) bagi tubuh/kesehatan manusia.\n\n- Kemudian diuraikan dalam bentuk tabel bahan makanan apa saja yang mengandung Lemak Jamak (berapa gram (g) dalam setiap 100 gram bahan makanan terkait) berdasarkan data dari\n\n- USDA (U.S. Department of Agriculture)\n\n- .\n\n- Yang dimaksud bahan makanan atau sumber makanan adalah sayuran, buah, ikan, hewan ternak, bahan dan hasil o", "excerpt": "- lemak tak jenuh tunggal\n\n- (monounsaturated fats juga disebut MUFA) dan asam\n\n- lemak tak jenuh ganda atau jamak\n\n- .\n\n- Di bawah ini diuraikan penjelasan mengenai manfaat Asam lemak tak jenuh jamak/ganda (Poly unsaturated fatty acids) bagi tubuh/kesehatan manusia.\n\n- Kemudian diuraikan dalam bentuk tabel bahan makanan apa saja yang mengandung Lemak Jamak (berapa gram (g) dalam setiap 100 gram bahan makanan terkait) berdasarkan data dari\n\n- USDA (U.S. Department of Agriculture)\n\n- .\n\n- Yang dimaksud bahan makanan atau sumber makanan adalah sayuran, buah, ikan, hewan ternak, bahan dan hasil o", "score": 0.0125}, {"docId": "Artikel+14129+hal87-98.pdf", "docName": "Artikel+14129+hal87-98.pdf", "documentName": "Artikel+14129+hal87-98.pdf", "chunkId": "11", "chunkIndex": 11, "page": null, "section": null, "text": "mengandung energi sebesar 342,31 kkal, protein 6,7\n\ngram, lemak 1,7 gram, karbohidrat 13,4 gram, dan zat\n\nbesi 28,2 mg. 7 Tepung sorgum juga mengandung\n\nberbagai zat gizi yang bermanfaat, yaitu energi sebesar\n\n339,0 kkal, protein 11 gram, lemak 3,3 gram, dan\n\nkarbohidrat 73 gram per 100 gram bahan. Selain itu,\n\ntepung sorgum mengandung zat besi sebesar 4,4 mg.8\n\nKukis merupakan salah satu jenis biskuit yang\n\ndibuat dari adonan lunak dengan kandungan lemak\n\ncukup tinggi, memiliki tekstur renyah, dan\n\nCookies Berbasis Tepung Sorgum\n\n89\n\nhttps://doi.org/10.31983/jrg.v14i1.14129\n\nmenghasilkan poto", "excerpt": "mengandung energi sebesar 342,31 kkal, protein 6,7\n\ngram, lemak 1,7 gram, karbohidrat 13,4 gram, dan zat\n\nbesi 28,2 mg. 7 Tepung sorgum juga mengandung\n\nberbagai zat gizi yang bermanfaat, yaitu energi sebesar\n\n339,0 kkal, protein 11 gram, lemak 3,3 gram, dan\n\nkarbohidrat 73 gram per 100 gram bahan. Selain itu,\n\ntepung sorgum mengandung zat besi sebesar 4,4 mg.8\n\nKukis merupakan salah satu jenis biskuit yang\n\ndibuat dari adonan lunak dengan kandungan lemak\n\ncukup tinggi, memiliki tekstur renyah, dan\n\nCookies Berbasis Tepung Sorgum\n\n89\n\nhttps://doi.org/10.31983/jrg.v14i1.14129\n\nmenghasilkan poto", "score": 0.9978}, {"docId": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "docName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "documentName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "chunkId": "33", "chunkIndex": 33, "page": null, "section": null, "text": "dengan serealia lain, dan beras mengandung zat besi paling rendah (1,8 mg/100g). Ini\n\nmenunjukkan salah satu keunggulan yang dimiliki sorgum, yang sangat sesuai untuk\n\nmengatasi anemia gizi besi yang merupakan salah satu defisiensi zat gizi yang\n\n10\n\nprevalensinya tinggi. Kadar kalsium sorgum (25mg/100g) sebanding dengan jagung\n\n(26mg/100g). Selain itu sorgum  juga mengandung  P, Mg, Zn, Cu, Mn, Mo dan Cr\n\nberturut-turut sebesar 352; 171; 2,5; 0,44; 1,15; 0,06 dan 0,017 mg/100g biji\n\n(http://www.blackherbals.com/sorghum_and_millet_in_african_nu.htm).\n\nPengaruh Penyosohan terhadap Komposisi Kim", "excerpt": "dengan serealia lain, dan beras mengandung zat besi paling rendah (1,8 mg/100g). Ini\n\nmenunjukkan salah satu keunggulan yang dimiliki sorgum, yang sangat sesuai untuk\n\nmengatasi anemia gizi besi yang merupakan salah satu defisiensi zat gizi yang\n\n10\n\nprevalensinya tinggi. Kadar kalsium sorgum (25mg/100g) sebanding dengan jagung\n\n(26mg/100g). Selain itu sorgum  juga mengandung  P, Mg, Zn, Cu, Mn, Mo dan Cr\n\nberturut-turut sebesar 352; 171; 2,5; 0,44; 1,15; 0,06 dan 0,017 mg/100g biji\n\n(http://www.blackherbals.com/sorghum_and_millet_in_african_nu.htm).\n\nPengaruh Penyosohan terhadap Komposisi Kim", "score": 0.9881}, {"docId": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "docName": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "documentName": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "chunkId": "43", "chunkIndex": 43, "page": null, "section": null, "text": "proporsi tepung sorgum pada setiap formulasi. Artinya,\n\nkomposisi tepung sorgum yang lebih banyak dapat\n\nmenyebabkan kenaikan kadar protein kukis. Tepung\n\nsorgum memiliki kadar protein yang lebih besar daripada\n\ntepung sagu. Takaran 100 gram tepung sorgum\n\nmenghasilkan protein sebesar 8,43%, sedangkan takaran\n\n100 g ram tepung sagu hanya menghasilkan protein\n\nsebesar 1,11% 42,43. Penelitian terdahulu mendukung\n\npernyataan ini dengan menyebutkan bahwa substitusi\n\ntepung sorgum sebanyak 50% berpengaruh signifikan\n\nterhadap peningkatan protein kukis44. Penelitian lain juga\n\nmenunjukkan komposisi ", "excerpt": "proporsi tepung sorgum pada setiap formulasi. Artinya,\n\nkomposisi tepung sorgum yang lebih banyak dapat\n\nmenyebabkan kenaikan kadar protein kukis. Tepung\n\nsorgum memiliki kadar protein yang lebih besar daripada\n\ntepung sagu. Takaran 100 gram tepung sorgum\n\nmenghasilkan protein sebesar 8,43%, sedangkan takaran\n\n100 g ram tepung sagu hanya menghasilkan protein\n\nsebesar 1,11% 42,43. Penelitian terdahulu mendukung\n\npernyataan ini dengan menyebutkan bahwa substitusi\n\ntepung sorgum sebanyak 50% berpengaruh signifikan\n\nterhadap peningkatan protein kukis44. Penelitian lain juga\n\nmenunjukkan komposisi ", "score": 0.9706}, {"docId": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "docName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "documentName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "chunkId": "45", "chunkIndex": 45, "page": null, "section": null, "text": "memperkuat  fakta bahwa ekstrak dan tepung biji sorgum mempunyai sifat fungsional\n\ndengan menguji peng hambatannya terhadap sel kanker A549, Hela, HCT 116, dan sel\n\nRaji.\n\nPengaruh Penyosohan terhadap Komposisi dan Sifat Fungsional Tepung Sorgum\n\nPemanfaatan biji sorgum sebagai bahan pangan harus melalui tahapan\n\npenyosohan sehingga diperoleh beras sorgum (so rgum sosoh), dan penggilingan untuk\n\nmenghasilkan tepung sorgum. Penyosohan akan meningkatkan palatabilitas atau citarasa\n\nprodukolahan sorgum, namuntahapan ini mengakibatkan penurunan sebagian komponen\n\ndan sifat fungsional sorgum. Tabel", "excerpt": "memperkuat  fakta bahwa ekstrak dan tepung biji sorgum mempunyai sifat fungsional\n\ndengan menguji peng hambatannya terhadap sel kanker A549, Hela, HCT 116, dan sel\n\nRaji.\n\nPengaruh Penyosohan terhadap Komposisi dan Sifat Fungsional Tepung Sorgum\n\nPemanfaatan biji sorgum sebagai bahan pangan harus melalui tahapan\n\npenyosohan sehingga diperoleh beras sorgum (so rgum sosoh), dan penggilingan untuk\n\nmenghasilkan tepung sorgum. Penyosohan akan meningkatkan palatabilitas atau citarasa\n\nprodukolahan sorgum, namuntahapan ini mengakibatkan penurunan sebagian komponen\n\ndan sifat fungsional sorgum. Tabel", "score": 0.9996}]}
-
-: heartbeat
+data: {"sources": [{"docId": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "docName": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "documentName": "adminoji,+5.+Agnes+Trinitas+Prasetyowati+33-43.pdf", "chunkId": "43", "chunkIndex": 43, "page": null, "section": null, "text": "Frias, J., Giacomino, S., Peñas, E.,\n\nPellegrino, N., Ferreyra, V., Apro, N.,\n\nCarrión, O. O., & Vidal -Valverde, C.\n\n(2011). Assessment of the nutritional\n\nquality of raw and extruded Pisum\n\nsativum L. var. laguna seeds. Lwt,\n\n44(5), 1303– 1308.\n\nhttps://doi.org/10.1016/j.lwt.2010.12.02\n\n5\n\nGunawan, A., Pranata, F. S., & Swasti, Y.\n\nR. (2021). Kualitas muffin dengan\n\nkombinasi tepung sorgum ( Sorghum\n\nbicolor ) dan tepung kacang merah (\n\nPhaseolus vulgaris ) the quality of\n\nmuffin with a combination of sorghum\n\nflour (Sorghum bicolor) and red bean\n\nflour (Phaseolus vulgaris). Jurnal\n\nteknolog", "excerpt": "Frias, J., Giacomino, S., Peñas, E.,\n\nPellegrino, N., Ferreyra, V., Apro, N.,\n\nCarrión, O. O., & Vidal -Valverde, C.\n\n(2011). Assessment of the nutritional\n\nquality of raw and extruded Pisum\n\nsativum L. var. laguna seeds. Lwt,\n\n44(5), 1303– 1308.\n\nhttps://doi.org/10.1016/j.lwt.2010.12.02\n\n5\n\nGunawan, A., Pranata, F. S., & Swasti, Y.\n\nR. (2021). Kualitas muffin dengan\n\nkombinasi tepung sorgum ( Sorghum\n\nbicolor ) dan tepung kacang merah (\n\nPhaseolus vulgaris ) the quality of\n\nmuffin with a combination of sorghum\n\nflour (Sorghum bicolor) and red bean\n\nflour (Phaseolus vulgaris). Jurnal\n\nteknolog", "score": 0.0163}, {"docId": "1538-13-5005-1-10-20260104.pdf", "docName": "1538-13-5005-1-10-20260104.pdf", "documentName": "1538-13-5005-1-10-20260104.pdf", "chunkId": "71", "chunkIndex": 71, "page": null, "section": null, "text": "Saputra, H., Dr. Vonny Setiaries Johan, S.TP., M ., & Rahmayuni, S.P., M. S. (2016).\n\nPembuatanroti Manis Dari Tepung Komposit (Tepung Terigu, Pati Sagu, Tepung\n\nUbi Jalar Ungu). JOM FAPERTA, 3(2), 1–11.\n\nSibanda, T., Ncube, T., & Ngoromani, N. (2015). Rheological Properties and Bread\n\nMaking Quality of White Grain Sorghum -Wheat Flour Composites. 5(4), 176–182.\n\nhttps://doi.org/10.5923/j.food.20150504.03\n\nSingh, V., & Prabhat, S. (2024). Effect of sorghum pre ‑ processing ( roasting and\n\ngermination ) on the replacement level and quality of sorghum ‑ wheat bread : bread\n\ncharacteristics , dig", "excerpt": "Saputra, H., Dr. Vonny Setiaries Johan, S.TP., M ., & Rahmayuni, S.P., M. S. (2016).\n\nPembuatanroti Manis Dari Tepung Komposit (Tepung Terigu, Pati Sagu, Tepung\n\nUbi Jalar Ungu). JOM FAPERTA, 3(2), 1–11.\n\nSibanda, T., Ncube, T., & Ngoromani, N. (2015). Rheological Properties and Bread\n\nMaking Quality of White Grain Sorghum -Wheat Flour Composites. 5(4), 176–182.\n\nhttps://doi.org/10.5923/j.food.20150504.03\n\nSingh, V., & Prabhat, S. (2024). Effect of sorghum pre ‑ processing ( roasting and\n\ngermination ) on the replacement level and quality of sorghum ‑ wheat bread : bread\n\ncharacteristics , dig", "score": 0.0144}, {"docId": "Teknologi Budidaya Sorgum.pdf", "docName": "Teknologi Budidaya Sorgum.pdf", "documentName": "Teknologi Budidaya Sorgum.pdf", "chunkId": "176", "chunkIndex": 176, "page": null, "section": null, "text": "sesuai dengan pola hidup masyarakat saat ini yang ingin serba praktis.\n\nKonsumen menyukai atau mengkonsumsi produk pangan yang bersifat\n\ninstan atau cepat saji (ready to use atau ready to eat) dan memiliki nilai\n\nfungsional bagi kesehatan.\n\nProduk olahan sorgum yang memiliki prospek untuk\n\ndikembangkan pada masa mendatang adalah produk olah berbentuk\n\nproduk instan, antara lain nasi instan, bubur instan atau sejenis sereal\n\n53\n\nTeknologi Budidaya Sorgum\n\nPetunjuk Teknis\n\nsiap santap yang biasa dikonsumsi untuk sarapan pagi ( breakfast\n\ncereals), dimana produk -produk tersebut lebih mudah untuk", "excerpt": "sesuai dengan pola hidup masyarakat saat ini yang ingin serba praktis.\n\nKonsumen menyukai atau mengkonsumsi produk pangan yang bersifat\n\ninstan atau cepat saji (ready to use atau ready to eat) dan memiliki nilai\n\nfungsional bagi kesehatan.\n\nProduk olahan sorgum yang memiliki prospek untuk\n\ndikembangkan pada masa mendatang adalah produk olah berbentuk\n\nproduk instan, antara lain nasi instan, bubur instan atau sejenis sereal\n\n53\n\nTeknologi Budidaya Sorgum\n\nPetunjuk Teknis\n\nsiap santap yang biasa dikonsumsi untuk sarapan pagi ( breakfast\n\ncereals), dimana produk -produk tersebut lebih mudah untuk", "score": 0.0109}, {"docId": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "docName": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "documentName": "Manfaat_dan_Khasiat_Zat_Gizi_Kesehatan.md", "chunkId": "34", "chunkIndex": 34, "page": null, "section": null, "text": "- lemak tak jenuh tunggal\n\n- (monounsaturated fats juga disebut MUFA) dan asam\n\n- lemak tak jenuh ganda atau jamak\n\n- .\n\n- Di bawah ini diuraikan penjelasan mengenai manfaat Asam lemak tak jenuh jamak/ganda (Poly unsaturated fatty acids) bagi tubuh/kesehatan manusia.\n\n- Kemudian diuraikan dalam bentuk tabel bahan makanan apa saja yang mengandung Lemak Jamak (berapa gram (g) dalam setiap 100 gram bahan makanan terkait) berdasarkan data dari\n\n- USDA (U.S. Department of Agriculture)\n\n- .\n\n- Yang dimaksud bahan makanan atau sumber makanan adalah sayuran, buah, ikan, hewan ternak, bahan dan hasil o", "excerpt": "- lemak tak jenuh tunggal\n\n- (monounsaturated fats juga disebut MUFA) dan asam\n\n- lemak tak jenuh ganda atau jamak\n\n- .\n\n- Di bawah ini diuraikan penjelasan mengenai manfaat Asam lemak tak jenuh jamak/ganda (Poly unsaturated fatty acids) bagi tubuh/kesehatan manusia.\n\n- Kemudian diuraikan dalam bentuk tabel bahan makanan apa saja yang mengandung Lemak Jamak (berapa gram (g) dalam setiap 100 gram bahan makanan terkait) berdasarkan data dari\n\n- USDA (U.S. Department of Agriculture)\n\n- .\n\n- Yang dimaksud bahan makanan atau sumber makanan adalah sayuran, buah, ikan, hewan ternak, bahan dan hasil o", "score": 0.0107}, {"docId": "Artikel+14129+hal87-98.pdf", "docName": "Artikel+14129+hal87-98.pdf", "documentName": "Artikel+14129+hal87-98.pdf", "chunkId": "11", "chunkIndex": 11, "page": null, "section": null, "text": "mengandung energi sebesar 342,31 kkal, protein 6,7\n\ngram, lemak 1,7 gram, karbohidrat 13,4 gram, dan zat\n\nbesi 28,2 mg. 7 Tepung sorgum juga mengandung\n\nberbagai zat gizi yang bermanfaat, yaitu energi sebesar\n\n339,0 kkal, protein 11 gram, lemak 3,3 gram, dan\n\nkarbohidrat 73 gram per 100 gram bahan. Selain itu,\n\ntepung sorgum mengandung zat besi sebesar 4,4 mg.8\n\nKukis merupakan salah satu jenis biskuit yang\n\ndibuat dari adonan lunak dengan kandungan lemak\n\ncukup tinggi, memiliki tekstur renyah, dan\n\nCookies Berbasis Tepung Sorgum\n\n89\n\nhttps://doi.org/10.31983/jrg.v14i1.14129\n\nmenghasilkan poto", "excerpt": "mengandung energi sebesar 342,31 kkal, protein 6,7\n\ngram, lemak 1,7 gram, karbohidrat 13,4 gram, dan zat\n\nbesi 28,2 mg. 7 Tepung sorgum juga mengandung\n\nberbagai zat gizi yang bermanfaat, yaitu energi sebesar\n\n339,0 kkal, protein 11 gram, lemak 3,3 gram, dan\n\nkarbohidrat 73 gram per 100 gram bahan. Selain itu,\n\ntepung sorgum mengandung zat besi sebesar 4,4 mg.8\n\nKukis merupakan salah satu jenis biskuit yang\n\ndibuat dari adonan lunak dengan kandungan lemak\n\ncukup tinggi, memiliki tekstur renyah, dan\n\nCookies Berbasis Tepung Sorgum\n\n89\n\nhttps://doi.org/10.31983/jrg.v14i1.14129\n\nmenghasilkan poto", "score": 0.9978}, {"docId": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "docName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "documentName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "chunkId": "33", "chunkIndex": 33, "page": null, "section": null, "text": "dengan serealia lain, dan beras mengandung zat besi paling rendah (1,8 mg/100g). Ini\n\nmenunjukkan salah satu keunggulan yang dimiliki sorgum, yang sangat sesuai untuk\n\nmengatasi anemia gizi besi yang merupakan salah satu defisiensi zat gizi yang\n\n10\n\nprevalensinya tinggi. Kadar kalsium sorgum (25mg/100g) sebanding dengan jagung\n\n(26mg/100g). Selain itu sorgum  juga mengandung  P, Mg, Zn, Cu, Mn, Mo dan Cr\n\nberturut-turut sebesar 352; 171; 2,5; 0,44; 1,15; 0,06 dan 0,017 mg/100g biji\n\n(http://www.blackherbals.com/sorghum_and_millet_in_african_nu.htm).\n\nPengaruh Penyosohan terhadap Komposisi Kim", "excerpt": "dengan serealia lain, dan beras mengandung zat besi paling rendah (1,8 mg/100g). Ini\n\nmenunjukkan salah satu keunggulan yang dimiliki sorgum, yang sangat sesuai untuk\n\nmengatasi anemia gizi besi yang merupakan salah satu defisiensi zat gizi yang\n\n10\n\nprevalensinya tinggi. Kadar kalsium sorgum (25mg/100g) sebanding dengan jagung\n\n(26mg/100g). Selain itu sorgum  juga mengandung  P, Mg, Zn, Cu, Mn, Mo dan Cr\n\nberturut-turut sebesar 352; 171; 2,5; 0,44; 1,15; 0,06 dan 0,017 mg/100g biji\n\n(http://www.blackherbals.com/sorghum_and_millet_in_african_nu.htm).\n\nPengaruh Penyosohan terhadap Komposisi Kim", "score": 0.9881}, {"docId": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "docName": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "documentName": "_8.+IND_RS_63118_Hana+Tri+Lestari.pdf", "chunkId": "43", "chunkIndex": 43, "page": null, "section": null, "text": "proporsi tepung sorgum pada setiap formulasi. Artinya,\n\nkomposisi tepung sorgum yang lebih banyak dapat\n\nmenyebabkan kenaikan kadar protein kukis. Tepung\n\nsorgum memiliki kadar protein yang lebih besar daripada\n\ntepung sagu. Takaran 100 gram tepung sorgum\n\nmenghasilkan protein sebesar 8,43%, sedangkan takaran\n\n100 g ram tepung sagu hanya menghasilkan protein\n\nsebesar 1,11% 42,43. Penelitian terdahulu mendukung\n\npernyataan ini dengan menyebutkan bahwa substitusi\n\ntepung sorgum sebanyak 50% berpengaruh signifikan\n\nterhadap peningkatan protein kukis44. Penelitian lain juga\n\nmenunjukkan komposisi ", "excerpt": "proporsi tepung sorgum pada setiap formulasi. Artinya,\n\nkomposisi tepung sorgum yang lebih banyak dapat\n\nmenyebabkan kenaikan kadar protein kukis. Tepung\n\nsorgum memiliki kadar protein yang lebih besar daripada\n\ntepung sagu. Takaran 100 gram tepung sorgum\n\nmenghasilkan protein sebesar 8,43%, sedangkan takaran\n\n100 g ram tepung sagu hanya menghasilkan protein\n\nsebesar 1,11% 42,43. Penelitian terdahulu mendukung\n\npernyataan ini dengan menyebutkan bahwa substitusi\n\ntepung sorgum sebanyak 50% berpengaruh signifikan\n\nterhadap peningkatan protein kukis44. Penelitian lain juga\n\nmenunjukkan komposisi ", "score": 0.9706}, {"docId": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "docName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "documentName": "Buku Sorgum_Penanganan dan Pengolahan Berbagai Produk Pangan 2011.pdf", "chunkId": "45", "chunkIndex": 45, "page": null, "section": null, "text": "memperkuat  fakta bahwa ekstrak dan tepung biji sorgum mempunyai sifat fungsional\n\ndengan menguji peng hambatannya terhadap sel kanker A549, Hela, HCT 116, dan sel\n\nRaji.\n\nPengaruh Penyosohan terhadap Komposisi dan Sifat Fungsional Tepung Sorgum\n\nPemanfaatan biji sorgum sebagai bahan pangan harus melalui tahapan\n\npenyosohan sehingga diperoleh beras sorgum (so rgum sosoh), dan penggilingan untuk\n\nmenghasilkan tepung sorgum. Penyosohan akan meningkatkan palatabilitas atau citarasa\n\nprodukolahan sorgum, namuntahapan ini mengakibatkan penurunan sebagian komponen\n\ndan sifat fungsional sorgum. Tabel", "excerpt": "memperkuat  fakta bahwa ekstrak dan tepung biji sorgum mempunyai sifat fungsional\n\ndengan menguji peng hambatannya terhadap sel kanker A549, Hela, HCT 116, dan sel\n\nRaji.\n\nPengaruh Penyosohan terhadap Komposisi dan Sifat Fungsional Tepung Sorgum\n\nPemanfaatan biji sorgum sebagai bahan pangan harus melalui tahapan\n\npenyosohan sehingga diperoleh beras sorgum (so rgum sosoh), dan penggilingan untuk\n\nmenghasilkan tepung sorgum. Penyosohan akan meningkatkan palatabilitas atau citarasa\n\nprodukolahan sorgum, namuntahapan ini mengakibatkan penurunan sebagian komponen\n\ndan sifat fungsional sorgum. Tabel", "score": 0.9996}]}
 
 : heartbeat
 
@@ -24,167 +22,119 @@ data: {"delta": " Konsep"}
 
 data: {"delta": " Produk\n**P"}
 
-data: {"delta": "uding"}
+data: {"delta": "uding Santan"}
 
-data: {"delta": " Sanjur Rendah"}
+data: {"delta": " Sorgum Manis"}
 
-data: {"delta": " GI"}
+data: {"delta": " (Low-GI"}
 
-data: {"delta": " (Glikem"}
+data: {"delta": ")** adalah resep dessert"}
 
-data: {"delta": "ik"}
+data: {"delta": " berbasis"}
 
-data: {"delta": " Indeks)** adalah dessert"}
+data: {"delta": " teknologi pangan yang memanfaatkan"}
 
-data: {"delta": " berbasis suspensi kol"}
+data: {"delta": " profil karbohid"}
 
-data: {"delta": "oidal padat yang memanfaatkan"}
+data: {"delta": "rat"}
 
-data: {"delta": " sifat fungsional tepung"}
+data: {"delta": " kompleks dan serat pangan"}
 
-data: {"delta": " sorgum sebagai agen"}
+data: {"delta": " tinggi pada tepung sorg"}
 
-data: {"delta": " pemadat alami."}
+data: {"delta": "um. Berdasarkan"}
 
-data: {"delta": " Berdasarkan data komposisi"}
+data: {"delta": " data rujukan,"}
 
-data: {"delta": " dalam"}
+data: {"delta": " tepung"}
 
-data: {"delta": " [DOKUM"}
+data: {"delta": " sorgum mengandung protein"}
 
-data: {"delta": "EN REFERENSI"}
+data: {"delta": " nab"}
 
-data: {"delta": "], tepung sorgum"}
+data: {"delta": "ati ~8,"}
 
-data: {"delta": " mengandung kar"}
+data: {"delta": "4–11"}
 
-data: {"delta": "bohidrat kompleks"}
+data: {"delta": "% dan"}
 
-data: {"delta": " sekitar 73"}
-
-data: {"delta": "%,"}
-
-data: {"delta": " protein 8–"}
-
-data: {"delta": "11%,"}
-
-data: {"delta": " serta mineral seperti zat"}
+data: {"delta": " mineral vital seperti zat"}
 
 data: {"delta": " besi (4"}
 
 data: {"delta": ",4–5"}
 
-data: {"delta": ",4 mg/"}
+data: {"delta": ","}
 
-data: {"delta": "100g"}
+data: {"delta": "4 mg/1"}
 
-data: {"delta": ") yang"}
+data: {"delta": "00g"}
 
-data: {"delta": " berperan dalam metabolisme"}
+data: {"delta": "), serta memiliki kadar"}
 
-data: {"delta": " energi"}
+data: {"delta": " serat yang"}
 
-data: {"delta": " seluler. Karakter"}
+data: {"delta": " signifikan meskipun telah dis"}
 
-data: {"delta": "istik fisik sorgum"}
+data: {"delta": "osoh."}
+
+data: {"delta": " Kombinasi dengan sant"}
+
+data: {"delta": "an (lemak"}
+
+data: {"delta": " baik/MUFA"}
+
+data: {"delta": " &"}
+
+data: {"delta": " PUFA sesuai liter"}
+
+data: {"delta": "atur kesehatan) dan"}
+
+data: {"delta": " gula merah memberikan penurunan"}
+
+data: {"delta": " laju pencernaan gluk"}
+
+data: {"delta": "osa, sehingga produk"}
+
+data: {"delta": " memenuhi target rendahnya"}
+
+data: {"delta": " indeks glikem"}
+
+data: {"delta": "ik ("}
+
+data: {"delta": "GI). Teknik hid"}
+
+data: {"delta": "rasi bertah"}
+
+data: {"delta": "ap dan penguk"}
+
+data: {"delta": "usan terkontrol diterapkan"}
+
+data: {"delta": " untuk menetralisir"}
+
+data: {"delta": " sifat \"berpas"}
+
+data: {"delta": "ir\""}
+
+data: {"delta": " alami sorgum akibat"}
+
+data: {"delta": " rendahnya jaringan gluten"}
+
+data: {"delta": " dan"}
+
+data: {"delta": " daya serap air"}
 
 data: {"delta": " yang"}
 
-data: {"delta": " cenderung menyerap air"}
+data: {"delta": " tinggi, menghasilkan tekst"}
 
-data: {"delta": " lebih tinggi dan memiliki"}
+data: {"delta": "ura lembut, re"}
 
-data: {"delta": " tekstur berpasir"}
+data: {"delta": "nyah saat dip"}
 
-data: {"delta": " dapat"}
+data: {"delta": "otong, dan aman"}
 
-data: {"delta": " diatasi melalui teknik"}
-
-data: {"delta": " hidrasi"}
-
-data: {"delta": " bertahap dengan"}
-
-data: {"delta": " cairan hangat, menghasilkan"}
-
-data: {"delta": " gel pati yang lembut"}
-
-data: {"delta": " tanpa merusak integrit"}
-
-data: {"delta": "as molekul serat"}
-
-data: {"delta": ".\n\nFormula ini"}
-
-data: {"delta": " sengaja dirancang untuk profil"}
-
-data: {"delta": " **rendah GI"}
-
-data: {"delta": "**"}
-
-data: {"delta": " dengan mengganti gula putih"}
-
-data: {"delta": " (GI ~6"}
-
-data: {"delta": "5)"}
-
-data: {"delta": " menjadi gula merah ("}
-
-data: {"delta": "GI ~"}
-
-data: {"delta": "35–5"}
-
-data: {"delta": "4), sekaligus mengandalkan"}
-
-data: {"delta": " protein dan polisakar"}
-
-data: {"delta": "ida sorgum untuk"}
-
-data: {"delta": " memperlambat la"}
-
-data: {"delta": "ju penyerapan gluk"}
-
-data: {"delta": "osa ke"}
-
-data: {"delta": " aliran darah. Kombin"}
-
-data: {"delta": "asi santan menyediakan"}
-
-data: {"delta": " lemak jenuh"}
-
-data: {"delta": " rantai sedang (M"}
-
-data: {"delta": "CT) sebagai sumber"}
-
-data: {"delta": " energi berkelanjutan, sedangkan"}
-
-data: {"delta": " daun pandan memberikan"}
-
-data: {"delta": " senyawa arom"}
-
-data: {"delta": "atik"}
-
-data: {"delta": " (pandan lact"}
-
-data: {"delta": "one) secara alami"}
-
-data: {"delta": "."}
-
-data: {"delta": " Produk ini sepenuhnya bebas"}
-
-data: {"delta": " gluten, cocok untuk"}
-
-data: {"delta": " modifikasi pola makan"}
-
-data: {"delta": " modern, dan dapat"}
-
-data: {"delta": " disiapkan dalam waktu <"}
-
-data: {"delta": "30 menit melalui"}
-
-data: {"delta": " proses pengukusan"}
-
-data: {"delta": " term"}
-
-data: {"delta": "al yang efisien."}
+data: {"delta": " untuk konsumsi rutin."}
 
 data: {"delta": "\n\n##"}
 
@@ -196,925 +146,993 @@ data: {"delta": "| Nama Bahan ("}
 
 data: {"delta": "Gramasi Spesifik"}
 
-data: {"delta": ") | Jumlah |"}
+data: {"delta": ") | Jumlah Fis"}
 
-data: {"delta": " Pers"}
+data: {"delta": "ik | Estimasi"}
 
-data: {"delta": "entase Terhadap Tepung"}
+data: {"delta": " Harga Matem"}
 
-data: {"delta": " | Estim"}
+data: {"delta": "atis | Status Data"}
 
-data: {"delta": "asi Harga (Mat"}
+data: {"delta": "/Rancangan Ahli |"}
 
-data: {"delta": "ematis) |"}
+data: {"delta": "\n|---"}
 
-data: {"delta": " Status"}
+data: {"delta": "|---|---"}
 
-data: {"delta": " Sumber Data |\n"}
+data: {"delta": "|---|\n"}
 
-data: {"delta": "|----------------------------"}
+data: {"delta": "| Tepung Sorg"}
 
-data: {"delta": "---|--------|"}
+data: {"delta": "um |"}
 
-data: {"delta": "----------------------------"}
+data: {"delta": " 80 gram"}
 
-data: {"delta": "|----------------------------|----------------"}
+data: {"delta": " | Rp2."}
 
-data: {"delta": "---|\n|"}
+data: {"delta": "400"}
 
-data: {"delta": " Tep"}
+data: {"delta": " | Rancangan &"}
 
-data: {"delta": "ung Sorgum ("}
+data: {"delta": " hitungan propors"}
 
-data: {"delta": "halus, kadar"}
+data: {"delta": "ional (harga pasar"}
 
-data: {"delta": " air ≤12"}
+data: {"delta": " grosir warung Rp"}
 
-data: {"delta": "%)"}
+data: {"delta": "30."}
 
-data: {"delta": " | 30"}
+data: {"delta": "000/kg"}
 
-data: {"delta": " gram"}
+data: {"delta": " → 80"}
 
-data: {"delta": " | 10"}
+data: {"delta": "/1"}
 
-data: {"delta": "0"}
+data: {"delta": "000×"}
 
-data: {"delta": "% (basis tepung"}
+data: {"delta": "30.0"}
 
-data: {"delta": " tunggal) | ("}
+data: {"delta": "00)."}
 
-data: {"delta": "30÷1"}
+data: {"delta": " Data komposisi protein"}
 
-data: {"delta": "000"}
+data: {"delta": "/z"}
 
-data: {"delta": ") × Rp2"}
+data: {"delta": "at besi bersumber"}
 
-data: {"delta": "2.00"}
-
-data: {"delta": "0 ="}
-
-data: {"delta": " **Rp66"}
-
-data: {"delta": "0"}
-
-data: {"delta": "** | [R"}
-
-data: {"delta": "ANCANGAN AHLI"}
-
-data: {"delta": "] ("}
-
-data: {"delta": "Harga pasar referensi)"}
-
-data: {"delta": " |\n|"}
-
-data: {"delta": " Santan Kelapa"}
-
-data: {"delta": " (saringan pertama"}
-
-data: {"delta": ","}
-
-data: {"delta": " viskositas sedang"}
-
-data: {"delta": ") | "}
-
-data: {"delta": "150 ml"}
-
-data: {"delta": " (~"}
-
-data: {"delta": "150 gram"}
-
-data: {"delta": ") |"}
-
-data: {"delta": " – | (1"}
-
-data: {"delta": "50"}
-
-data: {"delta": "÷100"}
-
-data: {"delta": "0) × Rp"}
-
-data: {"delta": "18."}
-
-data: {"delta": "000 ="}
-
-data: {"delta": " **Rp2."}
-
-data: {"delta": "700**"}
-
-data: {"delta": " | ["}
-
-data: {"delta": "RANCANGAN AHL"}
-
-data: {"delta": "I] |\n"}
+data: {"delta": " referensi. |\n"}
 
 data: {"delta": "|"}
 
-data: {"delta": " Gula Merah ("}
+data: {"delta": " Santan Kental"}
 
-data: {"delta": "dihaluskan"}
+data: {"delta": " (dari kelapa par"}
 
-data: {"delta": " serbuk) |"}
+data: {"delta": "ut segar) |"}
 
-data: {"delta": " 1"}
+data: {"delta": " "}
 
-data: {"delta": "2 gram | "}
+data: {"delta": "250 ml"}
 
-data: {"delta": "40% dari"}
+data: {"delta": " | Rp8"}
 
-data: {"delta": " berat tepung | ("}
+data: {"delta": ".333"}
 
-data: {"delta": "12÷1"}
+data: {"delta": " | Rancangan &"}
 
-data: {"delta": "000)"}
+data: {"delta": " hitungan propors"}
 
-data: {"delta": " × Rp18"}
+data: {"delta": "ional (harga pasar"}
+
+data: {"delta": " kelbolong Rp"}
+
+data: {"delta": "10."}
+
+data: {"delta": "000/b"}
+
+data: {"delta": "uah, yield ~"}
+
+data: {"delta": "300ml"}
+
+data: {"delta": " → 25"}
+
+data: {"delta": "0"}
+
+data: {"delta": "/300"}
+
+data: {"delta": "×1"}
+
+data: {"delta": "0.00"}
+
+data: {"delta": "0). Lemak"}
+
+data: {"delta": " berfungsi"}
+
+data: {"delta": " emulsi &"}
+
+data: {"delta": " pel"}
+
+data: {"delta": "indung GI. |"}
+
+data: {"delta": "\n"}
+
+data: {"delta": "| Gula Merah"}
+
+data: {"delta": " (ceprak/"}
+
+data: {"delta": "kepulaga)"}
+
+data: {"delta": " | 5"}
+
+data: {"delta": "0 gram | Rp"}
+
+data: {"delta": "1.25"}
+
+data: {"delta": "0 | Rancangan"}
+
+data: {"delta": " & hitungan prop"}
+
+data: {"delta": "orsional (harga"}
+
+data: {"delta": " pasar Rp25"}
+
+data: {"delta": ".00"}
+
+data: {"delta": "0/kg → "}
+
+data: {"delta": "50"}
+
+data: {"delta": "/100"}
+
+data: {"delta": "0×25"}
 
 data: {"delta": ".000"}
 
-data: {"delta": " = **Rp2"}
+data: {"delta": ")."}
 
-data: {"delta": "16** |"}
+data: {"delta": " Gula alternatif rendah"}
 
-data: {"delta": " [RANCANGAN"}
+data: {"delta": " GI dibanding sukrosa"}
 
-data: {"delta": " AHLI] |"}
+data: {"delta": " murni. |\n"}
 
-data: {"delta": "\n| Daun Pand"}
+data: {"delta": "| Daun Pandan"}
 
-data: {"delta": "an muda"}
+data: {"delta": " (daun lebar"}
 
-data: {"delta": " (muda,"}
+data: {"delta": ", iris kasar)"}
 
-data: {"delta": " bersih"}
+data: {"delta": " | 4"}
 
-data: {"delta": ") | 1"}
+data: {"delta": " helai (±"}
 
-data: {"delta": "0 gram (±"}
+data: {"delta": "5 g) |"}
 
-data: {"delta": "2 helai)"}
+data: {"delta": " Rp120"}
 
-data: {"delta": " | – | ("}
+data: {"delta": " | Rancangan &"}
+
+data: {"delta": " hitungan propors"}
+
+data: {"delta": "ional (harga pasar"}
+
+data: {"delta": " Rp1"}
+
+data: {"delta": ".500"}
+
+data: {"delta": "/ikat berisi "}
+
+data: {"delta": "50 hel"}
+
+data: {"delta": "ai → 4"}
+
+data: {"delta": "/50×"}
+
+data: {"delta": "1.50"}
+
+data: {"delta": "0)."}
+
+data: {"delta": " Penambah aroma volatil"}
+
+data: {"delta": " alami, bebas bahan"}
+
+data: {"delta": " kimia sintetis."}
+
+data: {"delta": " |\n|"}
+
+data: {"delta": " Air Panas Murn"}
+
+data: {"delta": "i ("}
+
+data: {"delta": "suhu ~8"}
+
+data: {"delta": "5"}
+
+data: {"delta": "°C) | "}
+
+data: {"delta": "100 ml"}
+
+data: {"delta": " | Rp0 |"}
+
+data: {"delta": " Rancangan proses hid"}
+
+data: {"delta": "rasi awal pati"}
+
+data: {"delta": " sorgum. |"}
+
+data: {"delta": "\n"}
+
+data: {"delta": "**Total Estimasi"}
+
+data: {"delta": " Biaya per Porsi"}
+
+data: {"delta": ":**"}
+
+data: {"delta": " Rp12."}
 
 data: {"delta": "10"}
 
-data: {"delta": "÷100"}
+data: {"delta": "3 (Memenuhi"}
 
-data: {"delta": "0"}
+data: {"delta": " batasan budget Rp"}
 
-data: {"delta": ") × Rp1"}
-
-data: {"delta": "5.00"}
-
-data: {"delta": "0 = **Rp"}
-
-data: {"delta": "150**"}
-
-data: {"delta": " | [RANC"}
-
-data: {"delta": "ANGAN AHLI]"}
-
-data: {"delta": " |\n| Air"}
-
-data: {"delta": " matang"}
-
-data: {"delta": " hangat | 3"}
-
-data: {"delta": "0 ml"}
-
-data: {"delta": " (~30 gram"}
-
-data: {"delta": ")"}
-
-data: {"delta": " | – | –"}
-
-data: {"delta": " | [RANC"}
-
-data: {"delta": "ANGAN"}
-
-data: {"delta": " AHLI] |"}
-
-data: {"delta": "\n| **TOTAL"}
-
-data: {"delta": " BIAYA BAHAN"}
-
-data: {"delta": "** | **~"}
-
-data: {"delta": "240 ml"}
-
-data: {"delta": "/gram** |"}
-
-data: {"delta": " |"}
-
-data: {"delta": " **Rp3."}
-
-data: {"delta": "726**"}
-
-data: {"delta": " | Mem"}
-
-data: {"delta": "enuhi budget Rp2"}
-
-data: {"delta": "0"}
+data: {"delta": "20"}
 
 data: {"delta": ".000"}
 
-data: {"delta": "/porsi |\n\n"}
+data: {"delta": "/p"}
 
-data: {"delta": "*Catatan:*"}
+data: {"delta": "orsi dengan margin keamanan"}
 
-data: {"delta": " Perhitungan harga mengikuti"}
+data: {"delta": " fluktuasi"}
 
-data: {"delta": " prinsip matematis prop"}
+data: {"delta": " musim"}
 
-data: {"delta": "ors"}
+data: {"delta": ").\n\n## Cara"}
 
-data: {"delta": "ional gramasi terhadap"}
+data: {"delta": " Membuat\n"}
 
-data: {"delta": " harga grosir/reg"}
+data: {"delta": "1. **T"}
 
-data: {"delta": "uler per kilogram."}
-
-data: {"delta": " Harga satuan warungan"}
-
-data: {"delta": " minimum Rp1."}
-
-data: {"delta": "500 telah"}
-
-data: {"delta": " disatukan dalam"}
-
-data: {"delta": " pen"}
-
-data: {"delta": "yesuaian harga"}
-
-data: {"delta": " e"}
-
-data: {"delta": "ceran, namun"}
-
-data: {"delta": " biaya aktual per porsi"}
-
-data: {"delta": " hanya merefleks"}
-
-data: {"delta": "ikan penggunaan fraks"}
-
-data: {"delta": "ional sesuai gramasi"}
-
-data: {"delta": " spesifik"}
-
-data: {"delta": " di atas.\n\n"}
-
-data: {"delta": "## Cara"}
-
-data: {"delta": " Membuat\n*(Sem"}
-
-data: {"delta": "ua tahap mengacu"}
-
-data: {"delta": " pada prinsip teknologi pengolahan"}
-
-data: {"delta": " termal-hidr"}
-
-data: {"delta": "asi untuk produk bebas"}
-
-data: {"delta": " gluten)*\n\n1"}
-
-data: {"delta": ". **Ekstr"}
-
-data: {"delta": "aksi Aroma Termal"}
-
-data: {"delta": " (5 menit)**"}
-
-data: {"delta": "\n"}
-
-data: {"delta": "   Masak "}
-
-data: {"delta": "150 ml"}
-
-data: {"delta": " santan dan ik"}
-
-data: {"delta": "atan daun pandan"}
-
-data: {"delta": " dalam"}
-
-data: {"delta": " panci berdinding"}
-
-data: {"delta": " tebal dengan tutup tertutup"}
-
-data: {"delta": " pada suhu **7"}
-
-data: {"delta": "5°C–8"}
-
-data: {"delta": "0°C** selama"}
-
-data: {"delta": " **3 menit**."}
-
-data: {"delta": " Jangan sampai mendid"}
-
-data: {"delta": "ih penuh untuk mencegah"}
-
-data: {"delta": " pecah emul"}
-
-data: {"delta": "si lemak santan"}
-
-data: {"delta": ". Ang"}
-
-data: {"delta": "kat, saring"}
-
-data: {"delta": ", buang daun pand"}
-
-data: {"delta": "an."}
-
-data: {"delta": " Sisakan santan"}
-
-data: {"delta": " hangat. *(R"}
-
-data: {"delta": "ANCANGAN AHLI"}
-
-data: {"delta": ")*\n\n"}
-
-data: {"delta": "2. **P"}
-
-data: {"delta": "encampuran K"}
-
-data: {"delta": "ering & Larutan"}
-
-data: {"delta": " Penguat ("}
-
-data: {"delta": "1 menit"}
-
-data: {"delta": ")**\n   Dalam"}
-
-data: {"delta": " mangkuk tahan"}
-
-data: {"delta": " panas, campurkan"}
-
-data: {"delta": " 30 gram"}
-
-data: {"delta": " tepung"}
-
-data: {"delta": " sorgum dan "}
-
-data: {"delta": "12 gram"}
-
-data: {"delta": " gula merah halus."}
-
-data: {"delta": " A"}
-
-data: {"delta": "duk rata dengan sendok"}
-
-data: {"delta": " kayu hingga tidak terdapat"}
-
-data: {"delta": " gumpalan kering"}
-
-data: {"delta": ". Teknik ini mencegah"}
-
-data: {"delta": " aglomerasi"}
-
-data: {"delta": " pati saat kontak dengan"}
-
-data: {"delta": " cairan panas. *("}
-
-data: {"delta": "RANC"}
-
-data: {"delta": "ANGAN AHLI)*"}
-
-data: {"delta": "\n\n3. **"}
-
-data: {"delta": "Hidrasi Bert"}
-
-data: {"delta": "ahap"}
-
-data: {"delta": " & Pembentukan Susp"}
-
-data: {"delta": "ensi (3 menit"}
-
-data: {"delta": ")**\n  "}
-
-data: {"delta": " Tuang 3"}
-
-data: {"delta": "0 ml air hangat"}
-
-data: {"delta": " ke dalam"}
-
-data: {"delta": " campuran tepung, ad"}
-
-data: {"delta": "uk cepat membentuk pasta"}
-
-data: {"delta": " kental. S"}
-
-data: {"delta": "ambil terus mengad"}
-
-data: {"delta": "uk dengan whisk/em"}
-
-data: {"delta": "ulsifier tangan,"}
-
-data: {"delta": " tuang sant"}
-
-data: {"delta": "an hangat (dari"}
-
-data: {"delta": " langkah 1)"}
-
-data: {"delta": " sedikit demi sedikit hingga"}
-
-data: {"delta": " adonan tampak kinvis"}
-
-data: {"delta": ", licin,"}
-
-data: {"delta": " dan"}
-
-data: {"delta": " bebas partikel kasar"}
-
-data: {"delta": ". Tah"}
-
-data: {"delta": "ap ini mengaktif"}
-
-data: {"delta": "kan kemampuan hidr"}
+data: {"delta": "ahap Hidr"}
 
 data: {"delta": "asi"}
 
-data: {"delta": " tinggi tepung sorgum"}
+data: {"delta": " & Gelatinisasi"}
 
-data: {"delta": " yang"}
+data: {"delta": " Awal"}
 
-data: {"delta": " telah diidentifikasi dalam"}
+data: {"delta": ":** Masukkan tepung sorg"}
 
-data: {"delta": " riset sebagai sifat fisi"}
+data: {"delta": "um (8"}
 
-data: {"delta": "ologisnya. *("}
+data: {"delta": "0 gram) ke"}
 
-data: {"delta": "DATA"}
+data: {"delta": " dalam mangkuk"}
 
-data: {"delta": " DOKUMEN"}
+data: {"delta": " tahan panas. Tu"}
 
-data: {"delta": " REFEREN"}
+data: {"delta": "ang air"}
 
-data: {"delta": "SI + RANC"}
+data: {"delta": " panas (10"}
 
-data: {"delta": "ANGAN AHLI)*"}
+data: {"delta": "0 ml) sambil"}
 
-data: {"delta": "\n\n4"}
+data: {"delta": " aduk cepat menggunakan"}
 
-data: {"delta": ". **Penguk"}
+data: {"delta": " whisk"}
 
-data: {"delta": "usan Terkontrol ("}
+data: {"delta": " hingga membentuk pasta hom"}
 
-data: {"delta": "2"}
+data: {"delta": "ogen tanpa"}
 
-data: {"delta": "0 menit)**\n"}
+data: {"delta": " gumpalan."}
 
-data: {"delta": "   Tuang adonan"}
+data: {"delta": " Diamkan 5"}
+
+data: {"delta": " menit"}
+
+data: {"delta": ". *(Prinsip"}
+
+data: {"delta": " Teknologi: Memic"}
+
+data: {"delta": "u swellability pati"}
+
+data: {"delta": " sorg"}
+
+data: {"delta": "um & menutupi"}
+
+data: {"delta": " partikel kasar ber"}
+
+data: {"delta": "pas"}
+
+data: {"delta": "ir).*\n2"}
+
+data: {"delta": ". **T"}
+
+data: {"delta": "ahap Infusi"}
+
+data: {"delta": " &"}
+
+data: {"delta": " Pelarutan:**"}
+
+data: {"delta": " Dalam"}
+
+data: {"delta": " panci kecil,"}
+
+data: {"delta": " pan"}
+
+data: {"delta": "askan santan ("}
+
+data: {"delta": "250"}
+
+data: {"delta": " ml), daun pand"}
+
+data: {"delta": "an ("}
+
+data: {"delta": "4 helai),"}
+
+data: {"delta": " dan gula merah ("}
+
+data: {"delta": "50 gram)"}
+
+data: {"delta": " dengan api sedang-"}
+
+data: {"delta": "kecil. A"}
+
+data: {"delta": "duk hingga gula lar"}
+
+data: {"delta": "ut sempurna"}
+
+data: {"delta": " dan suhu mencapai "}
+
+data: {"delta": "65–7"}
+
+data: {"delta": "0°C. Mat"}
+
+data: {"delta": "ikan api, s"}
+
+data: {"delta": "aring campuran menggunakan ay"}
+
+data: {"delta": "akan mesh"}
+
+data: {"delta": " halus untuk membuang resid"}
+
+data: {"delta": "u daun.\n"}
+
+data: {"delta": "3. **T"}
+
+data: {"delta": "ahap Emul"}
+
+data: {"delta": "si"}
+
+data: {"delta": " & Tempering:**"}
+
+data: {"delta": " Tu"}
+
+data: {"delta": "ang cairan santan"}
+
+data: {"delta": " hangat"}
+
+data: {"delta": " secara tipis-stream ke"}
+
+data: {"delta": " dalam pasta sorgum"}
+
+data: {"delta": " sambil"}
+
+data: {"delta": " dikocok vigorously"}
+
+data: {"delta": " hingga"}
+
+data: {"delta": "完全 terintegrasi"}
+
+data: {"delta": " dan"}
+
+data: {"delta": " konsistensi mengalir lancar"}
+
+data: {"delta": ".\n4."}
+
+data: {"delta": " **T"}
+
+data: {"delta": "ahap Setting term"}
+
+data: {"delta": "al:** Tuang"}
+
+data: {"delta": " adonan"}
 
 data: {"delta": " ke dalam cetakan"}
 
-data: {"delta": " silikon/malum tahan"}
+data: {"delta": " panci/loy"}
 
-data: {"delta": " panas (isi maksimal"}
+data: {"delta": "ang tahan kukus"}
 
-data: {"delta": " 80%"}
+data: {"delta": " ("}
 
-data: {"delta": " kapasitas). Tutup"}
+data: {"delta": "tebal max "}
 
-data: {"delta": " rapat dengan alum"}
+data: {"delta": "2 cm). Tut"}
 
-data: {"delta": "unium foil,"}
+data: {"delta": "up permukaan loyang"}
 
-data: {"delta": " tusuk permukaan foil"}
+data: {"delta": " dengan kertas roti/al"}
 
-data: {"delta": " sebanyak 3–"}
+data: {"delta": "umunium foil"}
 
-data: {"delta": "4"}
+data: {"delta": " yang"}
 
-data: {"delta": " lubang jarum untuk"}
+data: {"delta": " dialasi tusuk"}
 
-data: {"delta": " ventilasi kondens"}
+data: {"delta": " gigi kecil untuk mencegah"}
 
-data: {"delta": "asi terkontrol."}
+data: {"delta": " tetesan air meng"}
 
-data: {"delta": " Masukkan"}
+data: {"delta": "genangi permukaan."}
 
-data: {"delta": " ke dandang yang"}
+data: {"delta": " Kuk"}
 
-data: {"delta": " sudah membawa"}
+data: {"delta": "us pada suhu "}
 
-data: {"delta": " air hingga mendid"}
+data: {"delta": "100"}
 
-data: {"delta": "ih (**10"}
+data: {"delta": "°C (tekan"}
 
-data: {"delta": "0"}
+data: {"delta": "an uap kon"}
 
-data: {"delta": "°C**). Kuk"}
+data: {"delta": "stan) selama "}
 
-data: {"delta": "us pada api sedang"}
+data: {"delta": "2"}
 
-data: {"delta": " dengan tutup panci"}
+data: {"delta": "5 menit hingga tus"}
 
-data: {"delta": " ditutup"}
+data: {"delta": "uk uji keluar bersih"}
 
-data: {"delta": " kain lap bersih untuk"}
-
-data: {"delta": " menghindari"}
-
-data: {"delta": " tetesan air langsung"}
-
-data: {"delta": " mengenai permukaan puding"}
-
-data: {"delta": ". Proses berlangsung selama"}
-
-data: {"delta": " **20 menit"}
-
-data: {"delta": "**. *(RANC"}
-
-data: {"delta": "ANGAN AHLI)*"}
-
-data: {"delta": "\n\n5. **"}
-
-data: {"delta": "Pending"}
-
-data: {"delta": "inan & Seting"}
-
-data: {"delta": " Gel (±1"}
-
-data: {"delta": "5 menit di"}
-
-data: {"delta": " luar waktu masak)**"}
-
-data: {"delta": "\n"}
-
-data: {"delta": "   Angkat cet"}
-
-data: {"delta": "akan"}
-
-data: {"delta": ", tiriskan,"}
+data: {"delta": ". Angkat,"}
 
 data: {"delta": " bi"}
 
 data: {"delta": "arkan mendingin"}
 
-data: {"delta": " hingga suhu ruang (**"}
+data: {"delta": " secara alami hingga suhu"}
 
-data: {"delta": "2"}
+data: {"delta": " ruang (proses"}
 
-data: {"delta": "5°C–3"}
+data: {"delta": " retrogradasi pati"}
 
-data: {"delta": "0°C**) selama"}
+data: {"delta": " &"}
 
-data: {"delta": " **15 menit"}
+data: {"delta": " pembentukan jaringan gel"}
 
-data: {"delta": "**."}
+data: {"delta": " santan), lalu"}
 
-data: {"delta": " Biarkan proses gel"}
+data: {"delta": " masukkan kulkas"}
 
-data: {"delta": "atinisasi"}
+data: {"delta": " (4°C)"}
 
-data: {"delta": " pati sorgum menyelesaikan"}
+data: {"delta": " selama"}
 
-data: {"delta": " pembentukan struktur jaringan tiga"}
+data: {"delta": " 60 menit"}
 
-data: {"delta": " dimensi sebelum dicetak"}
+data: {"delta": " sebelum"}
 
-data: {"delta": "/dipotong."}
+data: {"delta": " pemotongan."}
 
-data: {"delta": " S"}
+data: {"delta": "\n\n## Catatan"}
 
-data: {"delta": "ajikan utuh atau"}
+data: {"delta": " Teknis\n-"}
 
-data: {"delta": " potong"}
+data: {"delta": " **Pengendalian Indeks"}
 
-data: {"delta": " dadu sesuai selera"}
+data: {"delta": " Glikemik"}
 
-data: {"delta": ". *(RANC"}
+data: {"delta": ":** Sorg"}
 
-data: {"delta": "ANGAN AHLI)*"}
+data: {"delta": "um menyimpan fraksi"}
 
-data: {"delta": "\n\n**Total Waktu"}
+data: {"delta": " pati resisten ("}
 
-data: {"delta": " Aktif:** "}
+data: {"delta": "Resistant Starch"}
 
-data: {"delta": "9 menit | **"}
+data: {"delta": " type 3)"}
 
-data: {"delta": "Total Waktu"}
+data: {"delta": " yang"}
 
-data: {"delta": " Proses (termasuk"}
+data: {"delta": " lebih tinggi dibanding tepung"}
 
-data: {"delta": " pendinginan):** "}
+data: {"delta": " gandum halus."}
 
-data: {"delta": "24"}
+data: {"delta": " Kombin"}
 
-data: {"delta": " menit (Memenuhi"}
+data: {"delta": "asi dengan lemak tak"}
 
-data: {"delta": " batas maks 3"}
+data: {"delta": " jenuh dari"}
 
-data: {"delta": "0"}
+data: {"delta": " santan memperl"}
 
-data: {"delta": " menit)\n\n##"}
+data: {"delta": "ambat kerja enzim"}
 
-data: {"delta": " Catatan Teknis\n"}
+data: {"delta": " amilase di"}
 
-data: {"delta": "**Analisis Ber"}
+data: {"delta": " usus halus, sementara"}
 
-data: {"delta": "basis Dokumen Referensi"}
+data: {"delta": " gula merah tetap mempertahankan"}
 
-data: {"delta": ":**\n- **["}
+data: {"delta": " ritme pelepas"}
 
-data: {"delta": "DATA DOKUM"}
+data: {"delta": "an glukosa yang"}
 
-data: {"delta": "EN"}
+data: {"delta": " stabil. Ini sel"}
 
-data: {"delta": "]:** Tepung"}
+data: {"delta": "aras dengan riset bahwa"}
 
-data: {"delta": " sorgum"}
+data: {"delta": " fortifikasi biji-b"}
 
-data: {"delta": " diketahui memiliki kandungan protein"}
+data: {"delta": "ijian utuh"}
 
-data: {"delta": " "}
+data: {"delta": "/kasar dapat men"}
 
-data: {"delta": "8–11"}
+data: {"delta": "unda pengosongan"}
 
-data: {"delta": "%, zat besi "}
+data: {"delta": " lambung & meningkatkan"}
 
-data: {"delta": "4,"}
+data: {"delta": " sensit"}
 
-data: {"delta": "4–5,"}
+data: {"delta": "ivitas insulin."}
 
-data: {"delta": "4 mg/1"}
+data: {"delta": "\n"}
 
-data: {"delta": "00"}
+data: {"delta": "- **Manajemen"}
 
-data: {"delta": "g, dan struktur"}
+data: {"delta": " Rheologi Non-G"}
 
-data: {"delta": " pati yang membutuhkan hid"}
+data: {"delta": "luten:** Tep"}
 
-data: {"delta": "rasi lebih tinggi"}
+data: {"delta": "ung sorgum kehilangan"}
 
-data: {"delta": " dibandingkan beras/jagung"}
+data: {"delta": " elastisitas struktur"}
 
-data: {"delta": ". Sifat fisik"}
+data: {"delta": " gluten."}
 
-data: {"delta": " ini membuat adonan cenderung"}
+data: {"delta": " Untuk produk puding"}
 
-data: {"delta": " lebih kasar/ber"}
+data: {"delta": "/custard,"}
 
-data: {"delta": "pasir jika hidrat"}
+data: {"delta": " peng"}
 
-data: {"delta": "asi tidak optimal."}
+data: {"delta": "ikatan cukup mengandalkan"}
 
-data: {"delta": " Kandungan polifen"}
+data: {"delta": " gelatinisasi pati"}
 
-data: {"delta": "ol dan serat lar"}
+data: {"delta": " + koagulasi"}
 
-data: {"delta": "ut/tidak lar"}
+data: {"delta": " protein santan yang"}
 
-data: {"delta": "ut juga"}
+data: {"delta": " dipanaskan secara"}
 
-data: {"delta": " berkontribusi pada penurunan"}
+data: {"delta": " uniform. Jika formul"}
 
-data: {"delta": " respons glikem"}
+data: {"delta": "asi dikembangkan ke arah"}
 
-data: {"delta": "ik.\n"}
+data: {"delta": " kue panggang solid"}
 
-data: {"delta": "- **[DATA D"}
+data: {"delta": " (>50%"}
 
-data: {"delta": "OKUMEN"}
+data: {"delta": " substit"}
 
-data: {"delta": "]:** Studi tentang"}
+data: {"delta": "usi), penambahan X"}
 
-data: {"delta": " substitusi tepung sorg"}
+data: {"delta": "anthan Gum "}
 
-data: {"delta": "um pada"}
+data: {"delta": "0,"}
 
-data: {"delta": " produk bakeri/p"}
+data: {"delta": "8 gram (1"}
 
-data: {"delta": "a"}
+data: {"delta": "% berat tepung)"}
 
-data: {"delta": "stry menunjukkan bahwa peningkatan"}
+data: {"delta": " atau Psyllium"}
 
-data: {"delta": " kadar sorgum berk"}
+data: {"delta": " Hus"}
 
-data: {"delta": "orelasi positif"}
+data: {"delta": "k 2,"}
 
-data: {"delta": " dengan kadar"}
+data: {"delta": "4"}
 
-data: {"delta": " protein dan stabilitas"}
+data: {"delta": " gram (3%"}
 
-data: {"delta": " tekstur jika rasio"}
+data: {"delta": " berat"}
 
-data: {"delta": " cairan-tepung"}
+data: {"delta": " tepung) WAJ"}
 
-data: {"delta": " dan teknik"}
+data: {"delta": "IB di"}
 
-data: {"delta": " pengadukan disesuaikan"}
+data: {"delta": "implementasikan sebagai pengganti"}
 
-data: {"delta": ".\n\n**Anal"}
+data: {"delta": " fungsi retensi air"}
 
-data: {"delta": "isis Desain Ahli ("}
+data: {"delta": " dan jaring str"}
 
-data: {"delta": "B"}
-
-data: {"delta": "IMA AI):**\n"}
-
-data: {"delta": "- **Struktur"}
-
-data: {"delta": " Tanpa Gluten:** P"}
-
-data: {"delta": "uding tidak bergantung pada"}
-
-data: {"delta": " jaringan gluten elastis"}
-
-data: {"delta": ". Struktur diambil al"}
-
-data: {"delta": "ih oleh koag"}
-
-data: {"delta": "ulasi protein nabati"}
-
-data: {"delta": " (sorgum"}
-
-data: {"delta": "+s"}
-
-data: {"delta": "antan) dan gel"}
-
-data: {"delta": "atin"}
-
-data: {"delta": "isasi parsial pati"}
-
-data: {"delta": ". Penggunaan xanth"}
-
-data: {"delta": "an gum atau"}
-
-data: {"delta": " psyllium tidak"}
-
-data: {"delta": " diperlukan mengingat viskos"}
-
-data: {"delta": "itas santan berfungsi"}
-
-data: {"delta": " sebagai pengemul"}
-
-data: {"delta": "si alami dan r"}
-
-data: {"delta": "asio cairan 5"}
-
-data: {"delta": "× berat tepung sudah"}
-
-data: {"delta": " cukup untuk pembentukan gel"}
-
-data: {"delta": " p"}
-
-data: {"delta": "ading yang kokoh"}
-
-data: {"delta": " namun lembut.\n"}
-
-data: {"delta": "- **"}
-
-data: {"delta": "Kontrol GI &"}
-
-data: {"delta": " Profil Rasa:** G"}
-
-data: {"delta": "ula merah"}
-
-data: {"delta": " dipilih bukan sekadar peman"}
-
-data: {"delta": "is, tetapi sebagai"}
-
-data: {"delta": " sumber sukrosa-fr"}
-
-data: {"delta": "uktosa dengan indeks"}
-
-data: {"delta": " glikemik"}
-
-data: {"delta": " lebih"}
-
-data: {"delta": " rendah, sejalan"}
-
-data: {"delta": " dengan target `dess"}
-
-data: {"delta": "ert_rend"}
-
-data: {"delta": "ah_gi`."}
-
-data: {"delta": " Aroma pandan menggantikan"}
-
-data: {"delta": " kebutuhan vanila buatan"}
-
-data: {"delta": ", menjaga keseg"}
-
-data: {"delta": "aran sensoris tanpa"}
-
-data: {"delta": " gangguan"}
-
-data: {"delta": " residu kimia."}
-
-data: {"delta": "\n-"}
-
-data: {"delta": " **Validasi Keamanan"}
-
-data: {"delta": " & Regulasi:**"}
-
-data: {"delta": " Tidak terdapat"}
-
-data: {"delta": " kombinasi bahan toksik"}
-
-data: {"delta": " atau antagonis gizi"}
-
-data: {"delta": ". Proses penguk"}
-
-data: {"delta": "usan pada 1"}
-
-data: {"delta": "00°C"}
-
-data: {"delta": " efektif membunuh kont"}
-
-data: {"delta": "aminan mikroba"}
-
-data: {"delta": " permukaan tanpa mengura"}
-
-data: {"delta": "ikan mineral besi ("}
-
-data: {"delta": "stable"}
-
-data: {"delta": " up to 1"}
-
-data: {"delta": "2"}
-
-data: {"delta": "0°C). K"}
-
-data: {"delta": "adar air akhir produk"}
-
-data: {"delta": " dit"}
-
-data: {"delta": "argetkan ≤8"}
-
-data: {"delta": "5% sehingga shelf"}
-
-data: {"delta": "-life ambient 2"}
-
-data: {"delta": "4 jam (pending"}
-
-data: {"delta": "inan ketat) aman"}
-
-data: {"delta": " secara"}
-
-data: {"delta": " mikrobiologi."}
+data: {"delta": "uktural gluten."}
 
 data: {"delta": "\n- **"}
 
-data: {"delta": "Verifikasi Matematis"}
+data: {"delta": "Parameter Proses & Kes"}
 
-data: {"delta": " Budget"}
+data: {"delta": "elamatan:** S"}
 
-data: {"delta": ":** Total biaya bahan"}
+data: {"delta": "uhu peng"}
 
-data: {"delta": " mentah Rp3"}
+data: {"delta": "ukusan 1"}
 
-data: {"delta": ".72"}
+data: {"delta": "0"}
 
-data: {"delta": "6 jauh di bawah"}
+data: {"delta": "0°C menjamin灭"}
 
-data: {"delta": " batas Rp20"}
+data: {"delta": "活 mikroflora"}
 
-data: {"delta": "."}
+data: {"delta": " permukaan tuntas sekaligus"}
 
-data: {"delta": "000/p"}
+data: {"delta": " mencapai titik transisi"}
 
-data: {"delta": "orsi. Margen"}
+data: {"delta": " kaca (glass transition"}
 
-data: {"delta": " operasional"}
+data: {"delta": ") pati sorgum"}
 
-data: {"delta": " (gas, air"}
+data: {"delta": " tanpa"}
 
-data: {"delta": ", cetak, kemasan"}
+data: {"delta": " menyebabkan deformasi term"}
 
-data: {"delta": ") ditanggung terpisah"}
+data: {"delta": "al berlebihan. Produk"}
 
-data: {"delta": " sesuai kebijakan dapur,"}
+data: {"delta": " bebas pengawet"}
 
-data: {"delta": " namun"}
+data: {"delta": ", memiliki masa sim"}
 
-data: {"delta": " komposisi bahan murni"}
+data: {"delta": "pan refrigerasi maksimum"}
 
-data: {"delta": " memenuhi standar efisiensi keuangan"}
+data: {"delta": " 72 jam"}
 
-data: {"delta": " yang diminta.\n\n"}
+data: {"delta": ". Hindari penggunaan bawang"}
 
-data: {"delta": "Produk"}
+data: {"delta": " putih, bawang merah"}
 
-data: {"delta": " ini siap diproduksi skala"}
+data: {"delta": ", atau bumbu g"}
 
-data: {"delta": " rumahan atau UMKM"}
+data: {"delta": "urih karena akan"}
 
-data: {"delta": " dengan replikasi hasil"}
+data: {"delta": " merusak profil sensoris"}
 
-data: {"delta": " konsisten berkat parameter suhu"}
+data: {"delta": " dessert manis yang diharapkan"}
 
-data: {"delta": ", waktu, dan"}
+data: {"delta": ".\n\n{\n"}
 
-data: {"delta": " r"}
+data: {"delta": "\"title\": \"P"}
 
-data: {"delta": "asio gramasi yang"}
+data: {"delta": "uding Sant"}
 
-data: {"delta": " ter"}
+data: {"delta": "an Sorgum Man"}
 
-data: {"delta": "standarisasi."}
+data: {"delta": "is (Low-G"}
+
+data: {"delta": "I)\","}
+
+data: {"delta": "\n\"servings"}
+
+data: {"delta": "\": "}
+
+data: {"delta": "1,\n\""}
+
+data: {"delta": "estimatedCost\": "}
+
+data: {"delta": "1210"}
+
+data: {"delta": "3,\n\""}
+
+data: {"delta": "ingredients\": [\n"}
+
+data: {"delta": "{\""}
+
+data: {"delta": "name\": \"T"}
+
+data: {"delta": "epung"}
+
+data: {"delta": " Sorgum (8"}
+
+data: {"delta": "0 gram)\", \""}
+
+data: {"delta": "amount\": \"8"}
+
+data: {"delta": "0 gram\", \""}
+
+data: {"delta": "estimatedPrice\": "}
+
+data: {"delta": "2400"}
+
+data: {"delta": "},\n{\"name"}
+
+data: {"delta": "\": \"Santan"}
+
+data: {"delta": " Kental (2"}
+
+data: {"delta": "50 ml)\","}
+
+data: {"delta": " \"amount\":"}
+
+data: {"delta": " \"250"}
+
+data: {"delta": " ml\", \"estimated"}
+
+data: {"delta": "Price\": 8"}
+
+data: {"delta": "333},"}
+
+data: {"delta": "\n"}
+
+data: {"delta": "{\"name\": \""}
+
+data: {"delta": "Gula Merah ("}
+
+data: {"delta": "50 gram)\","}
+
+data: {"delta": " \"amount\": \""}
+
+data: {"delta": "50 gram\","}
+
+data: {"delta": " \"estimatedPrice\":"}
+
+data: {"delta": " 125"}
+
+data: {"delta": "0},\n{\""}
+
+data: {"delta": "name\": \"Da"}
+
+data: {"delta": "un Pandan ("}
+
+data: {"delta": "4 helai ±"}
+
+data: {"delta": "5 g)\", \""}
+
+data: {"delta": "amount\":"}
+
+data: {"delta": " \"4 helai"}
+
+data: {"delta": "\", \"estimatedPrice"}
+
+data: {"delta": "\": 12"}
+
+data: {"delta": "0}\n],"}
+
+data: {"delta": "\n\"steps\":"}
+
+data: {"delta": " [\n{\"step"}
+
+data: {"delta": "Number\":"}
+
+data: {"delta": " 1, \""}
+
+data: {"delta": "title\":"}
+
+data: {"delta": " \"Hidrasi"}
+
+data: {"delta": " & Gelatinisasi"}
+
+data: {"delta": " Awal\", \"instruction"}
+
+data: {"delta": "\":"}
+
+data: {"delta": " \"Campurkan tepung"}
+
+data: {"delta": " sorg"}
+
+data: {"delta": "um (80"}
+
+data: {"delta": " g) dengan air"}
+
+data: {"delta": " panas"}
+
+data: {"delta": " (100"}
+
+data: {"delta": " ml) hingga pasta"}
+
+data: {"delta": " licin. Diam"}
+
+data: {"delta": "kan 5 menit"}
+
+data: {"delta": " untuk mengoptimalkan"}
+
+data: {"delta": " penyerapan air dan"}
+
+data: {"delta": " mengurangi rasa berpas"}
+
+data: {"delta": "ir khas"}
+
+data: {"delta": " sorgum.\"},"}
+
+data: {"delta": "\n{\"stepNumber"}
+
+data: {"delta": "\": 2,"}
+
+data: {"delta": " \"title\": \""}
+
+data: {"delta": "Infusi Santan"}
+
+data: {"delta": " & Gula"}
+
+data: {"delta": "\", \"instruction\":"}
+
+data: {"delta": " \"Panaskan sant"}
+
+data: {"delta": "an (25"}
+
+data: {"delta": "0 ml), daun"}
+
+data: {"delta": " pandan (4"}
+
+data: {"delta": " helai), dan"}
+
+data: {"delta": " gula"}
+
+data: {"delta": " merah (50"}
+
+data: {"delta": " g) dengan api"}
+
+data: {"delta": " kecil hingga gula lar"}
+
+data: {"delta": "ut dan"}
+
+data: {"delta": " suhu 65"}
+
+data: {"delta": "-70°C"}
+
+data: {"delta": ". S"}
+
+data: {"delta": "aring halus untuk membuang"}
+
+data: {"delta": " serabut.\"},"}
+
+data: {"delta": "\n"}
+
+data: {"delta": "{\"stepNumber\":"}
+
+data: {"delta": " 3, \""}
+
+data: {"delta": "title\": \"Em"}
+
+data: {"delta": "ulsi Adonan"}
+
+data: {"delta": "\", \""}
+
+data: {"delta": "instruction\": \"Tu"}
+
+data: {"delta": "ang perlahan cairan sant"}
+
+data: {"delta": "an hangat"}
+
+data: {"delta": " ke dalam pasta sorg"}
+
+data: {"delta": "um sambil dikoc"}
+
+data: {"delta": "ok vigorously hingga hom"}
+
+data: {"delta": "ogen dan tidak mengg"}
+
+data: {"delta": "umpal.\"},"}
+
+data: {"delta": "\n"}
+
+data: {"delta": "{\"stepNumber\":"}
+
+data: {"delta": " 4, \""}
+
+data: {"delta": "title\": \"P"}
+
+data: {"delta": "enggelatinan"}
+
+data: {"delta": "/Setting\", \""}
+
+data: {"delta": "instruction\": \"Tu"}
+
+data: {"delta": "ang ke cetakan"}
+
+data: {"delta": ", tutup rapat,"}
+
+data: {"delta": " lalu kukus pada"}
+
+data: {"delta": " suhu"}
+
+data: {"delta": " 100"}
+
+data: {"delta": "°C selama 2"}
+
+data: {"delta": "5 menit hingga set"}
+
+data: {"delta": ". Dinginkan hingga"}
+
+data: {"delta": " suhu ruang lalu sim"}
+
+data: {"delta": "pan di"}
+
+data: {"delta": " kulkas "}
+
+data: {"delta": "1 jam sebelum potong"}
+
+data: {"delta": ".\"}\n],"}
+
+data: {"delta": "\n\"nutritionHighlight"}
+
+data: {"delta": "\": {\n\"title"}
+
+data: {"delta": "\": \"Profil"}
+
+data: {"delta": " Rendah GMI"}
+
+data: {"delta": " & Nutris"}
+
+data: {"delta": "i Padat\","}
+
+data: {"delta": "\n\"description\": \""}
+
+data: {"delta": "R"}
+
+data: {"delta": "endahnya indeks g"}
+
+data: {"delta": "lik"}
+
+data: {"delta": "emik dihasilkan oleh"}
+
+data: {"delta": " kombinasi pati kompleks sorg"}
+
+data: {"delta": "um, serat pangan"}
+
+data: {"delta": " (hingga "}
+
+data: {"delta": "5% pada jenis"}
+
+data: {"delta": " non-palinth"}
+
+data: {"delta": "o), dan"}
+
+data: {"delta": " lemak santan yang"}
+
+data: {"delta": " memperlambat penyer"}
+
+data: {"delta": "apan glukosa."}
+
+data: {"delta": " Porsi ini menyediakan"}
+
+data: {"delta": " energi stabil, protein"}
+
+data: {"delta": " nabati (~8"}
+
+data: {"delta": ",4% dari"}
+
+data: {"delta": " data literature), serta"}
+
+data: {"delta": " mineral penting"}
+
+data: {"delta": " seperti zat besi ("}
+
+data: {"delta": "sekitar "}
+
+data: {"delta": "4,"}
+
+data: {"delta": "32 mg berdasarkan"}
+
+data: {"delta": " kandungan 5,"}
+
+data: {"delta": "4 mg/1"}
+
+data: {"delta": "00g sorg"}
+
+data: {"delta": "um).\"\n}"}
+
+data: {"delta": "\n}"}
 
 : heartbeat
 
 : heartbeat
 
-: heartbeat
+data: {"delta": "\n\n---\n\n### Catatan Verifikasi — perlu penyesuaian sebelum dipraktikkan\n\n- **hidrasi** (sedang): Cairan 350 g terhadap tepung 80 g (438%) terlalu encer untuk dibentuk. _Saran: Sesuaikan hidrasi: 55-75% untuk adonan uleni, 90-140% untuk adonan cair._\n- **waktu proses** (sedang): Satu tahap berlangsung 4320 menit tanpa alasan fermentasi/perendaman. _Saran: Periksa kembali durasi tahap tersebut; panggang/goreng umumnya hitungan menit._\n\n_Skor kelayakan: 55/100._"}
+
+data: {"validation": {"enabled": true, "verdict": "perlu_perbaikan", "score": 55, "issues": [{"severity": "sedang", "aspect": "hidrasi", "problem": "Cairan 350 g terhadap tepung 80 g (438%) terlalu encer untuk dibentuk.", "fix": "Sesuaikan hidrasi: 55-75% untuk adonan uleni, 90-140% untuk adonan cair.", "source": "statis"}, {"severity": "sedang", "aspect": "waktu proses", "problem": "Satu tahap berlangsung 4320 menit tanpa alasan fermentasi/perendaman.", "fix": "Periksa kembali durasi tahap tersebut; panggang/goreng umumnya hitungan menit.", "source": "statis"}, {"severity": "ringan", "aspect": "klaim gizi", "problem": "Klaim gula merah rendah GI dan angka zat besi terlalu pasti tanpa acuan spesifik; gula merah tetap sukrosa dengan GI mirip gula kelapa.", "fix": "Sebut gula merah sebagai pemanis dengan indeks glikemik sedang dan cantumkan estimasi zat besi berdasarkan acuan database pangan, bukan angka mutlak.", "source": "reviewer"}, {"severity": "ringan", "aspect": "konsistensi bahan", "problem": "Air panas 100 ml disebut dalam langkah tetapi tidak masuk daftar ingredients JSON.", "fix": "Tambahkan 'Air Panas (100 ml)' ke ingredients dengan estimatedPrice 0 atau Rp1500 sesuai aturan harga minimum.", "source": "reviewer"}, {"severity": "ringan", "aspect": "harga per bahan", "problem": "Estimasi daun pandan Rp120 dan gula merah Rp1.250 di bawah ketentuan harga beli satuan warung minimum Rp1.500/bahan.", "fix": "Naikkan estimasi harga satuan daun pandan dan gula merah minimal Rp1.500 atau jelaskan pembelian ikatan besar.", "source": "reviewer"}], "summary": "Puding sorgum santan ini layak dipraktikkan; tidak ada masalah kritis atau sedang, hanya catatan ringan pada klaim gizi, konsistensi bahan, dan estimasi harga warung.", "reviewer_ran": true, "reviewer_error": "", "repaired": false}}
+
+data: [DONE]
 

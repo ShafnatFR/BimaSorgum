@@ -281,7 +281,7 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 7. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
 
 ### FORMAT OUTPUT
-Anda WAJIB memberikan SATU JSON murni saja. JANGAN tulis penjelasan, markdown, atau teks lain sebelum/sesudah JSON. JANGAN gunakan markdown code block (\`\`\`). Langsung mulai dengan { dan akhiri dengan }.
+Anda WAJIB memberikan satu buah JSON murni (tanpa markdown code block).
 Pilih SALAH SATU struktur JSON berikut:
 
 JIKA RESEP DITERIMA (Valid):
