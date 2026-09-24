@@ -170,6 +170,34 @@ function generateSuggestionSteps(_title: string, category: string, ingredients: 
   ];
 }
 
+/** Estimate realistic servings when the LLM returns servings=1 or invalid.
+ *  Based on category and ingredient count/weight. */
+function estimateServings(llmServings: number | undefined, category: string, ingredients: any[]): number {
+  if (llmServings && llmServings > 1) return llmServings; // LLM gave valid servings
+
+  // Count total ingredient weight in grams (parse from name like "150 gram")
+  let totalGrams = 0;
+  for (const ing of ingredients) {
+    const name = ing.name || '';
+    const amount = ing.amount || '';
+    const m = (amount || name).match(/(\d+)\s*(gram|g|gr)/i);
+    if (m) totalGrams += parseInt(m[1], 10);
+    const ml = (amount || name).match(/(\d+)\s*ml/i);
+    if (ml) totalGrams += parseInt(ml[1], 10); // ml ≈ grams for liquids
+  }
+
+  // Minuman: usually 1-2 servings (personal drink)
+  if (category === 'minuman_nutrisi') return totalGrams > 500 ? 2 : 1;
+
+  // Others: estimate based on total weight
+  // Typical main dish: 250-400g per serving
+  // Typical snack: 100-150g per serving
+  const gramsPerServing = category === 'camilan_sehat' ? 120 : category === 'dessert_rendah_gi' ? 100 : 300;
+  const estimated = totalGrams > 0 ? Math.max(2, Math.round(totalGrams / gramsPerServing)) : 2;
+
+  return Math.min(estimated, 10); // cap at 10
+}
+
 /** Build a Recipe object from a parsed LLM JSON, tolerating missing fields. */
 function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, fallbackCategory: string): Recipe {
   const title = parsed.title || 'Resep Sorgum Spesial';
@@ -197,7 +225,7 @@ function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, 
     estimatedCost: parsed.estimatedCost ?? Math.min(fallbackBudget, 9500),
     prepTimeMinutes: parsed.prepTimeMinutes ?? 10,
     cookTimeMinutes: parsed.cookTimeMinutes ?? 15,
-    servings: parsed.servings ?? 1,
+    servings: estimateServings(parsed.servings, parsed.dishCategory || fallbackCategory, cleanedIngredients),
     ingredients: cleanedIngredients,
     nutritionHighlight: parsed.nutritionHighlight || {
       title: 'Nutrisi Unggulan',
@@ -253,7 +281,7 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 7. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
 
 ### FORMAT OUTPUT
-Anda WAJIB memberikan satu buah JSON murni (tanpa markdown \`\`\` block).
+Anda WAJIB memberikan SATU JSON murni saja. JANGAN tulis penjelasan, markdown, atau teks lain sebelum/sesudah JSON. JANGAN gunakan markdown code block (\`\`\`). Langsung mulai dengan { dan akhiri dengan }.
 Pilih SALAH SATU struktur JSON berikut:
 
 JIKA RESEP DITERIMA (Valid):
