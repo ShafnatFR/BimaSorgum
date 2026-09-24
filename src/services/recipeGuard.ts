@@ -276,8 +276,8 @@ export function validateRecipe(
   if (Number.isFinite(declared) && rawSum > 0) {
     // declared cost materially lower than the actual ingredient sum -> LLM faked it
     if (declared < rawSum - rawSum * 0.1) {
-      // Only error if the corrected total exceeds budget; otherwise just warn
-      const wouldExceedBudget = requestedBudget != null && honestSum > requestedBudget;
+      // Only error if the corrected per-portion cost exceeds budget; otherwise just warn
+      const wouldExceedBudget = requestedBudget != null && requestedBudget > 0 && (honestSum / Math.max(1, Number(parsed.servings) || 1)) > requestedBudget;
       issues.push({
         level: wouldExceedBudget ? 'error' : 'warning',
         message: 'Estimasi biaya AI tidak konsisten dengan harga bahan — dikoreksi ke total bahan sebenarnya.',
@@ -285,11 +285,15 @@ export function validateRecipe(
     }
   }
 
-  // 3) Budget feasibility
-  if (requestedBudget != null && honestSum > requestedBudget) {
+  // 3) Budget feasibility — the wizard budget is PER PORTION while honestSum is the
+  // total shopping cost, so compare like with like (total / servings). A missing or
+  // zero budget means "no constraint" (chat mode passes 0), not "cannot afford anything".
+  const servings = Math.max(1, Number(parsed.servings) || 1);
+  const costPerPortion = honestSum / servings;
+  if (requestedBudget != null && requestedBudget > 0 && costPerPortion > requestedBudget) {
     issues.push({
       level: 'error',
-      message: `Total bahan (Rp ${honestSum.toLocaleString('id-ID')}) melebihi budget Rp ${requestedBudget.toLocaleString('id-ID')}.`,
+      message: `Biaya bahan per porsi Rp ${Math.round(costPerPortion).toLocaleString('id-ID')} (${servings} porsi, total Rp ${honestSum.toLocaleString('id-ID')}) melebihi budget Rp ${requestedBudget.toLocaleString('id-ID')} per porsi.`,
     });
   }
 

@@ -279,6 +279,7 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 1.500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50, Rp 500 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 8.000, bukan "Garam halus (5 gram)" = Rp 2.
 6. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
 7. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
+8. BATAS ANGGARAN (WAJIB): Biaya bahan per porsi (total seluruh \`estimatedPrice\` dibagi \`servings\`) TIDAK BOLEH melebihi Target Budget per porsi yang diminta. Jika terpaksa melebihi, kurangi jumlah/gramasi bahan atau naikkan jumlah porsi agar biaya per porsi masuk budget; kalau benar-benar tidak mungkin, TOLAK dengan format UNPAYLOAD.
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown code block).
@@ -290,13 +291,22 @@ ${RECIPE_JSON_SCHEMA}
 JIKA RESEP DITOLAK (Melanggar aturan 1 atau 2):
 ${UNPAYLOAD_JSON_SCHEMA}`;
 
+/** Appended on the retry that follows a non-JSON answer — the schema is often
+ *  ignored when the model decides to answer with prose/analysis instead. */
+const JSON_ONLY_REMINDER = `
+
+### KOREKSI FORMAT (WAJIB)
+Jawaban sebelumnya TIDAK valid karena bukan JSON. Balas ULANG hanya dengan SATU objek JSON sesuai skema di atas — tanpa kalimat pembuka, tanpa penjelasan, tanpa markdown code block, tanpa teks apa pun sebelum '{' atau setelah '}'.`;
+
 /** Call the LLM up to 3 times; retries on empty/bad JSON AND on prose responses. */
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
   let lastProseResponse: string | null = null;
+  let timeouts = 0;
+  let strictFormat = false;
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const result = await bimaChat(prompt, [], { useRag: false, stream: true });
+      const result = await bimaChat(strictFormat ? prompt + JSON_ONLY_REMINDER : prompt, [], { useRag: false, stream: true });
       if (!result || !result.response) continue;
 
       const responseText = result.response;
@@ -325,15 +335,25 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
         return parsed;
       }
 
-      // No JSON found — save prose for potential refusal after retries
+      // No JSON found — save prose for potential refusal after retries, then
+      // force JSON on the next attempt instead of resending the same prompt.
       const trimmed = responseText.trim();
       if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
+      strictFormat = true;
     } catch (err) {
       const rejMsg = err instanceof Error ? err.message : String(err);
-      // Fatal: no point retrying — do NOT swallow these into the generic
-      // "AI tidak memberikan respons yang valid" case.
-      // A timeout retry would burn another 150s and blow past the proxy cap.
-      if (/timeout|422|504|502|524/i.test(rejMsg)) throw err;
+      // HTTP-level failures are fatal — retrying cannot help.
+      if (/422|504|502|524/.test(rejMsg)) throw err;
+      // A timeout gets exactly one more attempt: the backend occasionally stalls
+      // before its first token, but two 170s waits is the ceiling we accept.
+      if (/timeout/i.test(rejMsg)) {
+        timeouts++;
+        if (timeouts >= 2) throw err;
+        strictFormat = true;
+        continue;
+      }
+      // Backend error text / empty body: retry with the stricter format prompt.
+      strictFormat = true;
     }
   }
 

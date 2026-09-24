@@ -1,0 +1,39 @@
+{
+ "startedAt": "2026-09-24T17:35:39.449Z",
+ "finishedAt": "2026-09-24T17:38:02.958Z",
+ "base": "https://shafnat.llmsorgum.online",
+ "parallel": 1,
+ "runsPerConfig": 1,
+ "total": 1,
+ "passed": 1,
+ "failed": 0,
+ "failureCounts": {},
+ "failures": [],
+ "results": [
+  {
+   "label": "MN-biji-25k-30m",
+   "dishCategory": "minuman_nutrisi",
+   "ingredients": "biji_sorgum+Bawang Merah+Santan",
+   "budget": 25000,
+   "prepTime": "Maks 30 Menit",
+   "outcome": "PASS_RECIPE",
+   "detail": "Minuman Sari Sorgum Santan Bawang",
+   "durationMs": 143507,
+   "attempts": 1,
+   "attemptStatuses": [
+    200
+   ],
+   "ttftMs": [
+    102917
+   ],
+   "verdict": "perlu_perbaikan",
+   "score": 35,
+   "recipeTitle": "Minuman Sari Sorgum Santan Bawang",
+   "suggestionTitles": []
+  }
+ ],
+ "toolchain": {
+  "noContentGuardMs": null,
+  "note": "outcome gating from src/services/bimaClient.ts + recipeGenerator.ts as shipped"
+ }
+}
