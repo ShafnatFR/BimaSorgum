@@ -1,0 +1,992 @@
+{
+ "summary": {
+  "total": 140,
+  "matched": 128,
+  "noUrl": 0,
+  "distinctImages": 117,
+  "maxUses": 4,
+  "menus": 38
+ },
+ "rows": [
+  {
+   "title": "Healthy Buddha Bowl Sayur & Sorgum",
+   "key": "buddha-bowl",
+   "imageKey": "buddha-bowl#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Healthy_Vegan_Buddha_Bowl_-_49859044753.jpg/1920px-Healthy_Vegan_Buddha_Bowl_-_49859044753.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Rustic Sorghum Loaf Bread",
+   "key": "alias:bread",
+   "imageKey": "alias:bread#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Kue_kering_Idul_Fitri.JPG/1920px-Kue_kering_Idul_Fitri.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorghum Pancakes Bebas Gluten",
+   "key": "pancake",
+   "imageKey": "pancake#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/2022-07-18_08_07_00_A_QuickCakes_automated_pancake_maker_ejecting_a_freshly-made_pancake_at_the_Holiday_Inn_Express_%26_Suites_Dover_in_Dover%2C_Kent_County%2C_Delaware.jpg/1920px-thumbnail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorghum Mushroom Creamy Risotto",
+   "key": "risotto",
+   "imageKey": "risotto#0",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Risotto_with_speck_and_goat_cheese_%286101067436%29.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Tinutuan Bubur Sayur Sorgum Manado",
+   "key": "tinutuan",
+   "imageKey": "tinutuan#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Tinutuan_Disajikan_dengan_Sambal_Roa_dan_Sambal_Rica_1.jpg/1920px-Tinutuan_Disajikan_dengan_Sambal_Roa_dan_Sambal_Rica_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Crunchy Sorghum Chocochip Cookies",
+   "key": "alias:cookies",
+   "imageKey": "alias:cookies#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Matcha-cupcakes_%286453300119%29.jpg/1920px-Matcha-cupcakes_%286453300119%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Es Dawet Cendol Tepung Sorgum Sehat",
+   "key": "es-dawet",
+   "imageKey": "es-dawet#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Es_Dawet.jpg/1920px-Es_Dawet.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bolu Kukus Mekar Sorgum & Pandan Aren",
+   "key": "bolu-kukus",
+   "imageKey": "bolu-kukus#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Bolu_kukus.jpg/1920px-Bolu_kukus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Creamy Sorghum & Sweet Corn Chowder",
+   "key": "alias:chowder",
+   "imageKey": "alias:chowder#4",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Soto_Ayam_Kudus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Nasi_Goreng_Lumpur_02.jpg/1920px-Nasi_Goreng_Lumpur_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Warna-warni",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Nasi_uduk_netherlands.jpg/1920px-Nasi_uduk_netherlands.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Puding Sorgum Manis Madu",
+   "key": "puding",
+   "imageKey": "puding#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Puding_karamel_20230521_172754.jpg/1920px-Puding_karamel_20230521_172754.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Pancake Sorgum Tanpa Gluten & Kaya Serat",
+   "key": "pancake",
+   "imageKey": "pancake#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/2022-07-18_08_08_47_A_QuickCakes_automated_pancake_maker_ejecting_a_freshly-made_pancake_at_the_Holiday_Inn_Express_%26_Suites_Dover_in_Dover%2C_Kent_County%2C_Delaware.jpg/1920px-thumbnail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Uduk Sorgum Gurih & Sehat",
+   "key": "nasi-uduk",
+   "imageKey": "nasi-uduk#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Nasi_Mamih_Ungu.jpg/1920px-Nasi_Mamih_Ungu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Tumis Bawang",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#18",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Bakwan_jagung_%40_Born%C3%A9o_%C3%A0_Paris_%40_Galerie_Vaugirard_%40_Paris_%2832963590453%29.jpg/1920px-Bakwan_jagung_%40_Born%C3%A9o_%C3%A0_Paris_%40_Galerie_Vaugirard_%40_Paris_%2832963590453%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Wortel dan Ayam Kukus",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#13",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Bubur_Sumsum_Kacang_Hijau.jpg/1920px-Bubur_Sumsum_Kacang_Hijau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg/1920px-Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Nasi_Goreng_Kampung.jpg/1920px-Nasi_Goreng_Kampung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg/1920px-Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Nasi_Goreng_Jamur_Kuping.jpg/1920px-Nasi_Goreng_Jamur_Kuping.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Smoothie Bowl Sorgum Tropis",
+   "key": "smoothie",
+   "imageKey": "smoothie#12",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Smoothie_Bowl_%28Unsplash%29.jpg/1920px-Smoothie_Bowl_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Krim Ayam Sayuran",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#27",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Bubur_Gunting_001.jpg/1920px-Bubur_Gunting_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Resep Privat A",
+   "key": "kategori:makanan_berat",
+   "imageKey": "kategori:makanan_berat#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/Gulai_ayam3.jpg/1920px-Gulai_ayam3.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Resep Privat A2",
+   "key": "kategori:makanan_berat",
+   "imageKey": "kategori:makanan_berat#21",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Cake_Store_%28Jajanan_Pasar%29_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": false
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Nasi_Goreng_Lumpur_01.jpg/1920px-Nasi_Goreng_Lumpur_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorghum Milkshake Susu Nabati Kurma",
+   "key": "milkshake",
+   "imageKey": "milkshake#4",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Chilled_Milkshake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Susuri Sehat: Susu Sorgum Gurih Khas Nusantara",
+   "key": "alias:susu",
+   "imageKey": "alias:susu#0",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Soy_milk.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Camilan Sorgum Gurih Panggang",
+   "key": "alias:camilan",
+   "imageKey": "alias:camilan#8",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Perkedel_Milu_%283%29.jpg/1920px-Perkedel_Milu_%283%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Ayam Santan Lembut",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#26",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Aneka_Bubur_Manis_Khas_Kalimantan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Bola Energi Sorgum Cokelat",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#24",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Bola_Ubi.jpg/1920px-Bola_Ubi.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#8",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nasi_Goreng_Rumah.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Energy Balls",
+   "key": "kategori:camilan_sehat",
+   "imageKey": "kategori:camilan_sehat#30",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Bogor_Ketoprak_Indonesian_Traditional_Food.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": false
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg/1920px-Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Cookies Renyah Sorgum Cokelat Kenari",
+   "key": "alias:cookies",
+   "imageKey": "alias:cookies#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Cupcake-tin.jpg/1920px-Cupcake-tin.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Camilan Stick Sorgum Isi Tempe dan Ayam Madu",
+   "key": "alias:camilan",
+   "imageKey": "alias:camilan#16",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Bakwan_%28seafood_cake_with_whole_shrimp%29.jpg/1920px-Bakwan_%28seafood_cake_with_whole_shrimp%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#5",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Nasi_Goreng_Leunca.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Tempe Spesial",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Nasi_Goreng_Jamur_Kuping.jpg/1920px-Nasi_Goreng_Jamur_Kuping.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Resep Tidak Dapat Dibuat",
+   "key": "kategori:makanan_berat",
+   "imageKey": "kategori:makanan_berat#11",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Hidangan_Nusantara_03_-_WikiNusantara_2022.jpg/1920px-Hidangan_Nusantara_03_-_WikiNusantara_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Bubur Sorgum Ayam & Wortel",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/Bubur-Ayam-mit-Roestzwiebeln.jpg/1920px-Bubur-Ayam-mit-Roestzwiebeln.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg/1920px-Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Nasi_Goreng_Kampung.jpg/1920px-Nasi_Goreng_Kampung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Nasi_Goreng_Lumpur_01.jpg/1920px-Nasi_Goreng_Lumpur_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Madu Santan",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Bubur_Ayam_Sukabumi.jpg/1920px-Bubur_Ayam_Sukabumi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg/1920px-Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#8",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nasi_Goreng_Rumah.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg/1920px-Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Wortel & Telur",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#5",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Nasi_Goreng_Leunca.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Nasi_Goreng_Lumpur_02.jpg/1920px-Nasi_Goreng_Lumpur_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#5",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Nasi_Goreng_Leunca.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg/1920px-Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Nasi_Goreng_Lumpur_02.jpg/1920px-Nasi_Goreng_Lumpur_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Isi Ayam dan Telur",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#14",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Bakwan_Sayur.jpg/1920px-Bakwan_Sayur.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Tim Sorgum Ayam Sayuran",
+   "key": "nasi-tim",
+   "imageKey": "nasi-tim#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Nasi_Timbel_Bakar_1.png/1920px-Nasi_Timbel_Bakar_1.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Nasi_Goreng_Lumpur_01.jpg/1920px-Nasi_Goreng_Lumpur_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Sayuran Panggang",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#25",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Bola_Ubi.jpg/1920px-Bola_Ubi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Buddha Bowl Sehat",
+   "key": "buddha-bowl",
+   "imageKey": "buddha-bowl#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Tasty_Buddha_Bowl_with_Falafel_-_Dyke_Road_Park_Cafe_2025-05-09.jpg/1920px-Tasty_Buddha_Bowl_with_Falafel_-_Dyke_Road_Park_Cafe_2025-05-09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#8",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nasi_Goreng_Rumah.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Tim Ayam Santan dengan Telur",
+   "key": "kategori:makanan_berat",
+   "imageKey": "kategori:makanan_berat#17",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/Jajanan_jaman_dulu%2C_manisan_tebu.jpg/1920px-Jajanan_jaman_dulu%2C_manisan_tebu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Nasi_Goreng_Kampung.jpg/1920px-Nasi_Goreng_Kampung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Kental dengan Tumisan Ayam dan Tempe",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#9",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Bubur_Ayam_Travelling_Vendor_3.JPG/1920px-Bubur_Ayam_Travelling_Vendor_3.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Ayam Santan Mede",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#10",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/SumsumPorridge.jpg/1920px-SumsumPorridge.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ceria (SD Edition)",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg/1920px-Nasi_Goreng_Kampung_Telur_Mata_dan_Teh_O_Ais_%2829_Mei_2024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Tim Sorgum Segar",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#11",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Bubur_Candil%2C_Mutiara%2C_dan_Sumsum.jpg/1920px-Bubur_Candil%2C_Mutiara%2C_dan_Sumsum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Santan Kuning",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#28",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Bubur_Gunting_002.jpg/1920px-Bubur_Gunting_002.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Sayur Tumis Sehat",
+   "key": "alias:tumis",
+   "imageKey": "alias:tumis#0",
+   "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Tumis_kangkung_Makassar.JPG?width=1200",
+   "matched": true
+  },
+  {
+   "title": "Sup Sorgum Wortel Kol Bening",
+   "key": "alias:sup",
+   "imageKey": "alias:sup#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/2016_0717_Lontong_Sayur.jpg/1920px-2016_0717_Lontong_Sayur.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Tim Sorgum Telur Sayuran",
+   "key": "nasi-tim",
+   "imageKey": "nasi-tim#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Nasi_Tim_Ayam_in_Jakarta.jpg/1920px-Nasi_Tim_Ayam_in_Jakarta.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sup Sorgum Wortel Isi Dada Ayam",
+   "key": "alias:sup",
+   "imageKey": "alias:sup#9",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/58/Sayur_asem_vegetable_soup.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Isi Tempe dan Wortel",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#20",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/59/Cilok_sambal_tomat.jpg/1920px-Cilok_sambal_tomat.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Tahu Sayuran",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Bubur_Ayam_SDN_Pengadilan_5.jpg/1920px-Bubur_Ayam_SDN_Pengadilan_5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Ayam Santan dengan Pelengkap Tempe Tahu",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#8",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/Bubur_Ayam_Travelling_Vendor_1.JPG/1920px-Bubur_Ayam_Travelling_Vendor_1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Isi Tempe Wortel",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#0",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Perkedel_kentang.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Tumis Tempe Tahu Sorgum Tepung",
+   "key": "alias:tumis",
+   "imageKey": "alias:tumis#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Sayur_lodeh.JPG/1920px-Sayur_lodeh.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Perkedel Sorghum Ayam Bayam",
+   "key": "perkedel",
+   "imageKey": "perkedel#9",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Perkedel_jagung.JPG/1920px-Perkedel_jagung.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Uduk Sorgum Ayam Woku",
+   "key": "nasi-uduk",
+   "imageKey": "nasi-uduk#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Nasi_uduk_netherlands.jpg/1920px-Nasi_uduk_netherlands.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ayam Wortel dengan Sambal Kecap",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg/1920px-Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Sayur Bayam",
+   "key": "sayur-bayam",
+   "imageKey": "sayur-bayam#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Sayur_Bening.jpg/1920px-Sayur_Bening.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Tempe Keju Hijau",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/91/BUMBU_PERKEDEL_KENTANG.png/1920px-BUMBU_PERKEDEL_KENTANG.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Perkedel Sorgum Tempe Renyah",
+   "key": "perkedel",
+   "imageKey": "perkedel#0",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Perkedel_kentang.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Tempura dengan Taburan Tempe & Tahu",
+   "key": "kategori:camilan_sehat",
+   "imageKey": "kategori:camilan_sehat#38",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Ku%C3%A9_akar_kelapa.jpg/1920px-Ku%C3%A9_akar_kelapa.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Nasi Sorgum Santan Gurih",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#12",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nasi_Goreng_Rumah.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Santan",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Nasi_Goreng_Jamur_Kuping.jpg/1920px-Nasi_Goreng_Jamur_Kuping.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Madu Sorgum",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Nasi_Goreng_Lumpur_02.jpg/1920px-Nasi_Goreng_Lumpur_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Goreng Durian Madu Spesial",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Afghani_lamb_kebab.jpg/1920px-Afghani_lamb_kebab.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Sorgum Wortel Tahu Crispy",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#6",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Perkedel_Djagung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Kue Gurih Sorgum Tahu Santan Kukus",
+   "key": "kue",
+   "imageKey": "kue#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/%EC%A0%95%EC%84%B1%EC%99%95%ED%9B%84_%EB%B9%88%EC%A0%84_%EB%8F%84%EA%B0%90%EC%9D%98%EA%B6%A4._%E8%B2%9E%E8%81%96%E7%8E%8B%E5%90%8E_%E6%AE%AF%E6%AE%BF_%E9%83%BD%E7%9B%A3%E5%84%80%E8%BB%8C._%C4%8D%C5%8D%C3%B1_s%C5%8D%C3%B1_oa%C3%B1_hu_pin_%C4%8D%C5%8Dn_do_kam_%C5%ABi_kue_%C5%ABi_kue_-_btv1b10099767t_%28002_of_357%29.jpg/1920px-%EC%A0%95%EC%84%B1%EC%99%95%ED%9B%84_%EB%B9%88%EC%A0%84_%EB%8F%84%EA%B0%90%EC%9D%98%EA%B6%A4._%E8%B2%9E%E8%81%96%E7%8E%8B%E5%90%8E_%E6%AE%AF%E6%AE%BF_%E9%83%BD%E7%9B%A3%E5%84%80%E8%BB%8C._%C4%8D%C5%8D%C3%B1_s%C5%8D%C3%B1_oa%C3%B1_hu_pin_%C4%8D%C5%8Dn_do_kam_%C5%ABi_kue_%C5%ABi_kue_-_btv1b10099767t_%28002_of_357%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Santan Ayam Kecap Tempe Goreng Tepung Sorgum",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#13",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Nasi_Tim_Ayam_in_Jakarta.jpg/1920px-Nasi_Tim_Ayam_in_Jakarta.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Manis Apel",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Nasi_Goreng_Kampung.jpg/1920px-Nasi_Goreng_Kampung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Brownies Sorgum Panggang Cokelat Klasik",
+   "key": "brownies",
+   "imageKey": "brownies#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Chocolatebrownie.JPG/1920px-Chocolatebrownie.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Ayam",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#8",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nasi_Goreng_Rumah.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Santan Tahu Tempe Saus Kecap Madu",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#12",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/37/Bubur_Sumsum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Bakwan Sorgum Sayur Ayam",
+   "key": "bakwan",
+   "imageKey": "bakwan#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Bakwan_%28gorengan%29.jpg/1920px-Bakwan_%28gorengan%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bola-Bola Ayam Tahu Tepung Sorgum dengan Saus Kecap Madu & Tumis Bayam Wortel Santan",
+   "key": "alias:bola",
+   "imageKey": "alias:bola#7",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Perkedel_Jagung_Jakarta.jpg/1920px-Perkedel_Jagung_Jakarta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Kukis Tepung Sorgum Klasik",
+   "key": "alias:kukis",
+   "imageKey": "alias:kukis#9",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Wadai_Kukus_001.jpg/1920px-Wadai_Kukus_001.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sup Ayam Sorgum Gurih",
+   "key": "sup-ayam",
+   "imageKey": "sup-ayam#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Qi_Guoji.jpg/1920px-Qi_Guoji.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Gurih Bersantan dengan Orek Tempe Tahu & Tumisan Sayur",
+   "key": "orek-tempe",
+   "imageKey": "orek-tempe#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/BUMBU_OREK_TEMPE.png/1920px-BUMBU_OREK_TEMPE.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Kukus dengan Tumisan Ayam, Tahu & Sayuran Hijau",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#10",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Nasi_Goreng_Lumpur_01.jpg/1920px-Nasi_Goreng_Lumpur_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Liwet Santan Sorgum",
+   "key": "nasi-liwet",
+   "imageKey": "nasi-liwet#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Nasi_Liwet_Jolem.jpg/1920px-Nasi_Liwet_Jolem.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Santan Bawang Goreng",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#14",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/BuburKacangHijauDurian.jpg/1920px-BuburKacangHijauDurian.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Goreng Sorgum Khas Ngawi",
+   "key": "nasi-goreng",
+   "imageKey": "nasi-goreng#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg/1920px-Nasi_Goreng_Kambing_Kebon_Sirih_Jakarta_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Santan Gurih dengan Orek Tempe Tahu Wortel",
+   "key": "orek-tempe",
+   "imageKey": "orek-tempe#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Tempe_Orek.jpg/1920px-Tempe_Orek.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Bihun Goreng Sayur",
+   "key": "bihun-goreng",
+   "imageKey": "bihun-goreng#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Bihun_goreng.JPG/1920px-Bihun_goreng.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Kukus Santan Bumbu Bawang Merah",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Nasi_Uduk_Betawi.jpg/1920px-Nasi_Uduk_Betawi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Tumis Spesial Protein & Zat Besi",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg/1920px-Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Tim Sorgum Kremes Ayam & Tempe Bumbu Santan",
+   "key": "kategori:makanan_berat",
+   "imageKey": "kategori:makanan_berat#10",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Hidangan_Nusantara_02_-_WikiNusantara_2022.jpg/1920px-Hidangan_Nusantara_02_-_WikiNusantara_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Nasi Sorgum Gurih & Tumis Ayam Wortel-Sawi",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#21",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Hidangan_restoran_Padang_di_Sukabumi.JPG/1920px-Hidangan_restoran_Padang_di_Sukabumi.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Santan Gurih",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#15",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/BuburKacangHijauDurian.jpg/1920px-BuburKacangHijauDurian.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubur Sorgum Asin Santan Bawang",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#16",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Bubur_Kacang_Hijau_%28Sorba%29.jpg/1920px-Bubur_Kacang_Hijau_%28Sorba%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Kukus Santan Bawang",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#9",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Nasi_Goreng_Leunca.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Gurih Spesial Anak",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#11",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Nasi_Goreng_Lumpur_02.jpg/1920px-Nasi_Goreng_Lumpur_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Crepes Isi Tumis Ayam & Sayur Hijau",
+   "key": "alias:tumis",
+   "imageKey": "alias:tumis#2",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/2016_0717_Lontong_Sayur.jpg/1920px-2016_0717_Lontong_Sayur.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Tumis Sorgum Bumbu Santan Kecap Spesial",
+   "key": "alias:tumis",
+   "imageKey": "alias:tumis#3",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Sayur_Lodeh_Ibu_Sulastri.jpg/1920px-Sayur_Lodeh_Ibu_Sulastri.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Minuman Sorgum-Pandan Wempir",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#14",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Wedang_Jahe.jpg/1920px-Wedang_Jahe.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Minuman Hangat Sorgum-Protein & Super Sayur",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#18",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Dawet_Hitam_Asli_Pak_Wagiman_Purworejo.jpg/1920px-Dawet_Hitam_Asli_Pak_Wagiman_Purworejo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Minuman Sorgum-Green Superblend",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#12",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Ginger_tea-01.jpg/1920px-Ginger_tea-01.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nektar Sorgum-Zufi Nutri (Minuman Kembang-Gizi Sorgum)",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#4",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Es_Cendol.jpg/1280px-Es_Cendol.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Milkshake Vanila",
+   "key": "milkshake",
+   "imageKey": "milkshake#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Chocolate_Milkshake_%28Rudford%27s_Restaurant%29.jpg/1920px-Chocolate_Milkshake_%28Rudford%27s_Restaurant%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bubul Sorgum Kalsium-Besi untuk Anak Sekolah",
+   "key": "alias:bubur",
+   "imageKey": "alias:bubur#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Bubur_ayam_chicken_porridge.JPG/1920px-Bubur_ayam_chicken_porridge.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Wedang Sorgum-Santan Madu-Pandan",
+   "key": "kategori:minuman_nutrisi",
+   "imageKey": "kategori:minuman_nutrisi#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Bajigur_DSC_1981.jpg/960px-Bajigur_DSC_1981.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Sop Kental Sorgum Protein Tinggi",
+   "key": "alias:sop",
+   "imageKey": "alias:sop#14",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/NDL11220007_S.O.P._File_1950.pdf/page1-1920px-NDL11220007_S.O.P._File_1950.pdf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Susu Sorgum Kurma",
+   "key": "alias:susu",
+   "imageKey": "alias:susu#0",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Soy_milk.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Es Sorgum Jeruk Nipis",
+   "key": "kategori:minuman_nutrisi",
+   "imageKey": "kategori:minuman_nutrisi#9",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Bull_Trout%2C_Salvelinus_Confluentus..._Grande_Ronde_River_Recovery_Unit..._Chapter_11%2C_Draft_Recovery_Plan..._U.S._Department_of_the_Interior_%28IA_doi-report_i-4977-5b-87-chap-11-draft%29.pdf/page1-960px-thumbnail.pdf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Perkedel Panggang Sorgum-Wortel & Tempe",
+   "key": "perkedel",
+   "imageKey": "perkedel#1",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Perkedel_101141.jpg/1920px-Perkedel_101141.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Minuman Sorgum Hijau Wortel & Madu",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#6",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Es_cendol_-_Wajan.jpg/1920px-Es_cendol_-_Wajan.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Kukis Sorgum Madu-Pandan Rendah GI",
+   "key": "alias:kukis",
+   "imageKey": "alias:kukis#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Cupcake_muffin.jpg/1920px-Cupcake_muffin.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Gurih Santan Bawang",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#23",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Nasi_ambeng.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Kukis Sorgum Rendah GI Paduan Madu & Pandan",
+   "key": "alias:kukis",
+   "imageKey": "alias:kukis#10",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Bolu_Keju_Kukus.jpg/1920px-Bolu_Keju_Kukus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Bolu Susu Sorgum Pandan Rendah GI",
+   "key": "bolu",
+   "imageKey": "bolu#11",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/K%C3%A4%C3%A4retorttu.jpg/1920px-K%C3%A4%C3%A4retorttu.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Wedang Sorgum Padat Vitamin",
+   "key": "kategori:minuman_nutrisi",
+   "imageKey": "kategori:minuman_nutrisi#13",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/%22%2Barya%2B%22_es_cendol_dawet_2021.jpg/1920px-%22%2Barya%2B%22_es_cendol_dawet_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Mini Croquette Sorgum & Sayuran Hijau (Camilan Sehat)",
+   "key": "alias:camilan",
+   "imageKey": "alias:camilan#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Perkedel.JPG/1920px-Perkedel.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sorgum Sayur Crispy Balut Tahu-Tempe",
+   "key": "kategori:camilan_sehat",
+   "imageKey": "kategori:camilan_sehat#2",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Gorengan_Foto_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": false
+  },
+  {
+   "title": "Minuman Sorgum-Power Hijau",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#7",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Es_cendol_dawet.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Minuman Sorgum-Wortel-Pandan Kaya Protein",
+   "key": "alias:minuman",
+   "imageKey": "alias:minuman#8",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Jakarta_street-side_Es_Cendol_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Kukis Sorgum Wortel-Pandan Rendah GI",
+   "key": "alias:kukis",
+   "imageKey": "alias:kukis#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Kue_kering_Idul_Fitri.JPG/1920px-Kue_kering_Idul_Fitri.JPG?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Muffin Rendah GI Sorgum, Wortel, dan Bayam",
+   "key": "muffin",
+   "imageKey": "muffin#0",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Muffin_NIH.jpg/1920px-Muffin_NIH.jpg?utm_source=id.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Cookies Sorgum Cokelat",
+   "key": "alias:cookies",
+   "imageKey": "alias:cookies#6",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Esperando_a_Mr._Big_cupcakes_presentaci%C3%B3n.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "matched": true
+  },
+  {
+   "title": "Nasi Sorgum Kecap Santan Ayam & Tempe",
+   "key": "alias:nasi",
+   "imageKey": "alias:nasi#14",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Nasi_Tim.jpg/1920px-Nasi_Tim.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Tortila Sorgum Renyah Bumbu Santan & Bawang",
+   "key": "kategori:camilan_sehat",
+   "imageKey": "kategori:camilan_sehat#35",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Goreng_kue_keranjang.JPG/1920px-Goreng_kue_keranjang.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": false
+  },
+  {
+   "title": "Opor Ayam Sorgum Kukus dengan Pelengkap Tahu-Tempé Goreng",
+   "key": "opor-ayam",
+   "imageKey": "opor-ayam#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Ketupat_dengan_sayur_pepaya_dan_opor_ayam.JPG/1920px-Ketupat_dengan_sayur_pepaya_dan_opor_ayam.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  },
+  {
+   "title": "Sate Tempe-Tofu Krispi Sorgum Glaze Madu-Pandan",
+   "key": "sate",
+   "imageKey": "sate#5",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Babi_Guling_with_Sate_Lilit.JPG/1920px-Babi_Guling_with_Sate_Lilit.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+   "matched": true
+  }
+ ]
+}

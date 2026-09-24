@@ -98,6 +98,11 @@ export default function App() {
     });
   }, [isGoogleUser, ready]); // refetch when auth state or data ready changes
 
+  // Siapkan indeks gambar menu + peta pemakaian sekali di awal (lihat services/recipeImageResolver.ts)
+  useEffect(() => {
+    import('./lib/supabase').then((m) => m.primeRecipeImages()).catch(() => undefined);
+  }, []);
+
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');

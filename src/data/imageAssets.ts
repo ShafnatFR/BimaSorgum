@@ -1,3 +1,5 @@
+import { resolveMenuImage } from '../services/recipeImageResolver';
+
 export const FOOD_IMAGES = {
   nasiGoreng: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&auto=format&fit=crop&q=80',
   pancake: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&auto=format&fit=crop&q=80',
@@ -79,9 +81,20 @@ export function getIngredientThumbnail(ingredientName: string, index: number = 0
 }
 
 /**
- * Returns a relevant dummy image for a dish title or category
+ * Returns a relevant image for a dish title or category.
+ *
+ * Prioritas: indeks menu (services/recipeImageResolver.ts) yang punya ~2.900 foto
+ * terkurasi dan mencocokkan nama menu; kalau indeks belum termuat / tidak ada yang
+ * cocok, jatuh ke peta keyword lama di bawah ini.
  */
-export function getRecipeImage(title: string, category?: string): string {
+export function getRecipeImage(title: string, category?: string, seed?: string): string {
+  const resolved = resolveMenuImage(title, category, seed || title);
+  if (resolved.url) return resolved.url;
+  return getLegacyRecipeImage(title, category);
+}
+
+/** Peta keyword lama (cadangan saat indeks menu belum tersedia). */
+function getLegacyRecipeImage(title: string, category?: string): string {
   const t = (title || '').toLowerCase();
   if (t.includes('nasi goreng') || t.includes('goreng')) return FOOD_IMAGES.nasiGoreng;
   if (t.includes('pancake') || t.includes('panekuk')) return FOOD_IMAGES.pancake;
