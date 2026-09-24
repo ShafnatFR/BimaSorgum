@@ -370,12 +370,12 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
         formatAttempts++;
         continue;
       }
-      // Transient gateway/origin failure (Cloudflare 502/504 HTML page, ECONNRESET):
-      // retry quickly WITHOUT consuming a format attempt.
-      if (/\b(500|502|503|504|520|521|522|523|524)\b/.test(rejMsg) || /fetch failed|ECONNRESET|socket hang up|network/i.test(rejMsg)) {
+      // Transient gateway/origin failure (Cloudflare 502/504/530 HTML page, ECONNRESET):
+      // retry WITHOUT consuming a format attempt. A ~1 minute origin outage is absorbed.
+      if (/\b(500|502|503|504|520|521|522|523|524|525|526|527|529|530)\b/.test(rejMsg) || /fetch failed|ECONNRESET|socket hang up|network/i.test(rejMsg)) {
         transientRetries++;
-        if (transientRetries > 4) throw err;
-        await sleep(2000 * transientRetries);
+        if (transientRetries > 6) throw err;
+        await sleep(3000 * transientRetries);
         continue;
       }
       // Backend error text / empty body: counts as a format attempt.
