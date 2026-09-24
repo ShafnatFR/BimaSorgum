@@ -66,34 +66,36 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   }).map(id => getIngredientDisplayName(id));
 
   // Per-porsi base: divide full recipe cost by servings
-  const perPorsiFactor = recipe.servings > 0 ? recipe.servings : 1;
 
   // Fixed-cost ingredients (bumbu/rempah/dapur): bought once, last many servings.
   // These should NOT scale linearly with portion multiplier.
   const FIXED_COST_PATTERNS = /garam|merica|lada|bawang|minyak\s*goreng|minyak\s*kelapa|daun\s*(pandan|salam|jeruk)|baking\s*powder|soda\s*kue|vanili|kayu\s*manis|serai|lengkuas|jahe|kunyit|gula\s*(pasir|merah)|kecap|sambal|saus/i;
 
-  /** Calculate the scaled price for an ingredient.
-   *  - Consumable ingredients (tepung, telur, santan, madu, daging, sayur): scale with portions
-   *  - Fixed-cost ingredients (bumbu, rempah, minyak, daun): only charge once per recipe batch */
+  /** Price for an ingredient at current portion multiplier.
+   *  Fixed-cost (bumbu/rempah): always show base price (buy once, use many times).
+   *  Consumable (tepung/telur/santan): scale with portion multiplier. */
   const calcIngredientPrice = (ing: { name: string; estimatedPrice: number }) => {
-    const basePrice = ing.estimatedPrice / perPorsiFactor; // per-serving base
     if (FIXED_COST_PATTERNS.test(ing.name)) {
-      // Fixed cost: charge base price regardless of portion multiplier
-      // The user already bought the whole pack/unit
-      return basePrice;
+      return ing.estimatedPrice; // fixed: always the same regardless of multiplier
     }
-    // Consumable: scale with portions
-    return basePrice * portionMultiplier;
+    return ing.estimatedPrice * portionMultiplier; // consumable: scale up
   };
 
-  const formatRupiah = (fullRecipeAmount: number) => {
-    return `Rp ${calcIngredientPrice({ name: '', estimatedPrice: fullRecipeAmount }).toLocaleString('id-ID')}`;
-  };
-
+  // Total cost = sum of all ingredient display prices
   const totalCalculatedCost = recipe.ingredients.reduce(
     (sum, ing) => sum + calcIngredientPrice(ing),
     0
   );
+
+  // Total servings when multiplied
+  const totalServings = recipe.servings * portionMultiplier;
+
+  // Per-porsi = total / total servings
+  const perPorsiCost = Math.round(totalCalculatedCost / totalServings);
+
+  const formatRupiah = (amount: number) => {
+    return `Rp ${amount.toLocaleString('id-ID')}`;
+  };
 
   const handleSaveClick = () => {
     onToggleSave(recipe);
@@ -118,7 +120,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name} (${formatRupiah(i.estimatedPrice)})`)
+      .map((i) => `- ${i.name} (${formatRupiah(calcIngredientPrice(i))})`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -307,14 +309,14 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
           <div className="flex justify-between items-center text-xs text-[#424843]">
             <span>Total Estimasi Belanja:</span>
             <span className="font-bold text-sm text-[#163422]">
-              {formatRupiah(recipe.estimatedCost)}
+              {formatRupiah(totalCalculatedCost)}
             </span>
           </div>
           {recipe.servings > 1 && (
             <div className="flex justify-between items-center text-xs text-[#727972]">
-              <span>Harga per porsi ({recipe.servings} porsi):</span>
+              <span>Harga per porsi ({totalServings} porsi):</span>
               <span className="font-bold text-[#424843]">
-                {formatRupiah(Math.round(recipe.estimatedCost / recipe.servings))}
+                {formatRupiah(perPorsiCost)}
               </span>
             </div>
           )}

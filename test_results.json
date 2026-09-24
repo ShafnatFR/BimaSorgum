@@ -1,217 +1,840 @@
 [
   {
-    "scenario": "S01 — Minuman Nutrisi, Budget 100k, Semua Bahan",
+    "idx": 1,
+    "name": "S01-Dessert-30k",
     "status": "FAIL",
+    "time": 100421,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum\" Rp 2.100 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Sayuran Hijau\" Rp 1.500 (min Rp 2.000)",
-      "HARGA TERLALU RENDAH: \"Telur Ayam\" Rp 1.500 (min Rp 2.500)",
-      "HARGA TERLALU RENDAH: \"Santan\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Madu\" Rp 1.600 (min Rp 10.000)",
-      "HARGA TERLALU RENDAH: \"Minyak Kelapa\" Rp 1.500 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Garam & Merica\" Rp 1.500 (min Rp 2.000)",
-      "LOGIKA: minuman tapi ada bahan solid (ayam/tempe/tahu) tanpa konteks smoothie"
+      "COST_MISMATCH",
+      "FLOOR(1)",
+      "CEILING(1)"
     ],
-    "summary": {
-      "title": "Warm Sorghum-Leafy Green Nutri-Drink",
-      "servings": 1,
-      "totalCost": 12700,
-      "perPorsi": 12700,
-      "ingredientCount": 8,
-      "stepCount": 5
-    },
-    "hadCorrections": true,
-    "correctedTotal": 34000
+    "title": "Puding Sorgum Pandan Madu Rendah GI",
+    "servings": 4,
+    "rawTotal": 92000,
+    "correctedTotal": 87500,
+    "perPorsi": 21875,
+    "ingCount": 8,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "200",
+        "rawPrice": 20000,
+        "correctedPrice": 20000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Madu Asli Murni",
+        "amount": "50",
+        "rawPrice": 35000,
+        "correctedPrice": 35000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa Murni",
+        "amount": "200",
+        "rawPrice": 15000,
+        "correctedPrice": 10000,
+        "flags": [
+          "CEILING"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam Kampung",
+        "amount": "3",
+        "rawPrice": 6000,
+        "correctedPrice": 6000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Daun Pandan Wangi",
+        "amount": "5",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "0.25",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Baking Powder Organik",
+        "amount": "5",
+        "rawPrice": 10000,
+        "correctedPrice": 10000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Air Murni",
+        "amount": "50",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": false
+      }
+    ]
   },
   {
-    "scenario": "S02 — Makanan Berat, Budget 15k, Sedikit Bahan",
+    "idx": 2,
+    "name": "S02-Minuman-20k",
     "status": "FAIL",
+    "time": 83240,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Biji Sorgum Putih (dicuci & dikukus)\" Rp 3.000 (min Rp 6.000)",
-      "HARGA TERLALU RENDAH: \"Minyak Goreng (untuk menumis)\" Rp 1.800 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus & Merica Bubuk (campuran bumbu)\" Rp 1.500 (min Rp 2.000)",
-      "COST MISMATCH: total bahan Rp 13.275 vs declared Rp 13.475"
+      "COST_MISMATCH",
+      "FLOOR(2)"
     ],
-    "summary": {
-      "title": "Nasi Sorgum Kukus dengan Oseng Bumbu Bawang Merah dan Saus Santan Gurih",
-      "servings": 2,
-      "totalCost": 13475,
-      "perPorsi": 6738,
-      "ingredientCount": 5,
-      "stepCount": 4
-    },
-    "hadCorrections": true,
-    "correctedTotal": 19975
+    "title": "Minuman Sorgum Pandan Santan Madu",
+    "servings": 2,
+    "rawTotal": 32500,
+    "correctedTotal": 34000,
+    "perPorsi": 17000,
+    "ingCount": 5,
+    "stepCount": 4,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "80",
+        "rawPrice": 12000,
+        "correctedPrice": 12000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa Saset",
+        "amount": "2",
+        "rawPrice": 8000,
+        "correctedPrice": 8000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Madu Murni Asli",
+        "amount": "2",
+        "rawPrice": 9000,
+        "correctedPrice": 10000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Daun Pandan Wangi",
+        "amount": "3",
+        "rawPrice": 2000,
+        "correctedPrice": 2000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "1",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S03 — Camilan Sehat, Budget 25k",
+    "idx": 3,
+    "name": "S03-MakanBerat-25k",
     "status": "FAIL",
+    "time": 89223,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (100 gram | 100%)\" Rp 2.400 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Gula Pasir (60 gram | 60%)\" Rp 1.500 (min Rp 3.500)",
-      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni (30 gram | 30%)\" Rp 1.500 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus (1 gram | 1%)\" Rp 1.500 (min Rp 2.000)"
+      "FLOOR(6)"
     ],
-    "summary": {
-      "title": "Kukis Sorgum-Telur Minum Kopi/Teh Siang Hari",
-      "servings": 4,
-      "totalCost": 10420,
-      "perPorsi": 2605,
-      "ingredientCount": 5,
-      "stepCount": 4
-    },
-    "hadCorrections": true,
-    "correctedTotal": 22020
+    "title": "Bubur Sorgum Gurih Wortel Bawang",
+    "servings": 2,
+    "rawTotal": 14500,
+    "correctedTotal": 28500,
+    "perPorsi": 14250,
+    "ingCount": 8,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "150",
+        "rawPrice": 1500,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Bawang Merah",
+        "amount": "50",
+        "rawPrice": 2000,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Bawang Putih",
+        "amount": "20",
+        "rawPrice": 1500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Wortel",
+        "amount": "200",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Minyak Kelapa",
+        "amount": "45",
+        "rawPrice": 2000,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Garam",
+        "amount": "5",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Air",
+        "amount": "750",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Merica Halus",
+        "amount": "1",
+        "rawPrice": 1500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S04 — Dessert Rendah GI, Budget 20k",
+    "idx": 4,
+    "name": "S04-Camilan-15k",
     "status": "FAIL",
+    "time": 82826,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (100 gram)\" Rp 2.500 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Gula Merah (100 gram)\" Rp 2.000 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus (2 gram)\" Rp 1.500 (min Rp 2.000)"
+      "COST_MISMATCH",
+      "FLOOR(1)"
     ],
-    "summary": {
-      "title": "Puding Sorgum Pandan Gula Merah Rendah GI",
-      "servings": 4,
-      "totalCost": 12600,
-      "perPorsi": 3150,
-      "ingredientCount": 6,
-      "stepCount": 5
-    },
-    "hadCorrections": true,
-    "correctedTotal": 19600
+    "title": "Cookie Energi Sorgum Praktis",
+    "servings": 4,
+    "rawTotal": 33000,
+    "correctedTotal": 33500,
+    "perPorsi": 8375,
+    "ingCount": 6,
+    "stepCount": 4,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "100 gram",
+        "rawPrice": 8000,
+        "correctedPrice": 8000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam",
+        "amount": "2 butir",
+        "rawPrice": 7000,
+        "correctedPrice": 7000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Minyak Kelapa Murni",
+        "amount": "30 ml",
+        "rawPrice": 9000,
+        "correctedPrice": 9000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Gula Pasir",
+        "amount": "40 gram",
+        "rawPrice": 6000,
+        "correctedPrice": 6000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Bubuk Soda Kue",
+        "amount": "½ sdt",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Dapur",
+        "amount": "¼ sdt",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S05 — Minuman Nutrisi, Budget 10k (ketat)",
+    "idx": 5,
+    "name": "S05-Dessert-10k",
     "status": "FAIL",
+    "time": 98613,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih (50 gram)\" Rp 1.500 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Santan Kelapa Tua (100 ml)\" Rp 2.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Madu Murni (20 gram)\" Rp 3.000 (min Rp 10.000)"
+      "FLOOR(2)"
     ],
-    "summary": {
-      "title": "Bubur Susu Sorgum-Pandan Madu",
-      "servings": 1,
-      "totalCost": 10000,
-      "perPorsi": 10000,
-      "ingredientCount": 5,
-      "stepCount": 4
-    },
-    "hadCorrections": true,
-    "correctedTotal": 24000
+    "title": "Kue Kukus Sari Sorgum Pandan",
+    "servings": 3,
+    "rawTotal": 29500,
+    "correctedTotal": 31000,
+    "perPorsi": 10333,
+    "ingCount": 5,
+    "stepCount": 3,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "150",
+        "rawPrice": 20000,
+        "correctedPrice": 20000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa",
+        "amount": "150",
+        "rawPrice": 4500,
+        "correctedPrice": 4500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Gula Merah",
+        "amount": "40",
+        "rawPrice": 2000,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Daun Pandan",
+        "amount": "3",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "1",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S06 — Makanan Berat, Budget 50k, Bahan Lengkap",
+    "idx": 6,
+    "name": "S06-MakanBerat-50k",
     "status": "FAIL",
+    "time": 84771,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Biji Sorgum Sosoh (19% massa kering)\" Rp 2.500 (min Rp 6.000)",
-      "HARGA TERLALU RENDAH: \"Wortel (19% massa kering)\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Bawang Putih (6% massa aromatik)\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni (pelengkap lemak)\" Rp 1.500 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Kecap Manis (penyedap gurih-manis)\" Rp 2.000 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus (pendense rasa)\" Rp 1.500 (min Rp 2.000)",
-      "HARGA TERLALU RENDAH: \"Merica Bubuk (pengawet aroma)\" Rp 1.500 (min Rp 3.000)",
-      "COST MISMATCH: total bahan Rp 25.400 vs declared Rp 26.400"
+      "COST_MISMATCH",
+      "FLOOR(1)"
     ],
-    "summary": {
-      "title": "Nasi Goreng Sorgum Unggulan Ayam & Sayur Hijau",
-      "servings": 1,
-      "totalCost": 26400,
-      "perPorsi": 26400,
-      "ingredientCount": 11,
-      "stepCount": 5
-    },
-    "hadCorrections": true,
-    "correctedTotal": 38400
+    "title": "Nasi Goreng Sorgum Ayam Sayur Gurih",
+    "servings": 2,
+    "rawTotal": 60000,
+    "correctedTotal": 60500,
+    "perPorsi": 30250,
+    "ingCount": 9,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Beras Sorgum",
+        "amount": "150",
+        "rawPrice": 6000,
+        "correctedPrice": 6000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Dada Ayam Fillet",
+        "amount": "200",
+        "rawPrice": 28000,
+        "correctedPrice": 28000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Sawi Hijau",
+        "amount": "100",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Bawang Merah",
+        "amount": "50",
+        "rawPrice": 4000,
+        "correctedPrice": 4000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Wortel",
+        "amount": "100",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam",
+        "amount": "2",
+        "rawPrice": 4000,
+        "correctedPrice": 4000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Minyak Kelapa",
+        "amount": "15",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Kecap Manis",
+        "amount": "20",
+        "rawPrice": 3500,
+        "correctedPrice": 3500,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam",
+        "amount": "5",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S07 — Camilan Sehat, Budget 5k (sangat ketat)",
+    "idx": 7,
+    "name": "S07-Minuman-50k-Aneh",
     "status": "FAIL",
+    "time": 103372,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung sorgum putih\" Rp 2.500 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Garam halus\" Rp 1.500 (min Rp 2.000)",
-      "HARGA TERLALU RENDAH: \"Air matang\" Rp 0 (min Rp 1.500)",
-      "ZERO PRICE: \"Air matang\" harga Rp 0",
-      "HARGA TERLALU RENDAH: \"Minyak sayur\" Rp 75 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Merica bubuk\" Rp 25 (min Rp 3.000)",
-      "COST MISMATCH: total bahan Rp 4.100 vs declared Rp 3.100"
+      "FLOOR(5)"
     ],
-    "summary": {
-      "title": "Keripik Sorgum Panggang Gurih",
-      "servings": 2,
-      "totalCost": 3100,
-      "perPorsi": 1550,
-      "ingredientCount": 5,
-      "stepCount": 4
-    },
-    "hadCorrections": true,
-    "correctedTotal": 19500
+    "title": "Smoothie Soporhan Sorgum & Protein Campur",
+    "servings": 2,
+    "rawTotal": 29500,
+    "correctedTotal": 39500,
+    "perPorsi": 19750,
+    "ingCount": 10,
+    "stepCount": 4,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "40",
+        "rawPrice": 3500,
+        "correctedPrice": 8000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Bayam Mutiara",
+        "amount": "50",
+        "rawPrice": 2000,
+        "correctedPrice": 2000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Dada Ayam Fillet",
+        "amount": "30",
+        "rawPrice": 7500,
+        "correctedPrice": 7500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam Kampung",
+        "amount": "60",
+        "rawPrice": 3500,
+        "correctedPrice": 3500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Tempe Wisen",
+        "amount": "25",
+        "rawPrice": 2500,
+        "correctedPrice": 2500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Tahu Putih Segar",
+        "amount": "30",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Air Kaldu Sapi",
+        "amount": "200",
+        "rawPrice": 4000,
+        "correctedPrice": 4000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Bawang Putih Cincang",
+        "amount": "5",
+        "rawPrice": 1500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Minyak Goreng Kelapa",
+        "amount": "10",
+        "rawPrice": 2000,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus & Merica Bubuk",
+        "amount": "3",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S08 — Dessert, Budget 30k, Premium",
+    "idx": 8,
+    "name": "S08-Camilan-30k",
     "status": "FAIL",
+    "time": 83762,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum Putih\" Rp 5.250 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Madu Murni\" Rp 3.600 (min Rp 10.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus\" Rp 1.500 (min Rp 2.000)"
+      "CEILING(1)"
     ],
-    "summary": {
-      "title": "Puding Susu Sorgum-Pandan (Low-GI Custard)",
-      "servings": 4,
-      "totalCost": 19850,
-      "perPorsi": 4963,
-      "ingredientCount": 6,
-      "stepCount": 6
-    },
-    "hadCorrections": true,
-    "correctedTotal": 29400
+    "title": "Kue Kukus Sirup Sorgum-Gold",
+    "servings": 6,
+    "rawTotal": 66000,
+    "correctedTotal": 64000,
+    "perPorsi": 10667,
+    "ingCount": 5,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "250 gr",
+        "rawPrice": 10000,
+        "correctedPrice": 10000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam",
+        "amount": "4 butir",
+        "rawPrice": 16000,
+        "correctedPrice": 16000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Madu Murni",
+        "amount": "30 ml",
+        "rawPrice": 12000,
+        "correctedPrice": 12000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa",
+        "amount": "200 ml",
+        "rawPrice": 8000,
+        "correctedPrice": 8000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Minyak Kelapa Murni",
+        "amount": "30 ml",
+        "rawPrice": 20000,
+        "correctedPrice": 18000,
+        "flags": [
+          "CEILING"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S09 — Minuman, Budget 50k, Bahan Aneh (sayur+protein di minuman)",
+    "idx": 9,
+    "name": "S09-MakanBerat-15k",
     "status": "FAIL",
+    "time": 90655,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Biji Sorgum Putih Utuh (150 gram)\" Rp 3.750 (min Rp 6.000)",
-      "HARGA TERLALU RENDAH: \"Telur Ayam (50 gram)\" Rp 1.600 (min Rp 2.500)",
-      "HARGA TERLALU RENDAH: \"Bawang Putih Mentah (50 gram)\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus (5 gram)\" Rp 1.500 (min Rp 2.000)",
-      "HARGA TERLALU RENDAH: \"Merica Bubuk Halus (5 gram)\" Rp 1.500 (min Rp 3.000)",
-      "COST MISMATCH: total bahan Rp 17.850 vs declared Rp 19.850"
+      "FLOOR(5)"
     ],
-    "summary": {
-      "title": "Smoothie Gurih Sorgum Hijau Berprotein",
-      "servings": 2,
-      "totalCost": 19850,
-      "perPorsi": 9925,
-      "ingredientCount": 9,
-      "stepCount": 5
-    },
-    "hadCorrections": true,
-    "correctedTotal": 24500
+    "title": "Bubur Sorgum Kuah Santan Gurih",
+    "servings": 4,
+    "rawTotal": 25000,
+    "correctedTotal": 31500,
+    "perPorsi": 7875,
+    "ingCount": 9,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Biji Sorgum",
+        "amount": "200 gram",
+        "rawPrice": 4000,
+        "correctedPrice": 6000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa",
+        "amount": "400 ml",
+        "rawPrice": 5000,
+        "correctedPrice": 5000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Bawang Merah",
+        "amount": "100 gram",
+        "rawPrice": 3000,
+        "correctedPrice": 3000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Minyak Goreng",
+        "amount": "30 ml",
+        "rawPrice": 2500,
+        "correctedPrice": 5000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "5 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 2000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Gula Putih",
+        "amount": "10 gram",
+        "rawPrice": 2500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Air Bersih",
+        "amount": "1000 ml",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Merica Bubuk",
+        "amount": "3 gram",
+        "rawPrice": 2500,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      },
+      {
+        "name": "Daun Bawang",
+        "amount": "10 gram",
+        "rawPrice": 2000,
+        "correctedPrice": 3000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   },
   {
-    "scenario": "S10 — Makanan Berat, Budget 100k (longgar)",
+    "idx": 10,
+    "name": "S10-Dessert-50k",
     "status": "FAIL",
+    "time": 94427,
+    "pass": false,
     "issues": [
-      "HARGA TERLALU RENDAH: \"Biji Sorgum (berat kering)\" Rp 3.750 (min Rp 6.000)",
-      "HARGA TERLALU RENDAH: \"Tepung Sorgum (pengental)\" Rp 1.500 (min Rp 8.000)",
-      "HARGA TERLALU RENDAH: \"Wortel\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Bawang Merah Iris\" Rp 1.500 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Santan Kelapa Sedikit Asam\" Rp 2.250 (min Rp 3.000)",
-      "HARGA TERLALU RENDAH: \"Minyak Kelapa Murni\" Rp 1.500 (min Rp 5.000)",
-      "HARGA TERLALU RENDAH: \"Garam Halus\" Rp 1.500 (min Rp 2.000)",
-      "HARGA TERLALU RENDAH: \"Merica Bubuk\" Rp 1.500 (min Rp 3.000)",
-      "COST MISMATCH: total bahan Rp 29.500 vs declared Rp 30.500"
+      "FLOOR(1)",
+      "CEILING(3)"
     ],
-    "summary": {
-      "title": "Sup Kuning Sorgum Ayam Telur Spesial",
-      "servings": 4,
-      "totalCost": 30500,
-      "perPorsi": 7625,
-      "ingredientCount": 11,
-      "stepCount": 5
-    },
-    "hadCorrections": true,
-    "correctedTotal": 47500
+    "title": "Kue Panggang Sorgum Pandan Madu",
+    "servings": 4,
+    "rawTotal": 150500,
+    "correctedTotal": 114000,
+    "perPorsi": 28500,
+    "ingCount": 8,
+    "stepCount": 5,
+    "details": [
+      {
+        "name": "Tepung Sorgum",
+        "amount": "150 gram",
+        "rawPrice": 25000,
+        "correctedPrice": 20000,
+        "flags": [
+          "CEILING"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Madu Murni",
+        "amount": "40 ml",
+        "rawPrice": 65000,
+        "correctedPrice": 35000,
+        "flags": [
+          "CEILING"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Santan Kelapa Segar",
+        "amount": "150 ml",
+        "rawPrice": 12000,
+        "correctedPrice": 10000,
+        "flags": [
+          "CEILING"
+        ],
+        "isFixed": false
+      },
+      {
+        "name": "Telur Ayam Buras",
+        "amount": "3 butir",
+        "rawPrice": 25000,
+        "correctedPrice": 25000,
+        "flags": [],
+        "isFixed": false
+      },
+      {
+        "name": "Minyak Kelapa Murni",
+        "amount": "30 ml",
+        "rawPrice": 18000,
+        "correctedPrice": 18000,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Daun Pandan Wangi",
+        "amount": "5 batang",
+        "rawPrice": 1500,
+        "correctedPrice": 1500,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Baking Powder",
+        "amount": "5 gram",
+        "rawPrice": 2500,
+        "correctedPrice": 2500,
+        "flags": [],
+        "isFixed": true
+      },
+      {
+        "name": "Garam Halus",
+        "amount": "1 gram",
+        "rawPrice": 1500,
+        "correctedPrice": 2000,
+        "flags": [
+          "FLOOR"
+        ],
+        "isFixed": true
+      }
+    ]
   }
 ]
