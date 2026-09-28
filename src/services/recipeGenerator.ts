@@ -306,7 +306,24 @@ const JSON_PREFILL = `
 Tulis LANJUTAN objek JSON di bawah ini saja — tanpa penjelasan, tanpa markdown code block:
 {"title": "`;
 
-/** Call the LLM up to 3 format attempts; retries on empty/bad JSON and on prose.
+/** Retry that reuses the answer we already have: the model often replies with a
+ *  complete recipe written as prose/markdown ("## Konsep Produk" + tabel bahan +
+ *  langkah). Re-generating from scratch repeats the same mistake, so hand the text
+ *  back and ask for the SAME content as JSON — no new analysis, no changed numbers. */
+const proseConversionBlock = (prose: string) => `
+
+### KONVERSI WAJIB (JANGAN MENULIS ULANG DARI NOL)
+Jawaban sebelumnya isinya SUDAH benar tetapi ditulis sebagai prosa/markdown, sehingga DITOLAK oleh sistem yang hanya menerima JSON. Ambil isi jawaban itu APA ADANYA dan ubah menjadi SATU objek JSON sesuai skema di atas: judul, seluruh bahan beserta takaran dan field estimatedPrice, field servings, serta seluruh langkah bernomor. JANGAN menambah analisis/section baru, JANGAN mengubah angka, JANGAN mengulang teks prosa.
+
+"""${prose.slice(0, 1500)}"""`;
+
+/** Max format attempts (answers that actually came back). The 4th attempt exists
+ *  because a prose-only streak is the one failure mode the earlier retries can miss;
+ *  it only runs on a path that would otherwise surface as a hard error. */
+const MAX_FORMAT_ATTEMPTS = 4;
+
+/** Call the LLM up to MAX_FORMAT_ATTEMPTS times; retries on empty/bad JSON and on prose
+ *  (the 2nd attempt converts a prose answer into JSON, the later ones force JSON harder).
  *  Transient infrastructure failures (502/503/504/524/network) get their own fast
  *  retry budget so a Cloudflare/origin hiccup does not surface as a hard error. */
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
@@ -317,11 +334,13 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
   let transientRetries = 0;
   let formatAttempts = 0; // attempts that actually returned an answer (JSON or prose)
 
-  while (formatAttempts < 3) {
+  while (formatAttempts < MAX_FORMAT_ATTEMPTS) {
     const prefilled = formatAttempts >= 2;
+    // A prose answer is fed back verbatim on the next attempt (conversion) instead of
+    // being thrown away: the content is usually a complete recipe, only mis-formatted.
+    const conversion = lastProseResponse ? proseConversionBlock(lastProseResponse) : '';
     const attemptPrompt = formatAttempts === 0 ? prompt
-      : prefilled ? prompt + JSON_ONLY_REMINDER + JSON_PREFILL
-      : prompt + JSON_ONLY_REMINDER;
+      : prompt + JSON_ONLY_REMINDER + conversion + (prefilled ? JSON_PREFILL : '');
     try {
       const result = await bimaChat(attemptPrompt, [], { useRag: false, stream: true });
       if (!result || !result.response) { formatAttempts++; continue; }
@@ -366,9 +385,14 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
         return parsed;
       }
 
-      // No JSON found — save prose for the final refusal, then force JSON on the
-      // next attempt (JSON-only reminder, then the prefill).
-      const trimmed = responseText.trim();
+      // No JSON found — keep the prose so the next attempt can CONVERT it into JSON
+      // (reminder → conversion → prefill). parseSSE appends the backend reviewer's
+      // markdown note to the answer; strip it so the conversion prompt carries only
+      // the model's own recipe text.
+      const trimmed = responseText.trim()
+        .replace(/\n*### Catatan Verifikasi[\s\S]*$/i, '')
+        .replace(/\n*_Skor kelayakan:[\s\S]*$/i, '')
+        .trim();
       if (trimmed && trimmed.length > 50) lastProseResponse = trimmed;
       formatAttempts++;
     } catch (err) {
@@ -1010,11 +1034,22 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
 export async function generateCustomRecipeQueryAsync(userPrompt: string, budgetOverride?: number): Promise<Recipe> {
   // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
   // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
-  const prompt = `Anda adalah SorghumCare AI, koki dan pakar sorgum Indonesia.
-Tugas Anda adalah merancang resep masakan sorgum sehat berdasarkan permintaan pengguna.
+  const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
+Tugas Anda adalah merancang SATU resep masakan sorgum yang sehat, lezat, dan bisa langsung dipraktikkan.
 
 ### INPUT USER
 Permintaan: "${userPrompt}"
+
+### ATURAN BAHAN
+- Sorgum (biji sorgum atau tepung sorgum) WAJIB menjadi bahan pokok resep ini.
+- DIIZINKAN menambahkan bahan dapur umum (air, garam, merica, minyak goreng, bawang).
+- Patuhi batasan yang disebut pengguna bila ada (kategori hidangan, waktu persiapan, jumlah bahan).
+- DILARANG menambahkan bahan khusus lain (mis. keju, saus tiram, madu) kecuali pengguna menyebutnya.
+
+### FORMAT WAJIB
+Balas LANGSUNG dengan SATU objek JSON — karakter pertama jawaban HARUS '{' dan terakhir '}'.
+DILARANG menulis prosa, heading markdown, tabel naratif, bagian "Konsep Produk"/"Analisis"/"Bahan" dalam bentuk teks, kalimat pembuka, atau penjelasan apa pun di luar objek JSON.
+Semua penjelasan (alasan pemilihan bahan, klaim gizi, cara menghitung harga) cukup diringkas ke dalam field "subtitle" di dalam JSON.
 
 ${PROMPT_RULES}`;
 
