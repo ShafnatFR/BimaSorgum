@@ -30,9 +30,20 @@ function extractFirstJson(text: string): string {
   const start = text.indexOf('{');
   if (start === -1) return text;
   let depth = 0;
+  let inString = false;
   for (let i = start; i < text.length; i++) {
-    if (text[i] === '{') depth++;
-    else if (text[i] === '}') { depth--; if (depth === 0) return text.substring(start, i + 1); }
+    const ch = text[i];
+    // Braces inside a string literal (e.g. a description containing "}") must not end
+    // the object early: counting them truncated the JSON mid-`ingredients` array, which
+    // surfaced downstream as a "recipe" with an empty ingredient list.
+    if (inString) {
+      if (ch === '\\') { i++; continue; }
+      if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') { inString = true; continue; }
+    if (ch === '{') depth++;
+    else if (ch === '}') { depth--; if (depth === 0) return text.substring(start, i + 1); }
   }
   return text;
 }
@@ -43,12 +54,11 @@ async function parseSSE(reader: ReadableStreamDefaultReader<Uint8Array>): Promis
   let buffer = '';
   let validationData: any = null;
   let lastContentTime = Date.now();
-  // Backend time-to-first-token is 80–130s for wizard prompts (RAG retrieval +
-  // reviewer pass run BEFORE the first token is emitted): measured p75 114s and
-  // max 128s over 30 runs, so the old 60s cap aborted replies that were still
-  // coming and the 150s cap left only ~20s of headroom. 170s keeps headroom while
-  // staying under the Vercel-proxy upstream cap (175s) and this client's 180s.
-  const NO_CONTENT_TIMEOUT_MS = 170_000;
+  // 80–130s for wizard prompts (RAG retrieval + reviewer pass run BEFORE the first
+  // token is emitted). Measured over the 2026-09 sweeps: p75 114s, max 175s, and one
+  // production request streamed for 230s end-to-end, so the old 170s cap left ~3s of
+  // headroom on the slowest runs. 200s keeps headroom for the backend's slow tail.
+  const NO_CONTENT_TIMEOUT_MS = 200_000;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -142,8 +152,10 @@ export async function bimaChat(
       const payload: Record<string, unknown> = { message };
   if (history && history.length) payload.history = history;
 
-  // 🔧 Client-side timeout: 180s (matches Vercel proxy maxDuration)
-  const CLIENT_TIMEOUT_MS = 180_000;
+  // 🔧 Client-side timeout: 210s — must exceed the no-content guard in parseSSE (200s)
+  // AND the frontend-host proxy window. A production wizard request was measured
+  // streaming for 230s end-to-end, so 180s was cutting healthy calls.
+  const CLIENT_TIMEOUT_MS = 210_000;
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), CLIENT_TIMEOUT_MS);
 
