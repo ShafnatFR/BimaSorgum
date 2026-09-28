@@ -173,6 +173,15 @@ async function runOne(cfg: Cfg) {
     detail = `semua percobaan gagal di edge (HTTP ${statuses.join(', ')}) — origin tidak bisa dihubungi`;
   }
   const { verdict, score } = extractValidation(raws);
+  // BIMA_TEST_DUMP=1: keep the raw SSE bodies so a failure can be diagnosed from
+  // what the backend actually sent instead of only its classified outcome.
+  if (process.env.BIMA_TEST_DUMP) {
+    try {
+      fs.appendFileSync(OUT.replace(/\.json$/, '') + '-raws.txt',
+        `\n===== ${cfg.label} (${outcome}) =====\n` +
+        attempts.map((a, i) => `--- attempt ${i + 1} status=${a.status} ttft=${a.ttftMs} ---\n${a.raw}`).join('\n') + '\n');
+    } catch { /* best-effort */ }
+  }
   return {
     label: cfg.label, mode: cfg.mode || 'wizard', dishCategory: cfg.dishCategory,
     ingredients: cfg.selectedIngredientIds.concat(cfg.customIngredients).join('+'),
