@@ -312,6 +312,7 @@ Tulis LANJUTAN objek JSON di bawah ini saja — tanpa penjelasan, tanpa markdown
 async function generateWithRetry(prompt: string): Promise<Record<string, any> | { __refusal: true; message: string; suggestions?: RecipeSuggestion[]; flaggedIngredients?: string[] } | null> {
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   let lastProseResponse: string | null = null;
+  let lastEmptyIngredients: Record<string, any> | null = null;
   let timeouts = 0;
   let transientRetries = 0;
   let formatAttempts = 0; // attempts that actually returned an answer (JSON or prose)
@@ -350,6 +351,18 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
             : [];
           if (refMsg) return { __refusal: true, message: refMsg, suggestions, flaggedIngredients };
         }
+        const ingredientList = Array.isArray((parsed as any).ingredients) ? (parsed as any).ingredients : [];
+        if (ingredientList.length === 0) {
+          // A JSON object with no usable ingredient list is a MALFORMED answer, not a
+          // recipe: the model either got truncated mid-array or "declined" with an empty
+          // one (observed at TTFT 167s, backend loaded). Treat it like a non-JSON answer
+          // — retry with the JSON-only reminder, then the prefill — instead of refusing a
+          // request the backend never actually judged. A real refusal arrives as
+          // status:"unpayload" and is returned above.
+          lastEmptyIngredients = parsed as Record<string, any>;
+          formatAttempts++;
+          continue;
+        }
         return parsed;
       }
 
@@ -383,13 +396,20 @@ async function generateWithRetry(prompt: string): Promise<Record<string, any> | 
     }
   }
 
-  // All retries exhausted — if we got prose, return it as a refusal (truncated)
+  // All retries exhausted. Prefer the model's own explanation when it produced an
+  // ingredient-less object with a message/subtitle; else fall back to the prose it
+  // wrote; else hand the empty object back so the caller can still refuse with context.
+  const emptyMsg = lastEmptyIngredients
+    ? String((lastEmptyIngredients as any).message || (lastEmptyIngredients as any).subtitle || '').trim()
+    : '';
+  if (emptyMsg) return { __refusal: true, message: emptyMsg };
   if (lastProseResponse) {
     const truncated = lastProseResponse.length > 800
       ? lastProseResponse.substring(0, 800) + '...\n\n*(Resep tidak dapat dihasilkan dalam format yang benar. Silakan coba lagi.)*'
       : lastProseResponse;
     return { __refusal: true, message: truncated };
   }
+  if (lastEmptyIngredients) return lastEmptyIngredients;
   return null;
 }
 
