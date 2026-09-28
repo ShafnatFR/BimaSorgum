@@ -279,7 +279,7 @@ const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
 5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 1.500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50, Rp 500 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 8.000, bukan "Garam halus (5 gram)" = Rp 2.
 6. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
 7. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
-8. BATAS ANGGARAN (WAJIB): Biaya bahan per porsi (total seluruh \`estimatedPrice\` dibagi \`servings\`) TIDAK BOLEH melebihi Target Budget per porsi yang diminta. Jika terpaksa melebihi, kurangi jumlah/gramasi bahan atau naikkan jumlah porsi agar biaya per porsi masuk budget; kalau benar-benar tidak mungkin, TOLAK dengan format UNPAYLOAD.
+8. BATAS ANGGARAN (WAJIB): Biaya bahan per porsi (total seluruh \`estimatedPrice\` dibagi \`servings\`) TIDAK BOLEH melebihi Target Budget per porsi yang diminta. Ingat: harga bahan adalah HARGA SATUAN BELI di warung, jadi memperkecil gramasi TIDAK menurunkan harga bahan (mis. "Bawang merah (20 gram)" tetap ± Rp 3.000 untuk satu bungkus/ikat kecil). Cara memenuhi anggaran: (a) pakai JUMLAH bahan sesedikit mungkin — jangan menambah bahan opsional yang tidak diminta, dan (b) tetapkan \`servings\` secukupnya sesuai aturan 7. HITUNG DULU sebelum menjawab: jumlahkan seluruh \`estimatedPrice\`, bagi dengan \`servings\`, dan pastikan hasilnya ≤ Target Budget per porsi. Contoh: total bahan Rp 31.000 dengan budget Rp 15.000 per porsi → butuh minimal 3 porsi (Rp 10.333 per porsi). TOLAK dengan format UNPAYLOAD hanya bila budget benar-benar mustahil (total minimum bahan jauh di atas budget × jumlah porsi yang wajar).
 
 ### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown code block).
@@ -613,13 +613,32 @@ ${PROMPT_RULES}`;
     // a chat bubble instead.
     if (errorIssues.length > 0) {
       const feedback = errorIssues.map(i => `- ${i.message}`).join('\n');
+      // Give the model the exact arithmetic instead of vague advice: every ingredient
+      // is floored at its minimum warung purchase unit, so shrinking gramasi does NOT
+      // lower the cost. The only honest levers are fewer ingredients and a realistic
+      // `servings` count — without these numbers the model repeats the same violation.
+      const correctedPriceOf = (ing: any) => {
+        const rawPrice = Number(ing.estimatedPrice) || 0;
+        const warungFloor = getWarungFloor(ing.name || '');
+        return warungFloor !== null ? Math.max(rawPrice, warungFloor) : Math.max(rawPrice, GLOBAL_MINIMUM_PRICE);
+      };
+      const floorRows = ingredients
+        .filter((i: any) => i.name)
+        .map((i: any) => `- ${i.name}: Rp ${correctedPriceOf(i).toLocaleString('id-ID')}`)
+        .join('\n');
+      const floorTotal = ingredients.reduce((s: number, i: any) => s + correctedPriceOf(i), 0);
+      const budget = formData.budgetPerPortion;
+      const neededServings = budget > 0 ? Math.ceil(floorTotal / budget) : 1;
+      const arithmetic = floorRows
+        ? `\n\nHarga minimum tiap bahan menurut validator sistem (harga satuan beli di warung — TIDAK bisa turun dengan memperkecil gramasi):\n${floorRows}\n- TOTAL minimum bahan: Rp ${floorTotal.toLocaleString('id-ID')}\n- Budget per porsi: Rp ${budget.toLocaleString('id-ID')}\n- Agar LOLOS: (total estimatedPrice ÷ servings) ≤ Rp ${budget.toLocaleString('id-ID')} → dengan bahan sebanyak ini minimal ${neededServings} porsi. Bila ${neededServings} porsi dinilai tidak wajar untuk hidangan ini, TOLAK permintaan dengan format UNPAYLOAD.`
+        : '';
       const repairPrompt = `${prompt}
 
 ### KOREKSI WAJIB DARI VALIDATOR SISTEM
 Resep sebelumnya DITOLAK karena:
-${feedback}
+${feedback}${arithmetic}
 
-Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya PER PORSI (total estimatedPrice ÷ servings ≤ Target Budget per porsi). Cara yang benar: kurangi gramasi/jumlah bahan, ganti bahan mahal dengan bahan murah dari Bahan Pokok, atau perbesar jumlah porsi secara wajar bila adonannya memang banyak. Jangan mengulangi pelanggaran yang sama.`;
+Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya PER PORSI (total estimatedPrice ÷ servings ≤ Target Budget per porsi). Cara yang benar: pakai JUMLAH bahan sesedikit mungkin (hapus bahan opsional), ganti bahan mahal dengan bahan murah dari Bahan Pokok, atau tetapkan \`servings\` ≥ ${neededServings} secara wajar lalu pastikan \`estimatedCost\` = jumlah seluruh \`estimatedPrice\`. Memperkecil gramasi TIDAK menurunkan harga bahan di sistem ini. Jangan mengulangi pelanggaran yang sama.`;
 
       const repairedAttempt = await generateWithRetry(repairPrompt);
       if (repairedAttempt && '__refusal' in repairedAttempt) {
