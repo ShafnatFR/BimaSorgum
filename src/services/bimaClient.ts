@@ -211,7 +211,41 @@ export async function bimaChat(
   if (/^\s*Server AI gagal merespons/i.test(response) || /object has no attribute/i.test(response)) {
     throw new Error(`BIMA AI backend error: ${response.trim().slice(0, 200)}`);
   }
+  // The backend can also relay the UPSTREAM provider's quota/rate-limit payload as the
+  // answer body: an HTTP 200 whose content is
+  // {"error": {"message": "[commandcode/Qwen/...] [429]: You've reached your weekly usage
+  // limit ... resets at 2026-10-04T06:08:58.221Z"}} (observed 2026-09-29). Treated as prose
+  // it was retried four times and then rendered raw in the chat bubble. Retrying cannot
+  // create quota, so fail fast with a 429-shaped error — generateWithRetry treats 429 as
+  // non-retryable — and surface a message the user can act on.
+  if (isUpstreamQuotaPayload(response)) {
+    throw new Error(`BIMA AI error 429: kuota layanan AI sedang mencapai batas${quotaResetHint(response)}. Coba lagi setelah kuota direset.`);
+  }
   return { response, sources, model: modelUsed };
+}
+
+/**
+ * True when a body is an upstream provider quota/rate-limit payload rather than an answer.
+ * Deliberately narrow: the English provider signatures only, plus a length cap and a check
+ * that the text is not a recipe JSON — a real answer (recipe or prose) never satisfies it.
+ */
+export function isUpstreamQuotaPayload(text: string): boolean {
+  const t = (text || '').trim();
+  if (!t || t.length > 700) return false;
+  if (/"\s*title\s*"/.test(t)) return false;
+  return /\[429\]|usage limit|rate limit|too many requests|exceeded your current quota/i.test(t);
+}
+
+/** Pull the provider's reset timestamp out of a quota payload so the user knows when to retry. */
+function quotaResetHint(text: string): string {
+  const iso = text.match(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)/);
+  if (!iso) return '';
+  const d = new Date(iso[1]);
+  if (Number.isNaN(d.getTime())) return '';
+  const fmt = d.toLocaleString('id-ID', {
+    timeZone: 'Asia/Jakarta', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+  });
+  return ` (reset sekitar ${fmt} WIB)`;
 }
 
 /** Attempt to repair a truncated JSON string by closing open brackets/braces/strings. */
