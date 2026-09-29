@@ -588,6 +588,19 @@ export function buildLocalSuggestions(dishCategory: string, budget: number): Rec
 }
 
 /**
+ * Best-effort dish category from a free-form chat prompt. Chat mode has no wizard step
+ * where the user picked a category, so this only feeds LOCAL fallback suggestions when
+ * the AI is unavailable — never the AI prompt itself.
+ */
+export function inferDishCategoryFromText(text: string): string {
+  const t = (text || '').toLowerCase();
+  if (/minuman|jus|smoothie|teh|susu|wedang|infus/.test(t)) return 'minuman_nutrisi';
+  if (/dessert|puding|pudding|kue|bolu|cake|cookies|biskuit|flan|es krim|manis/.test(t)) return 'dessert_rendah_gi';
+  if (/camilan|cemilan|snack|gorengan|keripik|kudapan/.test(t)) return 'camilan_sehat';
+  return 'makanan_berat';
+}
+
+/**
  * Generate a recipe from Wizard data using the BIMA AI LLM (Living Labs).
  * Returns either a valid Recipe or an AiRefusalResponse when ingredients are nonsensical.
  * NO MORE offline fallback — if AI fails entirely, throws an error.
