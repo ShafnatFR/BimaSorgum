@@ -15,7 +15,7 @@ import {
   RECENT_CHAT_TOPICS 
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
-import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync, buildRecipeFromSuggestion } from './services/recipeGenerator';
+import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync, buildRecipeFromSuggestion, buildLocalSuggestions } from './services/recipeGenerator';
 import { 
   getCurrentPath, 
   parseRoute, 
@@ -493,10 +493,18 @@ export default function App() {
       const errorMsgText = typeof err === 'object' && err !== null && 'message' in err && typeof (err as any).message === 'string'
         ? (err as any).message
         : 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.';
+      // AI tidak tersedia (timeout / kuota upstream / backend error). Pesan error asli
+      // dipertahankan apa adanya, lalu user tetap diberi jalan keluar: saran resep lokal
+      // (tanpa panggilan AI) agar wizard tidak pernah berakhir di jalan buntu.
+      const fallbackSuggestions = buildLocalSuggestions(wizardData.dishCategory, wizardData.budgetPerPortion || 0);
       const aiErrorMsg: ChatMessage = {
         id: `msg-ai-${Date.now()}`,
         sender: 'ai',
-        text: errorMsgText,
+        text: fallbackSuggestions.length > 0
+          ? `${errorMsgText}\n\nBerikut alternatif resep yang bisa Anda pilih sementara AI belum tersedia:`
+          : errorMsgText,
+        refusalSuggestions: fallbackSuggestions.length > 0 ? fallbackSuggestions : undefined,
+        refusalNoSuggestions: fallbackSuggestions.length > 0 ? undefined : true,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setChatMessages([errorMsg, aiErrorMsg]);

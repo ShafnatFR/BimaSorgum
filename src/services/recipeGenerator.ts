@@ -460,7 +460,7 @@ function buildRefusalResponse(
  * Generate sensible local recipe suggestions when the AI's recipe is rejected by the guard.
  * These are realistic recipes that actually fit the budget, based on the dish category.
  */
-function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSuggestion[] {
+export function buildLocalSuggestions(dishCategory: string, budget: number): RecipeSuggestion[] {
   const pool: Record<string, RecipeSuggestion[]> = {
     makanan_berat: [
       {
