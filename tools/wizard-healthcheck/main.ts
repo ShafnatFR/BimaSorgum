@@ -7,7 +7,9 @@
  * so the runner must be bundled with `--define:import.meta.env={}`.
  * The only shim is global fetch: relative `/bima-api/chat` -> absolute prod URL.
  *
- * Exit code 0 = every config produced a usable result, 1 = at least one failure.
+ * Exit code 0 = every config produced a usable result, 1 = at least one pipeline
+ * failure, 3 = infrastructure outage (edge/origin down, or the LLM upstream out of
+ * quota — neither is fixable in this repo), 2 = harness crash.
  */
 import { generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync } from '../../src/services/recipeGenerator';
 import type { WizardFormData } from '../../src/types';
@@ -94,15 +96,27 @@ type Outcome =
   | 'PASS_RECIPE' | 'PASS_REFUSAL_AI'
   | 'FAIL_TIMEOUT' | 'FAIL_GENERIC_FALLBACK' | 'FAIL_NONJSON_PROSE'
   | 'FAIL_BACKEND_ERROR' | 'FAIL_BLOCKED_REVIEWER' | 'FAIL_GUARD_BUDGET'
-  | 'FAIL_EMPTY_INGREDIENTS' | 'FAIL_THROWN' | 'FAIL_BACKEND_DOWN' | 'FAIL_UNKNOWN';
+  | 'FAIL_EMPTY_INGREDIENTS' | 'FAIL_THROWN' | 'FAIL_BACKEND_DOWN'
+  | 'FAIL_UPSTREAM_QUOTA' | 'FAIL_UNKNOWN';
 
-const FAILS: Outcome[] = ['FAIL_TIMEOUT', 'FAIL_GENERIC_FALLBACK', 'FAIL_NONJSON_PROSE', 'FAIL_BACKEND_ERROR', 'FAIL_BLOCKED_REVIEWER', 'FAIL_GUARD_BUDGET', 'FAIL_EMPTY_INGREDIENTS', 'FAIL_THROWN', 'FAIL_BACKEND_DOWN', 'FAIL_UNKNOWN'];
+const FAILS: Outcome[] = ['FAIL_TIMEOUT', 'FAIL_GENERIC_FALLBACK', 'FAIL_NONJSON_PROSE', 'FAIL_BACKEND_ERROR', 'FAIL_BLOCKED_REVIEWER', 'FAIL_GUARD_BUDGET', 'FAIL_EMPTY_INGREDIENTS', 'FAIL_THROWN', 'FAIL_BACKEND_DOWN', 'FAIL_UPSTREAM_QUOTA', 'FAIL_UNKNOWN'];
 
 /** Every request died at the edge (Cloudflare 502/530…) — the origin was unreachable,
  *  which is an infrastructure outage, not a pipeline bug. */
 function isInfraOutage(statuses: number[], outcome: Outcome) {
   return (outcome === 'FAIL_THROWN' || outcome === 'FAIL_GENERIC_FALLBACK') && statuses.length > 0 && statuses.every(s => s === 0 || s >= 500);
 }
+
+/** The LLM upstream is out of quota/rate-limited and the backend relays the provider
+ *  payload as an HTTP 200 body (see `isUpstreamQuotaPayload` in src/services/bimaClient.ts).
+ *  The pipeline behaved correctly by reporting it: retrying the test cannot create quota,
+ *  so this is an outage — never "fix" it by loosening the pipeline.
+ *  Observed 2026-09-29: `[commandcode/Qwen/...] [429] weekly usage limit`, reset 2026-10-04T06:08:58Z. */
+function isUpstreamQuota(text: string) {
+  return /kuota layanan AI sedang mencapai batas|\[429\]|usage limit|rate limit|too many requests|exceeded your current quota/i.test(text || '');
+}
+
+const INFRA_OUTCOMES: Outcome[] = ['FAIL_BACKEND_DOWN', 'FAIL_UPSTREAM_QUOTA'];
 
 function classify(result: any, err: any, raws: string[]): { outcome: Outcome; detail: string } {
   const allRaw = raws.join('\n');
@@ -112,6 +126,7 @@ function classify(result: any, err: any, raws: string[]): { outcome: Outcome; de
 
   if (err) {
     const msg = String(err?.message || err);
+    if (isUpstreamQuota(msg) || isUpstreamQuota(allRaw)) return { outcome: 'FAIL_UPSTREAM_QUOTA', detail: msg.replace(/\s+/g, ' ').slice(0, 200) };
     if (/timeout/i.test(msg)) return { outcome: 'FAIL_TIMEOUT', detail: msg.slice(0, 200) };
     // chat mode throws instead of returning a refusal object
     if (/tidak memberikan respons yang valid/i.test(msg)) return { outcome: 'FAIL_GENERIC_FALLBACK', detail: msg.slice(0, 200) };
@@ -128,6 +143,7 @@ function classify(result: any, err: any, raws: string[]): { outcome: Outcome; de
     return { outcome: 'FAIL_UNKNOWN', detail: 'recipe object without ingredients' };
   }
   const msg: string = result.message || '';
+  if (isUpstreamQuota(msg) || isUpstreamQuota(allRaw)) return { outcome: 'FAIL_UPSTREAM_QUOTA', detail: msg.replace(/\s+/g, ' ').slice(0, 200) };
   if (/tidak memberikan respons yang valid/i.test(msg)) return { outcome: 'FAIL_GENERIC_FALLBACK', detail: msg.slice(0, 120) };
   if (looksBackendErr || /Server AI gagal merespons/i.test(msg)) return { outcome: 'FAIL_BACKEND_ERROR', detail: msg.slice(0, 200) };
   if (looksBlocked || /Skor Kelayakan/i.test(msg)) return { outcome: 'FAIL_BLOCKED_REVIEWER', detail: msg.replace(/\s+/g, ' ').slice(0, 160) };
@@ -232,7 +248,8 @@ async function main() {
   await Promise.all(workers);
 
   const failures = results.filter(r => FAILS.includes(r.outcome));
-  const infraOutage = failures.length > 0 && failures.every(f => f.outcome === 'FAIL_BACKEND_DOWN');
+  const infraOutage = failures.length > 0 && failures.every(f => (INFRA_OUTCOMES as string[]).includes(f.outcome));
+  const quotaFailure = failures.find(f => f.outcome === 'FAIL_UPSTREAM_QUOTA');
   const report = {
     startedAt: started.toISOString(),
     finishedAt: new Date().toISOString(),
@@ -252,7 +269,8 @@ async function main() {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, JSON.stringify(report, null, 1));
   fs.writeFileSync(OUT.replace(/\.json$/, '.md'), renderMarkdown(report));
-  console.log(`\nRESULT: ${report.passed}/${report.total} pass, ${report.failed} fail ${JSON.stringify(report.failureCounts)}${infraOutage ? ' [BACKEND/ORIGIN DOWN — infra, bukan bug kode]' : ''}`);
+  console.log(`\nRESULT: ${report.passed}/${report.total} pass, ${report.failed} fail ${JSON.stringify(report.failureCounts)}${infraOutage ? (quotaFailure ? ' [KUOTA LLM UPSTREAM HABIS — infra, bukan bug kode]' : ' [BACKEND/ORIGIN DOWN — infra, bukan bug kode]') : ''}`);
+  if (quotaFailure) console.log(`catatan infra: ${quotaFailure.detail}`);
   console.log('report:', OUT);
   if (infraOutage) process.exitCode = 3;
   else if (report.failed > 0) process.exitCode = 1;
@@ -262,6 +280,11 @@ function renderMarkdown(rep: any) {
   const lines: string[] = [];
   lines.push(`# Wizard healthcheck — ${rep.finishedAt}`, '');
   lines.push(`Target: ${rep.base} | parallel=${rep.parallel} | ${rep.passed}/${rep.total} pass, ${rep.failed} fail`, '');
+  // Outages are not regressions: say so in the report so nobody "fixes" working code.
+  const infra = (rep.failures || []).filter((f: any) => (INFRA_OUTCOMES as string[]).includes(f.outcome));
+  if (rep.infraOutage && infra.length) {
+    lines.push(`> **GANGGUAN INFRASTRUKTUR (bukan bug kode)** — ${infra[0].outcome}: ${infra[0].detail}`, '');
+  }
   lines.push('| Konfigurasi | Outcome | Durasi | Attempt | TTFT (s) | Verdict/Skor | Judul/Detail |');
   lines.push('|---|---|---|---|---|---|---|');
   for (const r of rep.results) {

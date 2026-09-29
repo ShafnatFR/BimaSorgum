@@ -15,7 +15,7 @@ import {
   RECENT_CHAT_TOPICS 
 } from './data/mockData';
 import { VideoTutorialItem } from './data/homeData';
-import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync, buildRecipeFromSuggestion, buildLocalSuggestions } from './services/recipeGenerator';
+import { generateRecipeFromWizard, generateRecipeFromWizardAsync, generateCustomRecipeQueryAsync, buildRecipeFromSuggestion, buildLocalSuggestions, inferDishCategoryFromText } from './services/recipeGenerator';
 import { 
   getCurrentPath, 
   parseRoute, 
@@ -55,7 +55,7 @@ import { useData } from './lib/dataContext';
 import { useAuth } from './lib/AuthProvider';
 import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
-import { bimaChat, type BimaChatMessage } from './services/bimaClient';
+import { bimaChat, isAiUnavailableError, type BimaChatMessage } from './services/bimaClient';
 import { preflightPrompt, type PreflightResult } from './services/preflight';
 import { PreflightWarningModal } from './components/Modals/PreflightWarningModal';
 
@@ -731,11 +731,24 @@ export default function App() {
 } catch (e) {
       console.error('chat error:', e);
       const eMsg = e instanceof Error ? e.message : (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string' ? (e as any).message : 'Maaf, terjadi kendala saat menghubungi AI. Coba lagi sebentar ya.');
+      // AI tidak tersedia (kuota upstream / timeout / backend error) pada permintaan resep:
+      // pesan error asli tetap ditampilkan, lalu user diberi jalan keluar berupa saran resep
+      // lokal (tanpa panggilan AI) supaya jalur chat tidak berakhir di jalan buntu.
+      const chatFallbackSuggestions = explicitRecipeOrder && isAiUnavailableError(e)
+        ? buildLocalSuggestions(inferDishCategoryFromText(trimmed), wizardData.budgetPerPortion || 0)
+        : [];
       setChatMessages((prev) =>
         prev.map((m) => {
           if (m.id !== aiPlaceholderId) return m;
           if (m.text && m.text.length > 100 && !m.isTypingStep) return m;
-          return { ...m, text: eMsg, isTypingStep: false };
+          return {
+            ...m,
+            text: chatFallbackSuggestions.length > 0
+              ? `${eMsg}\n\nBerikut alternatif resep yang bisa Anda pilih sementara AI belum tersedia:`
+              : eMsg,
+            refusalSuggestions: chatFallbackSuggestions.length > 0 ? chatFallbackSuggestions : undefined,
+            isTypingStep: false,
+          };
         })
       );
     } finally {

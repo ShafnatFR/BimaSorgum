@@ -236,6 +236,16 @@ export function isUpstreamQuotaPayload(text: string): boolean {
   return /\[429\]|usage limit|rate limit|too many requests|exceeded your current quota/i.test(t);
 }
 
+/**
+ * True when an error means the AI service could not answer (quota exhausted, timeout,
+ * backend/network failure) rather than the request being refused. The UI uses this to
+ * keep the real error text AND offer local, no-AI alternatives instead of a dead end.
+ */
+export function isAiUnavailableError(err: unknown): boolean {
+  const msg = String((err as any)?.message ?? err ?? '');
+  return /kuota layanan AI|BIMA AI error 429|\[429\]|usage limit|rate limit|too many requests|timeout|abort|failed to fetch|backend error|Server AI gagal merespons|empty response|tidak memberikan respons yang valid/i.test(msg);
+}
+
 /** Pull the provider's reset timestamp out of a quota payload so the user knows when to retry. */
 function quotaResetHint(text: string): string {
   const iso = text.match(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)/);
