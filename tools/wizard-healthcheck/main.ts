@@ -59,6 +59,23 @@ const CHAT_CONFIGS: Cfg[] = [
 const realFetch = globalThis.fetch.bind(globalThis);
 let attemptStart = 0;
 
+// Optional upstream override for diagnosis: the BIMA backend honours per-request
+// `X-Server-URL` / `X-Model` (proven 2026-10-18 — a keyless OpenAI-compatible upstream
+// answered through /bima-api/chat while the admin-configured upstream was dead).
+// Lets this harness measure whether an alternative upstream passes the full matrix
+// without touching product code:
+//   BIMA_TEST_SERVER_URL=https://text.pollinations.ai/openai BIMA_TEST_MODEL=openai bash run.sh
+const OVERRIDE_SERVER_URL = process.env.BIMA_TEST_SERVER_URL || '';
+const OVERRIDE_MODEL = process.env.BIMA_TEST_MODEL || '';
+
+function withUpstreamOverride(init: any) {
+  if (!OVERRIDE_SERVER_URL) return init;
+  const headers = { ...(init?.headers || {}) } as Record<string, string>;
+  headers['X-Server-URL'] = OVERRIDE_SERVER_URL;
+  if (OVERRIDE_MODEL) headers['X-Model'] = OVERRIDE_MODEL;
+  return { ...init, headers };
+}
+
 (globalThis as any).fetch = async (input: any, init?: any) => {
   const url = typeof input === 'string' ? input : input?.url;
   const abs = typeof url === 'string' && url.startsWith('/') ? BASE + url : url;
@@ -66,7 +83,7 @@ let attemptStart = 0;
   const rec = { ttftMs: null as number | null, raw: '', status: 0 };
   const store = runStore.getStore();
   store?.attempts.push(rec);
-  const res = await realFetch(abs, init);
+  const res = await realFetch(abs, withUpstreamOverride(init));
   rec.status = res.status;
   try {
     const clone = res.clone();

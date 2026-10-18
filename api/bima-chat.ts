@@ -11,7 +11,13 @@ export const config = { maxDuration: 180 };
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
 const UPSTREAM_TIMEOUT_MS = 175_000; // +60s from previous 115s
 const STREAM_CHUNK_TIMEOUT_MS = 165_000; // +60s from previous 105s
-const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key'];
+// `x-server-url` is forwarded so the LLM upstream can be switched per request —
+// the backend honours X-Server-URL/X-Model/X-API-Key (verified 2026-10-18: a keyless
+// OpenAI-compatible upstream answered through this proxy while the admin-configured
+// upstream was unreachable). Without it, the Vercel host silently dropped the override
+// while the custom-domain (Dokploy/Traefik) host passed it through, so the two
+// deployments had different recovery options.
+const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key', 'x-server-url'];
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
