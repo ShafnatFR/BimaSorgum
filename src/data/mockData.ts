@@ -194,7 +194,7 @@ export const INITIAL_FEATURED_RECIPE: Recipe = {
     { name: '1 piring nasi sorgum dingin', amount: '1 piring (150g)', estimatedPrice: 3000 },
     { name: '1 butir telur, kocok lepas', amount: '1 butir', estimatedPrice: 2000 },
     { name: 'Wortel kecil, potong dadu', amount: '1/2 buah', estimatedPrice: 1000 },
-    { name: 'Bawang merah & putih', amount: '2 siung each', estimatedPrice: 1500 },
+    { name: 'Bawang merah & putih', amount: '2 siung', estimatedPrice: 1500 },
     { name: 'Kecap manis & garam', amount: 'Secukupnya', estimatedPrice: 1000 },
     { name: 'Sedikit minyak goreng', amount: '1 sdm', estimatedPrice: 1000 },
   ],
