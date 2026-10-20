@@ -133,6 +133,10 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const fat = Math.round(derivedFat * servingsMultiplier);
   const calories = Math.round(baseCalories * servingsMultiplier);
   const fiber = Math.round(baseFiber * servingsMultiplier);
+  const totalMacro = carbs + protein + fat;
+  const carbsPct = totalMacro > 0 ? Math.round((carbs / totalMacro) * 100) : 0;
+  const proteinPct = totalMacro > 0 ? Math.round((protein / totalMacro) * 100) : 0;
+  const fatPct = totalMacro > 0 ? Math.round((fat / totalMacro) * 100) : 0;
 
   return (
     <div className="bg-[#f9f9f7] text-[#1a1c1b] min-h-screen pb-24 md:pb-16 font-['Manrope',sans-serif] antialiased">
@@ -352,7 +356,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
                         stroke="currentColor"
-                        strokeDasharray="70, 100"
+                        strokeDasharray={`${carbsPct}, 100`}
                         strokeWidth="4"
                       />
                     </svg>
@@ -370,7 +374,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
                         stroke="currentColor"
-                        strokeDasharray="40, 100"
+                        strokeDasharray={`${proteinPct}, 100`}
                         strokeWidth="4"
                       />
                     </svg>
@@ -388,7 +392,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
                         stroke="currentColor"
-                        strokeDasharray="25, 100"
+                        strokeDasharray={`${fatPct}, 100`}
                         strokeWidth="4"
                       />
                     </svg>
