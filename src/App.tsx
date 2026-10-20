@@ -1138,7 +1138,8 @@ export default function App() {
                           if (wizardStep > 1) {
                             handleSetWizardStep(wizardStep - 1);
                           } else {
-                            handleSelectTab('home');
+                            // Step 1: kembali ke halaman generate (chat), bukan home.
+                            startNewChat();
                           }
                         }}
                       />
