@@ -1,6 +1,6 @@
 import { WizardFormData, Recipe, RecipeIngredient, RecipeStep, AiRefusalResponse, RecipeSuggestion } from '../types';
 import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
-import { FOOD_IMAGES, getRecipeImage } from '../data/imageAssets';
+import { FOOD_IMAGES, getRecipeImageSync } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
 import { validateRecipe, GLOBAL_MINIMUM_PRICE, getWarungFloor } from './recipeGuard';
@@ -134,7 +134,7 @@ export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData
     ingredients,
     nutritionHighlight: nutrition,
     steps,
-    imageUrl: getRecipeImage(title, formData.dishCategory),
+    imageUrl: getRecipeImageSync(title, formData.dishCategory),
     tags: ['Bebas Gluten', 'Sorgum Sehat', dishCategory],
     createdAt: new Date().toISOString(),
   };
@@ -232,7 +232,7 @@ function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, 
       description: 'Tinggi serat dan gizi, bebas gluten.',
     },
     steps: Array.isArray(parsed.steps) ? parsed.steps : [],
-    imageUrl: getRecipeImage(title, parsed.dishCategory || fallbackCategory),
+    imageUrl: getRecipeImageSync(title, parsed.dishCategory || fallbackCategory),
     tags: Array.isArray(parsed.tags) && parsed.tags.length ? parsed.tags : ['Bebas Gluten', 'Sorgum Sehat'],
     createdAt: new Date().toISOString(),
   };

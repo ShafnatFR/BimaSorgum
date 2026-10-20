@@ -7,7 +7,7 @@ import type {
   ChatMessage,
   NutritionHighlight,
 } from '../types';
-import { getRecipeImage } from '../data/imageAssets';
+import { getRecipeImageSync } from '../data/imageAssets';
 
 /**
  * SorghumCare — Supabase data layer.
@@ -206,7 +206,7 @@ export function mapRecipe(
     ingredients: ingList,
     nutritionHighlight: nh,
     steps: stepList,
-    imageUrl: r.image_url || getRecipeImage(r.title, r.dish_category || undefined),
+    imageUrl: r.image_url || getRecipeImageSync(r.title, r.dish_category || undefined),
     tags: r.tags || [],
     createdAt: r.created_at || new Date().toISOString(),
     isPublished: r.is_published,

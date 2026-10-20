@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Recipe } from '../../types';
 import { FALLBACK_FOOD_IMAGE } from '../../data/homeData';
-import { getIngredientThumbnail, GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
+import { getIngredientThumbnail, getRecipeImage, GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 import { getRecipeSlug } from '../../utils/slugify';
 import { getShareableUrl, RouteSlugs } from '../../utils/slugRouter';
 import { 
@@ -55,6 +55,23 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [recipeImageUrl, setRecipeImageUrl] = useState<string>(recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE);
+  const [ingredientImages, setIngredientImages] = useState<Record<number, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const img = await getRecipeImage(recipe.title, recipe.category);
+      if (!cancelled) setRecipeImageUrl(img);
+
+      const next: Record<number, string> = {};
+      await Promise.all(recipe.ingredients.map(async (ing, idx) => {
+        next[idx] = await getIngredientThumbnail(ing.name, idx);
+      }));
+      if (!cancelled) setIngredientImages(next);
+    })();
+    return () => { cancelled = true; };
+  }, [recipe.title, recipe.category, recipe.ingredients]);
 
   const scaleAmount = (amount: string, multiplier: number) => {
     return amount.replace(/(\d+)\/(\d+)|\b(\d+(?:[.,]\d+)?)\b/g, (match, fracNum, fracDen, standalone) => {
@@ -198,7 +215,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             <img
               alt={recipe.title}
               className="w-full h-full object-cover"
-              src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+              src={recipeImageUrl}
               referrerPolicy="no-referrer"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
@@ -485,7 +502,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                           <img
                             alt={ing.name}
                             className="w-full h-full object-cover"
-                            src={getIngredientThumbnail(ing.name, idx)}
+                            src={ingredientImages[idx] || GLOBAL_FALLBACK_FOOD_IMAGE}
                             referrerPolicy="no-referrer"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;

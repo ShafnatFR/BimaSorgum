@@ -42,10 +42,70 @@ export const INGREDIENT_IMAGES: Record<string, string> = {
 
 export const GLOBAL_FALLBACK_FOOD_IMAGE = FOOD_IMAGES.buddhaBowl;
 
+const UNSPLASH_ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+
+async function unsplashSearch(query: string): Promise<string | null> {
+  if (!UNSPLASH_ACCESS_KEY) return null;
+  try {
+    const res = await fetch(
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=1&client_id=${UNSPLASH_ACCESS_KEY}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.results?.[0]?.urls?.small ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
- * Returns a relevant dummy image for an ingredient based on name keywords
+ * Versi sinkron (tanpa panggil API) untuk dipakai di fungsi yang tidak boleh async.
+ * Hanya fallback statis, cocok untuk mapRecipe / buildRecipeFromSuggestion / recipeFromLlmJson.
  */
-export function getIngredientThumbnail(ingredientName: string, index: number = 0): string {
+export function getRecipeImageSync(title: string, category?: string): string {
+  const t = (title || '').toLowerCase();
+
+  if (t.includes('nasi goreng') || t.includes('goreng')) return FOOD_IMAGES.nasiGoreng;
+  if (t.includes('pancake') || t.includes('panekuk')) return FOOD_IMAGES.pancake;
+  if (t.includes('bread') || t.includes('roti') || t.includes('loaf')) return FOOD_IMAGES.bread;
+  if (t.includes('bowl') || t.includes('buddha') || t.includes('salad')) return FOOD_IMAGES.buddhaBowl;
+  if (t.includes('risotto') || t.includes('mushroom') || t.includes('jamur')) return FOOD_IMAGES.risotto;
+  if (t.includes('bubur') || t.includes('tinutuan') || t.includes('porridge') || t.includes('mpasi')) return FOOD_IMAGES.buburManado;
+  if (t.includes('cookie') || t.includes('kue kering') || t.includes('biskuit')) return FOOD_IMAGES.cookies;
+  if (t.includes('cendol') || t.includes('dawet') || t.includes('es ') || t.includes('minuman')) return FOOD_IMAGES.esCendol;
+  if (t.includes('bolu') || t.includes('cake') || t.includes('kue')) return FOOD_IMAGES.boluKukus;
+  if (t.includes('sup') || t.includes('soup') || t.includes('chowder')) return FOOD_IMAGES.cornSoup;
+  if (t.includes('milkshake') || t.includes('smoothie') || t.includes('susu')) return FOOD_IMAGES.milkshake;
+  if (t.includes('puding') || t.includes('pudding') || t.includes('dessert')) return FOOD_IMAGES.pudding;
+
+  if (category === 'makanan_berat') return FOOD_IMAGES.nasiGoreng;
+  if (category === 'camilan_sehat') return FOOD_IMAGES.cookies;
+  if (category === 'minuman_nutrisi') return FOOD_IMAGES.esCendol;
+  if (category === 'dessert_rendah_gi') return FOOD_IMAGES.pudding;
+
+  return GLOBAL_FALLBACK_FOOD_IMAGE;
+}
+
+/**
+ * Returns a relevant image for a dish title or category.
+ * Coba Unsplash API dulu, fallback ke gambar statis kalau gagal atau tidak ada kunci API.
+ */
+export async function getRecipeImage(title: string, category?: string): Promise<string> {
+  const t = (title || '').toLowerCase();
+  const query = t || (category === 'makanan_berat' ? 'nasi goreng' : 'makanan');
+  const fromApi = await unsplashSearch(query);
+  if (fromApi) return fromApi;
+  return getRecipeImageSync(title, category);
+}
+
+/**
+ * Returns a relevant image for an ingredient based on name keywords.
+ * Coba Unsplash API dulu, fallback ke gambar statis kalau gagal atau tidak ada kunci API.
+ */
+export async function getIngredientThumbnail(ingredientName: string, index: number = 0): Promise<string> {
+  const fromApi = await unsplashSearch(ingredientName);
+  if (fromApi) return fromApi;
+
   const name = ingredientName.toLowerCase();
   if (name.includes('sorgum') || name.includes('sorghum') || name.includes('biji')) return INGREDIENT_IMAGES.sorgum;
   if (name.includes('tepung')) return INGREDIENT_IMAGES.tepung;
@@ -76,30 +136,4 @@ export function getIngredientThumbnail(ingredientName: string, index: number = 0
     INGREDIENT_IMAGES.madu,
   ];
   return fallbackList[index % fallbackList.length];
-}
-
-/**
- * Returns a relevant dummy image for a dish title or category
- */
-export function getRecipeImage(title: string, category?: string): string {
-  const t = (title || '').toLowerCase();
-  if (t.includes('nasi goreng') || t.includes('goreng')) return FOOD_IMAGES.nasiGoreng;
-  if (t.includes('pancake') || t.includes('panekuk')) return FOOD_IMAGES.pancake;
-  if (t.includes('bread') || t.includes('roti') || t.includes('loaf')) return FOOD_IMAGES.bread;
-  if (t.includes('bowl') || t.includes('buddha') || t.includes('salad')) return FOOD_IMAGES.buddhaBowl;
-  if (t.includes('risotto') || t.includes('mushroom') || t.includes('jamur')) return FOOD_IMAGES.risotto;
-  if (t.includes('bubur') || t.includes('tinutuan') || t.includes('porridge') || t.includes('mpasi')) return FOOD_IMAGES.buburManado;
-  if (t.includes('cookie') || t.includes('kue kering') || t.includes('biskuit')) return FOOD_IMAGES.cookies;
-  if (t.includes('cendol') || t.includes('dawet') || t.includes('es ') || t.includes('minuman')) return FOOD_IMAGES.esCendol;
-  if (t.includes('bolu') || t.includes('cake') || t.includes('kue')) return FOOD_IMAGES.boluKukus;
-  if (t.includes('sup') || t.includes('soup') || t.includes('chowder')) return FOOD_IMAGES.cornSoup;
-  if (t.includes('milkshake') || t.includes('smoothie') || t.includes('susu')) return FOOD_IMAGES.milkshake;
-  if (t.includes('puding') || t.includes('pudding') || t.includes('dessert')) return FOOD_IMAGES.pudding;
-
-  if (category === 'makanan_berat') return FOOD_IMAGES.nasiGoreng;
-  if (category === 'camilan_sehat') return FOOD_IMAGES.cookies;
-  if (category === 'minuman_nutrisi') return FOOD_IMAGES.esCendol;
-  if (category === 'dessert_rendah_gi') return FOOD_IMAGES.pudding;
-
-  return GLOBAL_FALLBACK_FOOD_IMAGE;
 }
