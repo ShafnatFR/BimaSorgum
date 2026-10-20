@@ -53,7 +53,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
-  const [showGiInfo, setShowGiInfo] = useState<boolean>(false);
+  const [giModalOpen, setGiModalOpen] = useState<boolean>(false);
 
   // Compute which user-selected ingredients were NOT used in the final recipe
   const unusedIngredients = inputIngredientNames.filter(inputId => {
@@ -274,13 +274,8 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
               GI: {recipe.nutritionHighlight.glycemicIndex}
               <Info
                 className="w-3 h-3 cursor-pointer hover:text-[#7c5800] ml-0.5"
-                onClick={(e) => { e.stopPropagation(); setShowGiInfo(!showGiInfo); }}
+                onClick={(e) => { e.stopPropagation(); setGiModalOpen(true); }}
               />
-              {showGiInfo && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 z-20 p-2 text-[10px] text-[#1A1C1B] bg-white border border-[#c2c8c0] rounded shadow-lg whitespace-nowrap w-[220px] text-left">
-                  GI (Indeks Glikemik) ukur secepat makanan naikkan gula darah. Rendah ≤55 aman untuk diabetes, ≥70 tinggi. Angka di sini estimasi, bukan hasil laboratorium.
-                </div>
-              )}
             </div>
           )}
           {recipe.prepTimeMinutes && (
@@ -441,6 +436,35 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         >
           {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
         </button>
+
+        {/* Modal Info GI */}
+        {giModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setGiModalOpen(false)}>
+            <div className="bg-white rounded-2xl border border-[#c2c8c0] p-4 sm:p-6 max-w-sm mx-4 shadow-xl relative" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2 mb-3">
+                <Info className="w-5 h-5 text-[#163422]" />
+                <h3 className="font-bold text-[#1A1C1B] text-sm">GI (Indeks Glikemik)</h3>
+              </div>
+              <p className="text-[#424843] text-xs sm:text-sm leading-relaxed mb-3">
+                GI ukur secepat karbohidrat dalam makanan naikkan gula darah setelah dimakan.
+              </p>
+              <div className="space-y-1.5 text-xs text-[#424843]">
+                <p><strong>Rendah (≤55):</strong> naik perlahan, aman untuk diabetes, lama kenyang. Contoh: sorgum, kacang-kacangan, sayur.</p>
+                <p><strong>Sedang (56–69):</strong> naik sedang.</p>
+                <p><strong>Tinggi (≥70):</strong> naik cepat, picu lonjakan insulin. Contoh: nasi putih, roti putih, gula.</p>
+              </div>
+              <p className="text-[10px] text-[#727972] mt-3 italic">
+                Angka GI di resep ini estimasi rancangan, bukan hasil tes laboratorium.
+              </p>
+              <button
+                onClick={() => setGiModalOpen(false)}
+                className="w-full py-1.5 rounded-lg bg-[#163422] text-white text-xs font-bold hover:bg-[#2d4b37] transition-all"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
