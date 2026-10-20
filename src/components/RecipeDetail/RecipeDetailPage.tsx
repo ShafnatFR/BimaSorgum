@@ -414,12 +414,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                     {nh.glycemicIndex || 'Rendah (Low GI)'}
                   </span>
                 </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-[#424843]">Estimasi Modal</span>
-                  <span className="font-bold text-[#163422]">
-                    Rp {(recipe.estimatedCost * servingsMultiplier).toLocaleString('id-ID')}
-                  </span>
-                </div>
               </div>
             </div>
 
