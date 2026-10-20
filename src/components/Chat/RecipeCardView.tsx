@@ -66,6 +66,17 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     return `Rp ${amount.toLocaleString('id-ID')}`;
   };
 
+  const scaleAmount = (amount: string, multiplier: number) => {
+    return amount.replace(/(\d+)\/(\d+)|(\b\d+(?:[.,]\d+)?\b)/g, (match, fracNum, fracDen, standalone) => {
+      if (fracNum !== undefined) {
+        const val = (parseInt(fracNum) / parseInt(fracDen)) * multiplier;
+        return Number.isInteger(val) ? String(val) : val.toFixed(1);
+      }
+      const val = parseFloat(standalone!.replace(',', '.')) * multiplier;
+      return Number.isInteger(val) ? String(val) : val.toFixed(1);
+    });
+  };
+
   const handleSaveClick = () => {
     onToggleSave(recipe);
     if (!isSaved) {
@@ -227,7 +238,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
               </div>
               {ing.amount && (
                 <span className="font-semibold text-xs text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
-                  {ing.amount}
+                  {scaleAmount(ing.amount, portionMultiplier)}
                 </span>
               )}
             </li>
