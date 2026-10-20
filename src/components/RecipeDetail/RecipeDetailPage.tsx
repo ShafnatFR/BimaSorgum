@@ -56,6 +56,15 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
+  const scaleAmount = (amount: string, multiplier: number) => {
+    const match = amount.match(/^([\d.,]+)\s+(.+)$/);
+    if (!match) return amount;
+    const value = parseFloat(match[1].replace(',', '.'));
+    const unit = match[2];
+    const scaled = value * multiplier;
+    return Number.isInteger(scaled) ? `${scaled} ${unit}` : `${scaled.toFixed(1)} ${unit}`;
+  };
+
   const recipeSlug = getRecipeSlug(recipe);
   const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
   const shareableUrl = getShareableUrl(fullSlugPath);
@@ -489,7 +498,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
 
                       {ing.amount && (
                         <span className="text-xs font-semibold text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
-                          {ing.amount}
+                          {scaleAmount(ing.amount, servingsMultiplier)}
                         </span>
                       )}
                     </li>
