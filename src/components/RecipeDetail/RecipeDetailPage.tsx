@@ -523,7 +523,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       <tr className="border-b border-[#e2e3e1]">
                         <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Bahan</th>
                         <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Jumlah</th>
-                        <th className="text-right font-bold text-[#424843] pb-1.5">Harga</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -531,9 +530,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                         <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
                           <td className="py-1.5 pr-2 text-[#1a1c1b] font-medium">{ing.name}</td>
                           <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                          <td className="py-1.5 text-right font-semibold text-[#163422]">
-                            Rp {(ing.estimatedPrice * servingsMultiplier).toLocaleString('id-ID')}
-                          </td>
                         </tr>
                       ))}
                     </tbody>
