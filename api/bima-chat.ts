@@ -9,6 +9,9 @@
 export const config = { maxDuration: 180 };
 
 const BACKEND_ORIGIN = process.env.BIMA_BACKEND_ORIGIN || 'https://api.llmsorgum.online';
+// Consumer key the backend requires on /api/chat (401 without it). Server-side
+// env (no VITE_ prefix) so it never ships in the browser bundle.
+const BIMA_API_KEY = process.env.BIMA_API_KEY || '';
 const UPSTREAM_TIMEOUT_MS = 175_000; // +60s from previous 115s
 const STREAM_CHUNK_TIMEOUT_MS = 165_000; // +60s from previous 105s
 // `x-server-url` is forwarded so the LLM upstream can be switched per request —
@@ -16,7 +19,9 @@ const STREAM_CHUNK_TIMEOUT_MS = 165_000; // +60s from previous 105s
 // OpenAI-compatible upstream answered through this proxy while the admin-configured
 // upstream was unreachable). Without it, the Vercel host silently dropped the override
 // while the custom-domain (Dokploy/Traefik) host passed it through, so the two
-// deployments had different recovery options.
+// deployments had different recovery options. Since the backend made chat key-only,
+// X-API-Key is the consumer key (BIMA_API_KEY below wins over a client value) and the
+// backend accepts X-Server-URL / X-LLM-API-Key overrides from the admin key only.
 const PASSTHROUGH_HEADERS = ['x-use-rag', 'x-stream', 'x-model', 'x-api-key', 'x-server-url'];
 
 export default async function handler(req: any, res: any) {
@@ -39,6 +44,7 @@ export default async function handler(req: any, res: any) {
     const value = req.headers?.[name];
     if (value) headers[canonical(name)] = Array.isArray(value) ? value[0] : value;
   }
+  if (BIMA_API_KEY) headers['X-Api-Key'] = BIMA_API_KEY;
   if (wantStream) headers['X-Stream'] = 'true';
 
   const ctl = new AbortController();
