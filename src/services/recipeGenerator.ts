@@ -134,7 +134,7 @@ export function buildRecipeFromSuggestion(suggestion: RecipeSuggestion, formData
     ingredients,
     nutritionHighlight: nutrition,
     steps,
-    imageUrl: getRecipeImage(title, formData.dishCategory),
+    imageUrl: getRecipeImage(title, formData.dishCategory, slugify(title)),
     tags: ['Bebas Gluten', 'Sorgum Sehat', dishCategory],
     createdAt: new Date().toISOString(),
   };
@@ -232,7 +232,7 @@ function recipeFromLlmJson(parsed: Record<string, any>, fallbackBudget: number, 
       description: 'Tinggi serat dan gizi, bebas gluten.',
     },
     steps: Array.isArray(parsed.steps) ? parsed.steps : [],
-    imageUrl: getRecipeImage(title, parsed.dishCategory || fallbackCategory),
+    imageUrl: getRecipeImage(title, parsed.dishCategory || fallbackCategory, slugify(title)),
     tags: Array.isArray(parsed.tags) && parsed.tags.length ? parsed.tags : ['Bebas Gluten', 'Sorgum Sehat'],
     createdAt: new Date().toISOString(),
   };

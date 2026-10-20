@@ -8,6 +8,46 @@ import type {
   NutritionHighlight,
 } from '../types';
 import { getRecipeImage } from '../data/imageAssets';
+import {
+  primeMenuImageIndex,
+  resolveMenuImage,
+  recordImageUsage,
+  setImageUsage,
+} from '../services/recipeImageResolver';
+
+/* ================================================================== *
+ *  Gambar resep — resolver indeks menu (lihat services/recipeImageResolver.ts)
+ * ================================================================== */
+
+/** Foto untuk resep yang belum punya image_url di DB (mis. data lama). */
+function resolvedFallbackImage(title: string, category?: string, seed?: string): string {
+  const r = resolveMenuImage(title, category, seed || title);
+  return r.url || getRecipeImage(title, category);
+}
+
+/**
+ * Siapkan indeks gambar + peta pemakaian. Dipanggil sekali saat app start
+ * (lihat App.tsx). Aman dipanggil berkali-kali.
+ */
+export async function primeRecipeImages(): Promise<void> {
+  await primeMenuImageIndex();
+  try {
+    const { data, error } = await supabase
+      .from('recipes')
+      .select('image_key')
+      .not('image_key', 'is', null)
+      .limit(5000);
+    if (!error && data) {
+      const usage: Record<string, number> = {};
+      for (const row of data as { image_key: string | null }[]) {
+        if (row.image_key) usage[row.image_key] = (usage[row.image_key] ?? 0) + 1;
+      }
+      setImageUsage(usage);
+    }
+  } catch {
+    /* offline / RLS: pakai peta kosong, resolver tetap jalan */
+  }
+}
 
 /**
  * SorghumCare — Supabase data layer.
@@ -63,6 +103,9 @@ export interface DbRecipeRow {
   subtitle: string | null;
   description: string | null;
   image_url: string | null;
+  image_key?: string | null;
+  image_credit?: string | null;
+  image_page?: string | null;
   tags: string[] | null;
   target_age_label: string | null;
   dish_category: 'makanan_berat' | 'camilan_sehat' | 'minuman_nutrisi' | 'dessert_rendah_gi' | null;
@@ -126,6 +169,8 @@ export interface DbChatSessionRow {
   title: string;
   created_at: string;
   updated_at: string;
+  /** Optional: "Inspirasi" chips persisted for this session (may be absent pre-008). */
+  inspiration_prompts?: string[] | null;
 }
 
 export interface DbChatMessageRow {
@@ -206,7 +251,10 @@ export function mapRecipe(
     ingredients: ingList,
     nutritionHighlight: nh,
     steps: stepList,
-    imageUrl: r.image_url || getRecipeImage(r.title, r.dish_category || undefined),
+    imageUrl: r.image_url || resolvedFallbackImage(r.title, r.dish_category || undefined, r.slug),
+    imageKey: r.image_key || undefined,
+    imageCredit: r.image_credit || undefined,
+    imagePage: r.image_page || undefined,
     tags: r.tags || [],
     createdAt: r.created_at || new Date().toISOString(),
     isPublished: r.is_published,
@@ -352,12 +400,19 @@ export async function upsertRecipe(
     : giRaw.includes('sedang') || giRaw.includes('medium') || giRaw.includes('moderate') ? 'Sedang'
     : null;
 
+  // Foto: resolver memilih foto menu yang cocok dengan nama resep dan paling sedikit
+  // dipakai (lihat services/recipeImageResolver.ts). Hasilnya disimpan supaya stabil.
+  const resolvedImage = resolveMenuImage(recipe.title, categoryKey || undefined, slug);
+
   const row: Partial<DbRecipeRow> = {
     source_id: recipe.id || `user-${Date.now()}`,
     slug,
     title: recipe.title,
     subtitle: recipe.subtitle || '',
-    image_url: recipe.imageUrl || null,
+    image_url: resolvedImage.url || recipe.imageUrl || null,
+    image_key: (recipe.imageKey || resolvedImage.imageKey) || null,
+    image_credit: (recipe.imageCredit || resolvedImage.credit) || null,
+    image_page: (recipe.imagePage || resolvedImage.page) || null,
     tags: recipe.tags || [],
     target_age_label: recipe.targetAge || null,
     dish_category: categoryKey,
@@ -389,6 +444,9 @@ export async function upsertRecipe(
     return null;
   }
   const saved = data as DbRecipeRow;
+
+  // catat pemakaian foto supaya resep berikutnya memakai foto berbeda
+  if (resolvedImage.imageKey) recordImageUsage(resolvedImage.imageKey);
 
   // Replace children (delete + insert) to keep in sync.
   await supabase.from('recipe_ingredients').delete().eq('recipe_id', saved.id);
@@ -622,6 +680,26 @@ export async function touchChatSession(sessionId: string): Promise<void> {
     .update({ updated_at: new Date().toISOString() })
     .eq('id', sessionId);
   if (error) console.error('touchChatSession error:', error.message);
+}
+
+/**
+ * Persist the "Inspirasi" chips for a session so they survive reloads and
+ * session re-opens. Fails quietly (column may not exist before migration 008).
+ */
+export async function saveSessionInspirationPrompts(
+  sessionId: string,
+  prompts: string[]
+): Promise<boolean> {
+  if (!sessionId || !prompts?.length) return false;
+  const { error } = await supabase
+    .from('chat_sessions')
+    .update({ inspiration_prompts: prompts.slice(0, 4) })
+    .eq('id', sessionId);
+  if (error) {
+    console.warn('saveSessionInspirationPrompts error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 export async function createChatSession(title: string): Promise<DbChatSessionRow | null> {

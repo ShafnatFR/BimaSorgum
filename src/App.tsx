@@ -53,9 +53,10 @@ import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
 import { useAuth } from './lib/AuthProvider';
-import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe, saveSessionInspirationPrompts } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat, isAiUnavailableError, type BimaChatMessage } from './services/bimaClient';
+import { fetchInspirationPrompts, buildInspirationContext } from './services/inspirationPrompts';
 import { preflightPrompt, type PreflightResult } from './services/preflight';
 import { PreflightWarningModal } from './components/Modals/PreflightWarningModal';
 
@@ -97,6 +98,11 @@ export default function App() {
       m.fetchUserStats().then(setUserStats);
     });
   }, [isGoogleUser, ready]); // refetch when auth state or data ready changes
+
+  // Siapkan indeks gambar menu + peta pemakaian sekali di awal (lihat services/recipeImageResolver.ts)
+  useEffect(() => {
+    import('./lib/supabase').then((m) => m.primeRecipeImages()).catch(() => undefined);
+  }, []);
 
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
@@ -172,6 +178,7 @@ export default function App() {
   // Initial messages — start clean; the hero/empty-state shows when empty.
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [dynamicPrompts, setDynamicPrompts] = useState<string[]>([]);
+  const [isRefreshingPrompts, setIsRefreshingPrompts] = useState<boolean>(false);
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [typingStatusText, setTypingStatusText] = useState<string>('Sedang menulis langkah memasak...');
@@ -465,6 +472,10 @@ export default function App() {
       setCurrentTab('generate');
       navigateToSlug(RouteSlugs.generate());
       persistChatExchange(userPromptText, newRecipe.title, newRecipe);
+      // Segarkan chip Inspirasi agar relevan dengan resep yang baru dibuat.
+      refreshInspirationPrompts({
+        explicitContext: `User: ${userPromptText}\nAI: membuat resep "${newRecipe.title}"`,
+      });
 
       setTimeout(() => {
         setTypingStatusText('Menghitung estimasi rincian biaya bahan...');
@@ -546,6 +557,10 @@ export default function App() {
 
     setChatMessages((prev) => [...prev, userMsg, aiMsg]);
     persistChatExchange(`Pilih: ${suggestion.title}`, newRecipe.title, newRecipe);
+    // Resep dibuat lokal dari saran — segarkan chip agar tetap relevan.
+    refreshInspirationPrompts({
+      explicitContext: `User: memilih saran "${suggestion.title}"\nAI: membuat resep "${newRecipe.title}"`,
+    });
 
     confetti({
       particleCount: 70,
@@ -556,6 +571,50 @@ export default function App() {
   };
 
   // Chat Handlers
+
+  /** Prevent overlapping refresh calls (double-click / concurrent triggers). */
+  const promptsRefreshInFlight = React.useRef(false);
+
+  /**
+   * Ask the AI for a fresh set of "Inspirasi" chips and swap them in.
+   *
+   * Only replaces the chips when the model returns >= 2 usable suggestions, so a
+   * slow or failing model keeps the previous chips instead of blanking the row.
+   * Falls back to the wizard/last-message topic so suggestions stay relevant.
+   */
+  const refreshInspirationPrompts = React.useCallback(
+    async (opts: { explicitContext?: string } = {}) => {
+      if (promptsRefreshInFlight.current) return;
+      promptsRefreshInFlight.current = true;
+      setIsRefreshingPrompts(true);
+      try {
+        const fallbackTopic = `Kategori resep: ${wizardData.dishCategory.replace(/_/g, ' ')}, target: ${wizardData.targetConsumers.join(', ')}`;
+        const context =
+          opts.explicitContext ||
+          buildInspirationContext(
+            chatMessages.map((m) => ({
+              sender: m.sender,
+              text: m.text,
+              recipeTitle: m.recipe?.title,
+            })),
+            fallbackTopic
+          );
+        const prompts = await fetchInspirationPrompts(context);
+        if (prompts.length >= 2) {
+          setDynamicPrompts(prompts);
+          const sid = currentSessionIdRef.current;
+          if (sid) saveSessionInspirationPrompts(sid, prompts);
+        }
+      } catch (e) {
+        console.warn('refreshInspirationPrompts error:', e);
+      } finally {
+        setIsRefreshingPrompts(false);
+        promptsRefreshInFlight.current = false;
+      }
+    },
+    [chatMessages, wizardData]
+  );
+
   const handleSendMessage = async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed) return;
@@ -623,6 +682,8 @@ export default function App() {
             )
           );
           persistChatExchange(trimmed, msg, null);
+          // AI menolak — tetap segarkan chip Inspirasi agar user punya jalan lanjut.
+          refreshInspirationPrompts({ explicitContext: `User: ${trimmed}\nAI: menolak permintaan resep.` });
         } else {
           setDynamicRecipes((prev) => [newRecipe, ...prev]);
           setChatMessages((prev) =>
@@ -633,6 +694,10 @@ export default function App() {
             )
           );
           persistChatExchange(trimmed, newRecipe.title, newRecipe);
+          // Segarkan chip Inspirasi agar relevan dengan resep yang baru dibuat.
+          refreshInspirationPrompts({
+            explicitContext: `User: ${trimmed}\nAI: membuat resep "${newRecipe.title}"`,
+          });
         }
       } else {
                     // General chat flow: free-form AI answer, no recipe card.
@@ -654,12 +719,14 @@ export default function App() {
                     // 🔧 Hapus artefak markdown (###, ---, ***, ___) dari SELURUH respons — baris yang hanya berisi artefak
                     replyText = replyText.split('\n').filter((l: string) => !/^\s*(?:#{1,6}|---+|\*\*\*+|_{3,})\s*$/.test(l.trim())).join('\n').trim();
 
-                    // 🔧 Extract inspirasi dari >>> atau > lines di AKHIR respons
+                    // 🔧 Legacy path: ekstraksi cepat & gratis dari baris ">>>" di AKHIR respons.
+                    // Bila model tidak mematuhi format (umum terjadi), jangan diam-diam
+                    // mempertahankan chip lama — serahkan ke refreshInspirationPrompts.
                     const allLines = replyText.split('\n');
                     const trailingQuotes: string[] = [];
                     for (let i = allLines.length - 1; i >= 0; i--) {
                       const stripped = allLines[i].trim();
-                      if (/^>{1,3}\s+/.test(stripped)) {
+                      if (/^>{1,4}\s*/.test(stripped) && stripped.replace(/^>+/, '').trim().length > 2) {
                         trailingQuotes.unshift(stripped.replace(/^>*\s*/, '').trim());
                       } else if (stripped === '') {
                         continue; // skip blank lines between quotes
@@ -667,9 +734,11 @@ export default function App() {
                         break; // stop at first non-quote, non-blank line
                       }
                     }
+                    let promptsFromExtraction = false;
                     if (trailingQuotes.length >= 2) {
-                      const prompts = trailingQuotes.filter((l) => l.length > 2 && l.length < 50);
+                      const prompts = trailingQuotes.filter((l) => l.length > 2 && l.length < 60);
                       if (prompts.length >= 2) {
+                        promptsFromExtraction = true;
                         setDynamicPrompts(prompts.slice(0, 4));
                         // Strip trailing quote block — take only lines before the quotes
                         replyText = allLines.slice(0, allLines.length - trailingQuotes.length).join('\n').trim();
@@ -727,6 +796,13 @@ export default function App() {
               );
               // Persist the FULL reply so history playback is never truncated.
               persistChatExchange(trimmed, replyText, null);
+              // Bila ekstraksi ">>>" tidak menghasilkan chip yang cukup, minta saran
+              // terstruktur ke AI supaya bar Inspirasi tidak diam-diam tetap statis.
+              if (!promptsFromExtraction) {
+                refreshInspirationPrompts({
+                  explicitContext: `User: ${trimmed}\nAI: ${replyText.slice(0, 400)}`,
+                });
+              }
             }
 } catch (e) {
       console.error('chat error:', e);
@@ -922,6 +998,12 @@ export default function App() {
 
       setSessionIdBoth(chatId);
       const rows = await fetchChatSessionMessages(chatId);
+      // Pulihkan chip Inspirasi sesi ini (kolom opsional, bisa kosong/pra-migrasi).
+      const sess = chatSessions.find((s) => s.id === chatId);
+      const savedPrompts = (sess as any)?.inspiration_prompts;
+      if (Array.isArray(savedPrompts) && savedPrompts.length >= 2) {
+        setDynamicPrompts(savedPrompts.filter((p: unknown) => typeof p === 'string').slice(0, 4));
+      }
       if (!rows.length) {
         setChatMessages([]);
         return;
@@ -987,6 +1069,22 @@ export default function App() {
       dishCategory: categoryKey as DishCategoryId,
     }));
     handleSetWizardStep(1);
+  };
+
+  // Reset ke sesi chat baru (halaman new chat di tab Generate).
+  const startNewChat = () => {
+    setChatMessages([]);
+    setSessionIdBoth(null);
+    setActiveChatId(`chat-${Date.now()}`);
+    setGeneratorMode('chat');
+    setCurrentTab('generate');
+    setIsGenerating(false);
+    setIsSidebarOpen(false);
+    setSelectedRecipeDetail(null);
+    setCookModeRecipe(null);
+    setSelectedVideoTutorial(null);
+    setIsSearchOpen(false);
+    navigateToSlug(RouteSlugs.generate());
   };
 
   return (
@@ -1079,17 +1177,7 @@ export default function App() {
                                     <Sidebar
                             isOpen={isSidebarOpen}
                             onClose={() => setIsSidebarOpen(false)}
-                  onNewRecipeChat={() => {
-                                      // Reset to a fresh chat session in-place (stay in chat mode).
-                                      setChatMessages([]);
-                                      setSessionIdBoth(null);
-                                      setActiveChatId(`chat-${Date.now()}`);
-                                      setGeneratorMode('chat');
-                                      setCurrentTab('generate');
-                                      setIsGenerating(false);
-                                      setIsSidebarOpen(false);
-                                      navigateToSlug(RouteSlugs.generate());
-                                    }}
+                  onNewRecipeChat={startNewChat}
                   recentChats={
                     chatSessions.length
                       ? chatSessions.map((s) => ({
@@ -1138,7 +1226,8 @@ export default function App() {
                           if (wizardStep > 1) {
                             handleSetWizardStep(wizardStep - 1);
                           } else {
-                            handleSelectTab('home');
+                            // Step 1: kembali ke halaman new chat (chat kosong di tab Generate).
+                            startNewChat();
                           }
                         }}
                       />
@@ -1415,6 +1504,8 @@ export default function App() {
                         onSendMessage={handleSendMessage}
                         isLoading={isGenerating}
                         dynamicPrompts={dynamicPrompts}
+                        onRefreshPrompts={() => refreshInspirationPrompts()}
+                        isRefreshingPrompts={isRefreshingPrompts}
                       />
                     </div>
                   </div>

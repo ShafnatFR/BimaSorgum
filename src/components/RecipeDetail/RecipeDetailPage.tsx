@@ -206,6 +206,30 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
             </div>
           </div>
 
+          {/* Atribusi foto: wajib untuk gambar berlisensi CC BY / CC BY-SA / ODbL.
+              Diisi otomatis oleh services/recipeImageResolver.ts saat resep disimpan. */}
+          {recipe.imageCredit && (
+            <p className="text-[11px] leading-snug text-[#6b7269] flex items-start gap-1 flex-wrap -mt-1">
+              <span className="material-symbols-outlined text-[13px]">photo_camera</span>
+              <span>
+                Foto: {recipe.imageCredit}
+                {recipe.imagePage ? (
+                  <>
+                    {' · '}
+                    <a
+                      href={recipe.imagePage}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="underline decoration-dotted hover:text-[#163422]"
+                    >
+                      sumber
+                    </a>
+                  </>
+                ) : null}
+              </span>
+            </p>
+          )}
+
           <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 pt-1">
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-3xl lg:text-[32px] font-bold text-[#1a1c1b] leading-tight">

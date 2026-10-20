@@ -73,6 +73,11 @@ export interface Recipe {
   nutritionHighlight: NutritionHighlight;
   steps: RecipeStep[];
   imageUrl?: string;
+  /** "<menu-key>#<indeks foto>" — dipakai resolver untuk menyebar pemakaian foto */
+  imageKey?: string;
+  /** atribusi foto (judul menu · author · lisensi · sumber) */
+  imageCredit?: string;
+  imagePage?: string;
   tags: string[];
   createdAt: string;
   /** false = private (only visible to owner); true = public in Explore */
