@@ -14,7 +14,8 @@ import {
   Flame, 
   Wheat, 
   Play,
-  Volume2
+  Volume2,
+  Info
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
@@ -52,6 +53,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [showGiInfo, setShowGiInfo] = useState<boolean>(false);
 
   // Compute which user-selected ingredients were NOT used in the final recipe
   const unusedIngredients = inputIngredientNames.filter(inputId => {
@@ -267,10 +269,19 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
             </span>
           )}
           {recipe.nutritionHighlight.glycemicIndex && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-[#163422] text-xs font-semibold shadow-xs">
+            <div className="relative inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-[#163422] text-xs font-semibold shadow-xs">
               <Sparkles className="w-3 h-3 text-[#163422]" />
               GI: {recipe.nutritionHighlight.glycemicIndex}
-            </span>
+              <Info
+                className="w-3 h-3 cursor-pointer hover:text-[#7c5800] ml-0.5"
+                onClick={(e) => { e.stopPropagation(); setShowGiInfo(!showGiInfo); }}
+              />
+              {showGiInfo && (
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 z-20 p-2 text-[10px] text-[#1A1C1B] bg-white border border-[#c2c8c0] rounded shadow-lg whitespace-nowrap w-[220px] text-left">
+                  GI (Indeks Glikemik) ukur secepat makanan naikkan gula darah. Rendah ≤55 aman untuk diabetes, ≥70 tinggi. Angka di sini estimasi, bukan hasil laboratorium.
+                </div>
+              )}
+            </div>
           )}
           {recipe.prepTimeMinutes && (
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-[#163422] text-xs font-semibold shadow-xs">
