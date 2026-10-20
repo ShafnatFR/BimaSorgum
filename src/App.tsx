@@ -35,6 +35,14 @@ import { ExploreRecipesPage } from './components/Explore/ExploreRecipesPage';
 import { ProfilePage } from './components/Profile/ProfilePage';
 import { BottomNavBar, AppTab } from './components/Navigation/BottomNavBar';
 
+import { AdminGuard } from './components/Admin/AdminGuard';
+import { AdminLayout } from './components/Admin/AdminLayout';
+import { AdminDashboard } from './components/Admin/AdminDashboard';
+import { AdminComments } from './components/Admin/AdminComments';
+import { AdminReports } from './components/Admin/AdminReports';
+import { AdminRecipes } from './components/Admin/AdminRecipes';
+import { AdminSettings } from './components/Admin/AdminSettings';
+
 import { WizardProgressBar } from './components/Wizard/WizardProgressBar';
 import { WizardStep1 } from './components/Wizard/WizardStep1';
 import { WizardStep2 } from './components/Wizard/WizardStep2';
@@ -53,7 +61,7 @@ import { VideoTutorialModal } from './components/Modals/VideoTutorialModal';
 import { SearchModal } from './components/Modals/SearchModal';
 import { useData } from './lib/dataContext';
 import { useAuth } from './lib/AuthProvider';
-import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe } from './lib/supabase';
+import { upsertRecipe, fetchRecipeBySlug, fetchSavedRecipeIds, createChatSession, saveChatMessages, fetchChatSessions, fetchChatSessionMessages, renameChatSession, touchChatSession, mapRecipe, deleteChatSession, fetchSessionRecipeIds, deleteOwnedRecipe, getAdminConfigValue } from './lib/supabase';
 import type { DbChatMessageRow } from './lib/supabase';
 import { bimaChat, isAiUnavailableError, type BimaChatMessage } from './services/bimaClient';
 import { preflightPrompt, type PreflightResult } from './services/preflight';
@@ -98,6 +106,31 @@ export default function App() {
     });
   }, [isGoogleUser, ready]); // refetch when auth state or data ready changes
 
+  // Load admin feature flags (main_feature_enabled, images_enabled)
+  useEffect(() => {
+    if (!ready) return;
+    const loadAdminConfig = async () => {
+      const [mainFeature, images] = await Promise.all([
+        getAdminConfigValue('main_feature_enabled'),
+        getAdminConfigValue('images_enabled'),
+      ]);
+      // toBool inline: treat truthy-ish as enabled
+      const toBool = (v: unknown, fallback: boolean) => {
+        if (v === null || v === undefined) return fallback;
+        if (typeof v === 'boolean') return v;
+        if (typeof v === 'number') return v !== 0;
+        if (typeof v === 'string') {
+          const n = v.trim().toLowerCase();
+          return !['false', '0', 'tidak', 'off', 'nonaktif'].includes(n);
+        }
+        return fallback;
+      };
+      setMainFeatureEnabled(toBool(mainFeature, true));
+      setImagesEnabled(toBool(images, true));
+    };
+    loadAdminConfig();
+  }, [ready, getAdminConfigValue]);
+
   // Navigation: 'home' is the primary home page requested by user
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
@@ -106,6 +139,13 @@ export default function App() {
     typeof window !== 'undefined' ? window.innerWidth >= 768 : true
   );
   const [exploreCategoryKey, setExploreCategoryKey] = useState<string>('all');
+
+  // Admin feature flags (from admin_configs payload)
+  const [mainFeatureEnabled, setMainFeatureEnabled] = useState<boolean>(true);
+  const [imagesEnabled, setImagesEnabled] = useState<boolean>(true);
+  const [adminSection, setAdminSection] = useState<string>('dashboard');
+
+  const { role: authRole, isAdmin: isAdminUser } = useAuth();
 
   // Preflight (pre-generation sanity check) state
   const [preflight, setPreflight] = useState<{
@@ -187,6 +227,23 @@ export default function App() {
     const handleUrlChange = () => {
       const rawPath = getCurrentPath();
       const parsed = parseRoute(rawPath);
+
+      // Admin route — set adminSection dari URL, render AdminLayout di JSX
+      if (parsed.routeType === 'admin') {
+        setAdminSection(parsed.slug || 'dashboard');
+        return;
+      }
+
+      // Blokir generator (wizard/chat) jika fitur utama dimatikan oleh admin
+      if (
+        !mainFeatureEnabled &&
+        (parsed.routeType === 'generate' || parsed.routeType === 'wizard')
+      ) {
+        setCurrentTab('home');
+        setGeneratorMode('chat');
+        navigateToSlug(RouteSlugs.home());
+        return;
+      }
 
       if (parsed.routeType === 'recipe' && parsed.slug) {
         const found =
@@ -282,6 +339,11 @@ export default function App() {
 
   // Tab Selection with Slug Update
   const handleSelectTab = (tab: AppTab) => {
+    // Blokir tab Generate jika fitur utama dimatikan oleh admin
+    if (tab === 'generate' && !mainFeatureEnabled) {
+      return;
+    }
+
     setSelectedRecipeDetail(null);
     setCookModeRecipe(null);
     setSelectedVideoTutorial(null);
@@ -989,8 +1051,22 @@ export default function App() {
     handleSetWizardStep(1);
   };
 
+  const isAdminRoute = parseRoute(getCurrentPath()).routeType === 'admin';
+
   return (
-    <div className="min-h-screen bg-[#F9F9F7] text-[#1A1C1B] font-['Manrope',sans-serif] flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9F9F7] text-[#1A1C1B] font-['Manrope',sans-serif] flex flex-col justify-between overflow-x-hidden" data-images-disabled={imagesEnabled ? undefined : 'true'}>
+      {/* Admin Panel — hanya ditampilkan saat route /admin */}
+      {isAdminRoute && (
+        <AdminLayout active={adminSection}>
+          <AdminGuard>
+            {adminSection === 'dashboard' && <AdminDashboard />}
+            {adminSection === 'komentar' && <AdminComments />}
+            {adminSection === 'laporan' && <AdminReports />}
+            {adminSection === 'resep' && <AdminRecipes />}
+            {adminSection === 'pengaturan' && <AdminSettings />}
+          </AdminGuard>
+        </AdminLayout>
+      )}
       {/* 1. MAIN CONTENT (FULL PAGE RECIPE DETAIL OR TABS) */}
       {selectedRecipeDetail ? (
         <RecipeDetailPage
@@ -1423,54 +1499,55 @@ export default function App() {
               </div>
             </div>
           )}
+          {/* 2. BOTTOM NAVIGATION BAR (Hidden on Generate tab) */}
+          {currentTab !== 'generate' && (
+            <BottomNavBar
+              currentTab={currentTab}
+              onSelectTab={handleSelectTab}
+            />
+          )}
+
+          {/* 3. MODALS & POPUPS */}
+          <>
+            {/* Video Tutorial Modal */}
+            {selectedVideoTutorial && (
+              <VideoTutorialModal
+                tutorial={selectedVideoTutorial}
+                onClose={handleCloseTutorial}
+              />
+            )}
+
+            {/* Search Modal */}
+            <SearchModal
+              isOpen={isSearchOpen}
+              onClose={handleCloseSearch}
+              onSelectRecipe={handleViewRecipe}
+              recipes={dbRecipes}
+              onSearchQuery={(query) => {
+                handleSendMessage(query);
+              }}
+            />
+
+            {/* Cook Mode Modal */}
+            {cookModeRecipe && (
+              <CookModeModal
+                recipe={cookModeRecipe}
+                onClose={handleCloseCookMode}
+              />
+            )}
+
+            {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
+            {preflight && (
+              <PreflightWarningModal
+                isOpen={true}
+                result={preflight.result}
+                originalPrompt={preflight.prompt}
+                onClose={() => setPreflight(null)}
+                onProceed={handlePreflightProceed}
+              />
+            )}
+          </>
         </>
-      )}
-
-      {/* 2. BOTTOM NAVIGATION BAR (Hidden on Generate tab) */}
-      {currentTab !== 'generate' && (
-        <BottomNavBar
-          currentTab={currentTab}
-          onSelectTab={handleSelectTab}
-        />
-      )}
-
-      {/* 3. MODALS & POPUPS */}
-      {/* Video Tutorial Modal */}
-      {selectedVideoTutorial && (
-        <VideoTutorialModal
-          tutorial={selectedVideoTutorial}
-          onClose={handleCloseTutorial}
-        />
-      )}
-
-      {/* Search Modal */}
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={handleCloseSearch}
-        onSelectRecipe={handleViewRecipe}
-        recipes={dbRecipes}
-        onSearchQuery={(query) => {
-          handleSendMessage(query);
-        }}
-      />
-
-      {/* Cook Mode Modal */}
-      {cookModeRecipe && (
-        <CookModeModal
-          recipe={cookModeRecipe}
-          onClose={handleCloseCookMode}
-        />
-      )}
-
-      {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
-      {preflight && (
-        <PreflightWarningModal
-          isOpen={true}
-          result={preflight.result}
-          originalPrompt={preflight.prompt}
-          onClose={() => setPreflight(null)}
-          onProceed={handlePreflightProceed}
-        />
       )}
     </div>
   );

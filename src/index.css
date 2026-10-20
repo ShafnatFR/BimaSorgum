@@ -53,7 +53,9 @@
   background: #727972;
 }
 
-/* Range input custom styling */
+[data-images-disabled="true"] img {
+  display: none !important;
+}
 input[type="range"] {
   accent-color: #f4be55;
 }

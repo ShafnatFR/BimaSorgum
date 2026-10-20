@@ -138,3 +138,27 @@ export interface WizardFormData {
   prepTimeLimit: string;
   notes?: string;
 }
+
+/** Konfigurasi admin (key-value payload) yang disimpan di admin_configs. */
+export interface AdminConfig {
+  id: string;
+  config_key: string;
+  config_value: any; // jsonb payload — boleh object/array/string/boolean/number
+  description: string | null;
+  updated_by: string | null;
+  updated_at: string;
+}
+
+/** Laporan (report) dari user yang akan ditinjau/disetujui admin. */
+export interface Report {
+  id: string;
+  reporter_id: string | null;
+  target_type: 'comment' | 'recipe' | 'user' | 'content';
+  target_id: string;
+  reason: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}

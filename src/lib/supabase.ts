@@ -6,6 +6,8 @@ import type {
   SavedRecipe,
   ChatMessage,
   NutritionHighlight,
+  AdminConfig,
+  Report,
 } from '../types';
 import { getRecipeImageSync } from '../data/imageAssets';
 
@@ -699,16 +701,28 @@ export async function deleteOwnedRecipe(recipeId: string): Promise<boolean> {
  *  PROFILES (anonymous user info)
  * ================================================================== */
 
-export async function fetchProfile(): Promise<{ full_name: string; avatar_url: string | null } | null> {
+export async function fetchProfile(): Promise<{ full_name: string; avatar_url: string | null; role: string } | null> {
   const userId = await getUserIdAsync();
   if (!userId) return null;
   const { data, error } = await supabase
     .from('profiles')
-    .select('full_name, avatar_url')
+    .select('full_name, avatar_url, role')
     .eq('id', userId)
     .maybeSingle();
   if (error || !data) return null;
-  return data as { full_name: string; avatar_url: string | null };
+  return data as { full_name: string; avatar_url: string | null; role: string };
+}
+
+export async function isAdmin(): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error || !data) return false;
+  return (data as { role: string }).role === 'admin';
 }
 
 export async function updateProfileName(fullName: string): Promise<boolean> {
@@ -823,6 +837,28 @@ export interface RecipeComment {
   parent_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface DbAdminConfigRow {
+  id: string;
+  config_key: string;
+  config_value: any;
+  description: string | null;
+  updated_by: string | null;
+  updated_at: string;
+}
+
+export interface DbReportRow {
+  id: string;
+  reporter_id: string | null;
+  target_type: string;
+  target_id: string;
+  reason: string;
+  status: string;
+  admin_note: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
 }
 
 /** Fetch all comments for a recipe, flat list. */
@@ -946,4 +982,124 @@ export async function toggleCommentLike(
       .eq('comment_id', commentId);
     return { liked: true, count: count || 0 };
   }
+}
+
+/* ================================================================== *
+ *  ADMIN — konfigurasi payload (admin_configs)
+ * ================================================================== */
+
+/** Fetch all admin config rows (key-value payloads). Admin only (RLS enforced). */
+export async function fetchAdminConfigs(): Promise<AdminConfig[]> {
+  const { data, error } = await supabase
+    .from('admin_configs')
+    .select('*')
+    .order('config_key', { ascending: true });
+  if (error || !data) return [];
+  return data as AdminConfig[];
+}
+
+/** Upsert (create or update) a single admin config payload. Admin only. */
+export async function updateAdminConfig(
+  configKey: string,
+  configValue: any,
+  description: string | null = null,
+): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('admin_configs')
+    .upsert(
+      { config_key: configKey, config_value: configValue, description, updated_by: userId },
+      { onConflict: 'config_key' }
+    );
+  if (error) {
+    console.error('updateAdminConfig error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Get a single config value by key. Returns null if not found. */
+export async function getAdminConfigValue(configKey: string): Promise<any> {
+  const { data, error } = await supabase
+    .from('admin_configs')
+    .select('config_value')
+    .eq('config_key', configKey)
+    .maybeSingle();
+  if (error || !data) return null;
+  return (data as { config_value: any }).config_value;
+}
+
+/* ================================================================== *
+ *  ADMIN — laporan (reports)
+ * ================================================================== */
+
+/** Fetch all reports (newest first). Admin only (RLS allows select for all, but UI should gate). */
+export async function fetchReports(): Promise<Report[]> {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error || !data) return [];
+  return data as Report[];
+}
+
+/** Accept (setujui) a report. Admin only. */
+export async function acceptReport(reportId: string, adminNote: string | null = null): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('reports')
+    .update({ status: 'accepted', admin_note: adminNote, reviewed_by: userId, reviewed_at: new Date().toISOString() })
+    .eq('id', reportId);
+  if (error) {
+    console.error('acceptReport error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Reject (tolak) a report. Admin only. */
+export async function rejectReport(reportId: string, adminNote: string | null = null): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId) return false;
+  const { error } = await supabase
+    .from('reports')
+    .update({ status: 'rejected', admin_note: adminNote, reviewed_by: userId, reviewed_at: new Date().toISOString() })
+    .eq('id', reportId);
+  if (error) {
+    console.error('rejectReport error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/* ================================================================== *
+ *  ADMIN — hapus konten (komentar & resep) oleh admin
+ * ================================================================== */
+
+/** Delete ANY comment as admin (bypasses owner-only RLS via admin policy). */
+export async function adminDeleteComment(commentId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('recipe_comments')
+    .delete()
+    .eq('id', commentId);
+  if (error) {
+    console.error('adminDeleteComment error:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Delete ANY recipe as admin (cascade removes children). Admin only. */
+export async function adminDeleteRecipe(recipeId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('recipes')
+    .delete()
+    .eq('id', recipeId);
+  if (error) {
+    console.error('adminDeleteRecipe error:', error.message);
+    return false;
+  }
+  return true;
 }

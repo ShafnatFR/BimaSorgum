@@ -17,7 +17,8 @@ export type AppRouteType =
   | 'recipe' 
   | 'cook' 
   | 'tutorial' 
-  | 'search';
+  | 'search'
+  | 'admin';
 
 export interface ParsedRoute {
   routeType: AppRouteType;
@@ -138,6 +139,14 @@ export function parseRoute(path: string): ParsedRoute {
     };
   }
 
+  // 9. Admin (/admin)
+  if (first === 'admin') {
+    return {
+      routeType: 'admin',
+      tab: 'profile',
+    };
+  }
+
   // Default Home
   return {
     routeType: 'home',
@@ -186,6 +195,7 @@ export const RouteSlugs = {
   cook: (recipe: Recipe) => `/cook/${getRecipeSlug(recipe)}`,
   tutorial: (tut: VideoTutorialItem) => `/tutorial/${getTutorialSlug(tut)}`,
   search: () => '/search',
+  admin: () => '/admin',
 };
 
 /**

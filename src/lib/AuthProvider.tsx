@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { supabase } from './supabase';
+import { supabase, fetchProfile } from './supabase';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextValue {
@@ -9,6 +9,8 @@ interface AuthContextValue {
   isGoogleUser: boolean;
   displayName: string;
   avatarUrl: string | null;
+  role: string | null;
+  isAdmin: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -20,6 +22,8 @@ const AuthContext = createContext<AuthContextValue>({
   isGoogleUser: false,
   displayName: 'Guest',
   avatarUrl: null,
+  role: null,
+  isAdmin: false,
   signInWithGoogle: async () => {},
   signOut: async () => {},
 });
@@ -28,11 +32,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
+      fetchProfile().then((profile: any) => {
+        setRole(profile?.role ?? null);
+      });
       setLoading(false);
     });
 
@@ -40,6 +48,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (_event, s) => {
         setSession(s);
         setUser(s?.user ?? null);
+        fetchProfile().then((profile: any) => {
+          setRole(profile?.role ?? null);
+        });
         setLoading(false);
       }
     );
@@ -70,6 +81,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isGoogleUser = !!user && user.app_metadata?.provider === 'google';
 
+  const isAdmin = role === 'admin';
+
   // Extract display info from Google user metadata
   const displayName = isGoogleUser
     ? (user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User')
@@ -81,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, isGoogleUser, displayName, avatarUrl, signInWithGoogle, signOut }}
+      value={{ user, session, loading, isGoogleUser, displayName, avatarUrl, role, isAdmin, signInWithGoogle, signOut }}
     >
       {children}
     </AuthContext.Provider>

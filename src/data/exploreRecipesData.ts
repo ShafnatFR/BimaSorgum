@@ -353,10 +353,10 @@ export const EXPLORE_RECIPES_DATABASE: Recipe[] = [
 
 export const RECIPE_COLLECTIONS: RecipeCollection[] = [
   {
-    id: 'mbg-school',
-    title: 'Koleksi Menu MBG (Makan Bergizi Gratis)',
+    id: 'school-meals',
+    title: 'Koleksi Makan Bergizi Gratis',
     subtitle: 'Paket menu hemat biaya, tinggi serat, dan bebas gluten untuk bekal sekolah anak SD & SMP.',
-    badge: 'Program Nasional MBG',
+    badge: 'Program Makan Bergizi Gratis',
     color: 'from-[#163422] to-[#2d4b37]',
     recipeIds: ['nasi-goreng-sorgum-sd', 'sup-krim-sorgum-jagung', 'sorghum-cookies-chocochip'],
   },
@@ -390,7 +390,7 @@ export interface MostLikedRecipeItem {
 export const MOST_LIKED_RECIPES: MostLikedRecipeItem[] = [
   {
     rank: 1,
-    recipe: INITIAL_FEATURED_RECIPE, // Nasi Goreng Sorgum Komplit (MBG)
+    recipe: INITIAL_FEATURED_RECIPE, // Nasi Goreng Sorgum Komplit
     likesCount: 1840,
     rating: 4.9,
     reviewsCount: 320,

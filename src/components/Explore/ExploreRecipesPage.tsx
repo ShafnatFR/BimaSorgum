@@ -171,7 +171,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     { id: 'Bebas Gluten', label: '🌾 Bebas Gluten' },
     { id: 'Low GI', label: '📉 Low GI (Diabetes)' },
     { id: 'Tinggi Serat', label: '🥗 Tinggi Serat' },
-    { id: 'Bekal Sekolah', label: '🎒 Bekal Anak (MBG)' },
+    { id: 'Bekal Sekolah', label: '🎒 Bekal Anak' },
     { id: 'Plant-Based', label: '🌱 Plant-Based' },
   ];
 
@@ -986,7 +986,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                       {[
                         { id: 'all', label: 'Semua Usia' },
                         { id: 'Balita', label: '👶 Balita (1-5 thn)' },
-                        { id: 'Anak Sekolah', label: '🎒 Anak Sekolah (MBG)' },
+                        { id: 'Anak Sekolah', label: '🎒 Anak Sekolah' },
                         { id: 'Remaja', label: '🧑 Remaja & Dewasa' },
                         { id: 'Lansia', label: '👴 Lansia (Ramah Gula)' },
                       ].map((item) => {
@@ -1020,7 +1020,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                       {[
                         { value: 'all', label: 'Bebas Budget' },
                         { value: 10000, label: '≤ Rp 10.000 (Hemat)' },
-                        { value: 15000, label: '≤ Rp 15.000 (MBG)' },
+                        { value: 15000, label: '≤ Rp 15.000' },
                         { value: 20000, label: '≤ Rp 20.000' },
                       ].map((item) => (
                         <button
