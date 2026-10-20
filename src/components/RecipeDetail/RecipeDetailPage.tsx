@@ -57,12 +57,16 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   const scaleAmount = (amount: string, multiplier: number) => {
-    const match = amount.match(/^([\d.,]+)\s+(.+)$/);
-    if (!match) return amount;
-    const value = parseFloat(match[1].replace(',', '.'));
-    const unit = match[2];
-    const scaled = value * multiplier;
-    return Number.isInteger(scaled) ? `${scaled} ${unit}` : `${scaled.toFixed(1)} ${unit}`;
+    return amount.replace(/(\d+)\/(\d+)|\b(\d+(?:[.,]\d+)?)\b/g, (match, fracNum, fracDen, standalone) => {
+      if (fracNum !== undefined) {
+        // Pecahan seperti 1/2 → hitung desimal, diskalakan, tulis ulang
+        const val = (parseInt(fracNum) / parseInt(fracDen)) * multiplier;
+        return Number.isInteger(val) ? String(val) : val.toFixed(1);
+      }
+      // Angka tunggal (termasuk yang dalam kurung, mis. 150 di (150g))
+      const val = parseFloat(standalone!.replace(',', '.')) * multiplier;
+      return Number.isInteger(val) ? String(val) : val.toFixed(1);
+    });
   };
 
   const recipeSlug = getRecipeSlug(recipe);
