@@ -169,6 +169,8 @@ export interface DbChatSessionRow {
   title: string;
   created_at: string;
   updated_at: string;
+  /** Optional: "Inspirasi" chips persisted for this session (may be absent pre-008). */
+  inspiration_prompts?: string[] | null;
 }
 
 export interface DbChatMessageRow {
@@ -678,6 +680,26 @@ export async function touchChatSession(sessionId: string): Promise<void> {
     .update({ updated_at: new Date().toISOString() })
     .eq('id', sessionId);
   if (error) console.error('touchChatSession error:', error.message);
+}
+
+/**
+ * Persist the "Inspirasi" chips for a session so they survive reloads and
+ * session re-opens. Fails quietly (column may not exist before migration 008).
+ */
+export async function saveSessionInspirationPrompts(
+  sessionId: string,
+  prompts: string[]
+): Promise<boolean> {
+  if (!sessionId || !prompts?.length) return false;
+  const { error } = await supabase
+    .from('chat_sessions')
+    .update({ inspiration_prompts: prompts.slice(0, 4) })
+    .eq('id', sessionId);
+  if (error) {
+    console.warn('saveSessionInspirationPrompts error:', error.message);
+    return false;
+  }
+  return true;
 }
 
 export async function createChatSession(title: string): Promise<DbChatSessionRow | null> {

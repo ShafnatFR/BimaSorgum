@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { Mic, MicOff, Send, Sparkles } from 'lucide-react';
+import { Mic, MicOff, Send, Sparkles, RefreshCw } from 'lucide-react';
 
 interface ChatInputBarProps {
   onSendMessage: (text: string) => void;
   isLoading?: boolean;
   dynamicPrompts?: string[];
+  /** Request a fresh set of inspiration chips. */
+  onRefreshPrompts?: () => void;
+  /** True while a refresh request is in flight. */
+  isRefreshingPrompts?: boolean;
 }
 
 export const ChatInputBar: React.FC<ChatInputBarProps> = ({
   onSendMessage,
   isLoading = false,
   dynamicPrompts,
+  onRefreshPrompts,
+  isRefreshingPrompts = false,
 }) => {
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
@@ -98,6 +104,17 @@ export const ChatInputBar: React.FC<ChatInputBarProps> = ({
                                         </button>
                                       ))
                                     )}
+                  {onRefreshPrompts && !isLoading && (
+                    <button
+                      type="button"
+                      onClick={onRefreshPrompts}
+                      disabled={isRefreshingPrompts}
+                      title={isRefreshingPrompts ? 'Sedang menyegarkan saran...' : 'Saran baru'}
+                      className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[#7c5800] hover:bg-[#fdc65c]/30 border border-transparent hover:border-[#fdc65c] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isRefreshingPrompts ? 'animate-spin' : ''}`} />
+                    </button>
+                  )}
                 </div>
 
         {/* Conversational Input Area container */}
