@@ -498,12 +498,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
               </ul>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#e2e3e1] flex items-center justify-between text-xs text-[#424843]">
-              <span>* Centang bahan yang sudah tersedia di dapur</span>
-              <span className="font-bold text-[#163422]">
-                Total: Rp {(recipe.estimatedCost * servingsMultiplier).toLocaleString('id-ID')}
-              </span>
-            </div>
           </div>
         </section>
 
