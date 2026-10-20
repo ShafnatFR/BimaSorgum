@@ -55,7 +55,6 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [ingredientsTab, setIngredientsTab] = useState<'takaran' | 'belanja'>('takaran');
 
   const recipeSlug = getRecipeSlug(recipe);
   const fullSlugPath = RouteSlugs.recipeSlug(recipeSlug);
@@ -431,26 +430,9 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 <div className="flex items-center gap-3">
                   <h3 className="text-base sm:text-lg font-bold text-[#1a1c1b]">Ingredients</h3>
                   {/* Tab toggle */}
-                  <div className="flex items-center bg-[#f4f4f2] rounded-full border border-[#e2e3e1] overflow-hidden">
-                    <button
-                      onClick={() => setIngredientsTab('takaran')}
-                      className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                        ingredientsTab === 'takaran'
-                          ? 'bg-[#163422] text-white'
-                          : 'text-[#727972] hover:text-[#424843]'
-                      }`}
-                    >
+                  <div className="flex items-center bg-[#163422] rounded-full border border-[#e2e3e1] overflow-hidden">
+                    <button className="px-2.5 py-0.5 text-[11px] font-bold text-white">
                       Takaran
-                    </button>
-                    <button
-                      onClick={() => setIngredientsTab('belanja')}
-                      className={`px-2.5 py-0.5 text-[11px] font-bold transition-all ${
-                        ingredientsTab === 'belanja'
-                          ? 'bg-[#163422] text-white'
-                          : 'text-[#727972] hover:text-[#424843]'
-                      }`}
-                    >
-                      Daftar Belanja
                     </button>
                   </div>
                 </div>
@@ -475,67 +457,45 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 </div>
               </div>
 
-              {ingredientsTab === 'takaran' ? (
-                /* Takaran view: name + amount, no price */
-                <ul className="space-y-1">
-                  {recipe.ingredients.map((ing, idx) => {
-                    const isChecked = checkedIngredients.includes(idx);
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => toggleIngredientCheck(idx)}
-                        className={`flex items-center justify-between py-2.5 px-2.5 rounded-xl border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
-                          isChecked ? 'opacity-40 line-through' : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
-                            <img
-                              alt={ing.name}
-                              className="w-full h-full object-cover"
-                              src={getIngredientThumbnail(ing.name, idx)}
-                              referrerPolicy="no-referrer"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
-                              }}
-                            />
-                          </div>
-
-                          <div>
-                            <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
-                          </div>
+              {/* Takaran view: name + amount, no price */}
+              <ul className="space-y-1">
+                {recipe.ingredients.map((ing, idx) => {
+                  const isChecked = checkedIngredients.includes(idx);
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => toggleIngredientCheck(idx)}
+                      className={`flex items-center justify-between py-2.5 px-2.5 rounded-xl border-b border-[rgba(45,75,55,0.05)] hover:bg-[#f9f9f7] cursor-pointer transition-colors ${
+                        isChecked ? 'opacity-40 line-through' : ''
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
+                          <img
+                            alt={ing.name}
+                            className="w-full h-full object-cover"
+                            src={getIngredientThumbnail(ing.name, idx)}
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = GLOBAL_FALLBACK_FOOD_IMAGE;
+                            }}
+                          />
                         </div>
 
-                        {ing.amount && (
-                          <span className="text-xs font-semibold text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
-                            {ing.amount}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                /* Daftar Belanja view: name + amount + price table */
-                <div>
-                  <table className="w-full text-xs sm:text-sm">
-                    <thead>
-                      <tr className="border-b border-[#e2e3e1]">
-                        <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Bahan</th>
-                        <th className="text-left font-bold text-[#424843] pb-1.5 pr-2">Jumlah</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recipe.ingredients.map((ing, idx) => (
-                        <tr key={idx} className="border-b border-[#f4f4f2] last:border-0">
-                          <td className="py-1.5 pr-2 text-[#1a1c1b] font-medium">{ing.name}</td>
-                          <td className="py-1.5 pr-2 text-[#727972]">{ing.amount || '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                        <div>
+                          <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
+                        </div>
+                      </div>
+
+                      {ing.amount && (
+                        <span className="text-xs font-semibold text-[#727972] whitespace-nowrap bg-[#f9f9f7] px-2 py-0.5 rounded-md">
+                          {ing.amount}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
             <div className="mt-4 pt-3 border-t border-[#e2e3e1] flex items-center justify-between text-xs text-[#424843]">
