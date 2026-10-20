@@ -1062,8 +1062,7 @@ Permintaan: "${userPrompt}"
 ### FORMAT WAJIB
 Balas LANGSUNG dengan SATU objek JSON — karakter pertama jawaban HARUS '{' dan terakhir '}'.
 DILARANG menulis prosa, heading markdown, tabel naratif, bagian "Konsep Produk"/"Analisis"/"Bahan" dalam bentuk teks, kalimat pembuka, atau penjelasan apa pun di luar objek JSON.
-Semua penjelasan (alasan pemilihan bahan, klaim gizi, cara menghitung harga) cukup diringkas ke dalam field "subtitle" di dalam JSON.
-
+Field "subtitle" berisi deskripsi singkat tentang masakan itu sendiri — rasa, tekstur, kenikmatan, dan cara disajikan. JANGAN tulis kandungan gizi, komposisi nutrisi, atau perhitungan harga di subtitle. Data gizi dan komposisi hanya masuk ke field "nutritionHighlight".
 ${PROMPT_RULES}`;
 
   const result = await generateWithRetry(prompt);
