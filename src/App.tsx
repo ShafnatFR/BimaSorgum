@@ -164,7 +164,7 @@ export default function App() {
     targetConsumers: ['anak_sekolah'],
     dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
-    customIngredients: ['Bawang Merah', 'Santan'],
+    customIngredients: ['Bawang Merah'],
     budgetPerPortion: 25000,
     prepTimeLimit: 'Maks 30 Menit',
   });
