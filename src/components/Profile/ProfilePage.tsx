@@ -69,8 +69,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showToast, setShowToast] = useState<string | null>(null);
-  // "See All" gallery mode: false = recent preview (first 4), true = full grid gallery
-  const [showAllSaved, setShowAllSaved] = useState(false);
   // Jumlah resep yang diposting user
   const [postedCount, setPostedCount] = useState(0);
   const [postedRecipes, setPostedRecipes] = useState<Recipe[]>([]);
@@ -376,18 +374,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <section className="space-y-3">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">
-              {showAllSaved ? 'Galeri Resep Tersimpan' : 'Recent Saved Recipes'}
+              Recent Saved Recipes
             </h2>
-            <div className="flex items-center gap-2">
-              {savedRecipes.length > 4 && (
-                <button
-                  onClick={() => setShowAllSaved((v) => !v)}
-                  className="text-xs font-bold text-[#163422] bg-[#163422]/10 hover:bg-[#163422]/20 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
-                >
-                  {showAllSaved ? 'Ringkas' : `See All (${savedRecipes.length})`}
-                </button>
-              )}
-            </div>
           </div>
           {savedRecipes.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
@@ -397,8 +385,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 3)).map((saved) => (
+            <>
+              <div className="grid grid-cols-3 gap-3">
+                {savedRecipes.slice(0, 3).map((saved) => (
                 <div
                   key={saved.id}
                   onClick={() => handleRecipeClick(saved.recipe)}
@@ -440,7 +429,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+              {savedRecipes.length > 3 && (
+                <button
+                  type="button"
+                  onClick={() => setOpenList('saved')}
+                  className="w-full py-2.5 rounded-xl border border-[#c2c8c0] text-xs font-bold text-[#163422] hover:bg-[#f4f4f2] transition-colors cursor-pointer"
+                >
+                  Show More ({savedRecipes.length - 3} lainnya)
+                </button>
+              )}
+            </>
           )}
         </section>
 
