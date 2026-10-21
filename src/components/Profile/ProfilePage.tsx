@@ -397,8 +397,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 4)).map((saved) => (
+            <div className="grid grid-cols-3 gap-3">
+              {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 3)).map((saved) => (
                 <div
                   key={saved.id}
                   onClick={() => handleRecipeClick(saved.recipe)}
