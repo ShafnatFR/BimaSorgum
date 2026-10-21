@@ -56,6 +56,10 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [servingsMultiplier, setServingsMultiplier] = useState<number>(1);
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
   const [favoriteState, setFavoriteState] = useState<boolean>(isSaved);
+  // Sinkron saat status simpanan dari DB selesai dimuat (mis. setelah refresh)
+  useEffect(() => {
+    setFavoriteState(isSaved);
+  }, [isSaved]);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [recipeImageUrl, setRecipeImageUrl] = useState<string>(recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE);
   const [ingredientImages, setIngredientImages] = useState<Record<number, string>>({});
@@ -139,8 +143,13 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   };
 
   const handleFavoriteClick = () => {
-    setFavoriteState(!favoriteState);
+    // Optimistis dulu, lalu selaraskan ulang dari DB (prop isSaved)
+    const next = !favoriteState;
+    setFavoriteState(next);
     onToggleSave(recipe);
+    // Jika DB menolak, kembalikan saat refetch selesai via sync isSaved di atas.
+    // Naikkan/turunkan badge count sementara agar terasa responsif.
+    setSaveCount((c) => Math.max(0, c + (next ? 1 : -1)));
   };
 
   const handleSpeakInstructions = () => {
