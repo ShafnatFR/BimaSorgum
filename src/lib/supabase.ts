@@ -697,6 +697,18 @@ export async function deleteOwnedRecipe(recipeId: string): Promise<boolean> {
   return true;
 }
 
+/** Count recipes created by current user (for profile badge). */
+export async function fetchUserRecipeCount(): Promise<number> {
+  const userId = await getUserIdAsync();
+  if (!userId) return 0;
+  const { count, error } = await supabase
+    .from('recipes')
+    .select('id', { count: 'exact', head: true })
+    .eq('created_by', userId);
+  if (error) return 0;
+  return count || 0;
+}
+
 /* ================================================================== *
  *  PROFILES (anonymous user info)
  * ================================================================== */

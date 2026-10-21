@@ -9,7 +9,8 @@ import {
   X, 
   Sparkles,
   Edit3,
-  User
+  User,
+  ChefHat
 } from 'lucide-react';
 import { Recipe, SavedRecipe } from '../../types';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
@@ -67,6 +68,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showToast, setShowToast] = useState<string | null>(null);
   // "See All" gallery mode: false = recent preview (first 4), true = full grid gallery
   const [showAllSaved, setShowAllSaved] = useState(false);
+  // Jumlah resep yang diposting user
+  const [postedCount, setPostedCount] = useState(0);
+  useEffect(() => {
+    import('../../lib/supabase').then((m) => {
+      m.fetchUserRecipeCount().then(setPostedCount);
+    });
+  }, []);
 
   useEffect(() => {
     setUserName(userNameProp);
@@ -208,12 +216,19 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </section>
 
         {/* Stats Section */}
-        <section className="grid grid-cols-2 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
+        <section className="grid grid-cols-3 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
           <div className="flex flex-col items-center p-2 text-center">
             <span className="text-2xl font-bold text-[#163422]">{savedRecipes.length}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Saved Recipes</span>
           </div>
-          <div className="flex flex-col items-center p-2 text-center border-l border-[#c2c8c0]/30">
+          <div className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30">
+            <span className="text-2xl font-bold text-[#163422] flex items-center gap-1">
+              <ChefHat className="w-5 h-5 text-[#7c5800]" />
+              {postedCount}
+            </span>
+            <span className="text-xs text-[#424843] mt-1 font-medium">Resep Diposting</span>
+          </div>
+          <div className="flex flex-col items-center p-2 text-center">
             <span className="text-2xl font-bold text-[#163422]">{dayStreak}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Day Streak</span>
           </div>
