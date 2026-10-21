@@ -11,7 +11,9 @@ import {
   Edit3,
   User,
   ChefHat,
-  Search
+  Search,
+  Heart,
+  MessageCircle
 } from 'lucide-react';
 import { Recipe, SavedRecipe } from '../../types';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
@@ -77,6 +79,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   // Jumlah resep yang diposting user
   const [postedCount, setPostedCount] = useState(0);
   const [postedRecipes, setPostedRecipes] = useState<Recipe[]>([]);
+  // Count komentar & save (like) per resep milik user
+  const [commentCountMap, setCommentCountMap] = useState<Record<string, number>>({});
+  const [saveCountMap, setSaveCountMap] = useState<Record<string, number>>({});
   // Halaman daftar penuh: null = profil, 'saved' | 'posted' = daftar
   const [openList, setOpenList] = useState<'saved' | 'posted' | null>(initialList);
   // Filter daftar: kata kunci + urutan
@@ -93,7 +98,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   useEffect(() => {
     import('../../lib/supabase').then((m) => {
       m.fetchUserRecipeCount().then(setPostedCount);
-      m.fetchUserRecipes().then(setPostedRecipes);
+      m.fetchUserRecipes().then(async (recipes) => {
+        setPostedRecipes(recipes);
+        const ids = recipes.map((r) => r.id).filter(Boolean);
+        if (ids.length === 0) return;
+        try {
+          const counts = await m.fetchRecipeEngagement(ids);
+          setCommentCountMap(counts.comments);
+          setSaveCountMap(counts.saves);
+        } catch {
+          // abaikan — kartu tetap tampil tanpa angka
+        }
+      });
     });
   }, []);
 
@@ -258,6 +274,20 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                     <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
                       {recipe.title}
                     </h3>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="inline-flex flex-col items-center leading-none">
+                        <Heart className="w-4 h-4 fill-red-600 text-red-600" />
+                        <span className="text-[10px] font-bold text-[#424843] mt-0.5">
+                          {saveCountMap[recipe.id] ?? 0}
+                        </span>
+                      </span>
+                      <span className="inline-flex flex-col items-center leading-none">
+                        <MessageCircle className="w-4 h-4 text-[#163422]" />
+                        <span className="text-[10px] font-bold text-[#424843] mt-0.5">
+                          {commentCountMap[recipe.id] ?? 0}
+                        </span>
+                      </span>
+                    </div>
                     <div className="flex gap-1.5 mt-1.5 flex-wrap">
                       {(recipe.tags || []).slice(0, 2).map((tag, i) => (
                         <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">

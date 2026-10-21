@@ -1019,6 +1019,32 @@ export async function toggleCommentLike(
 }
 
 /* ================================================================== *
+ *  RECIPE ENGAGEMENT — comment & save counts per recipe
+ *  (dipakai badge profil "Resep yang Diposting")
+ * ================================================================== */
+
+/** Count komentar + save per recipe_id dalam 2 query (RLS: komen publik, save milik sendiri). */
+export async function fetchRecipeEngagement(
+  recipeIds: string[],
+): Promise<{ comments: Record<string, number>; saves: Record<string, number> }> {
+  const comments: Record<string, number> = {};
+  const saves: Record<string, number> = {};
+  const ids = [...new Set(recipeIds.filter(Boolean))];
+  if (ids.length === 0) return { comments, saves };
+  const [cRes, sRes] = await Promise.all([
+    supabase.from('recipe_comments').select('recipe_id').in('recipe_id', ids),
+    supabase.from('saved_recipes').select('recipe_id').in('recipe_id', ids),
+  ]);
+  for (const row of (cRes.data as { recipe_id: string }[]) || []) {
+    comments[row.recipe_id] = (comments[row.recipe_id] || 0) + 1;
+  }
+  for (const row of (sRes.data as { recipe_id: string }[]) || []) {
+    saves[row.recipe_id] = (saves[row.recipe_id] || 0) + 1;
+  }
+  return { comments, saves };
+}
+
+/* ================================================================== *
  *  ADMIN — konfigurasi payload (admin_configs)
  * ================================================================== */
 
