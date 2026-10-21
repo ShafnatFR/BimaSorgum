@@ -30,11 +30,12 @@ import {
   MOST_LIKED_RECIPES,
   MostLikedRecipeItem 
 } from '../../data/exploreRecipesData';
-import { 
-  CardImageWithSkeleton, 
-  CarouselCardSkeleton, 
-  GridRecipeCardSkeleton 
+import {
+  CardImageWithSkeleton,
+  CarouselCardSkeleton,
+  GridRecipeCardSkeleton
 } from '../Common/CardSkeleton';
+import { useData } from '../../lib/dataContext';
 
 interface ExploreRecipesPageProps {
   onViewRecipe: (recipe: Recipe) => void;
@@ -67,6 +68,8 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
   const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Varian kartu tanpa gambar saat toggle admin off
+  const { imagesEnabled } = useData();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -426,6 +429,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                       >
                         {/* Media Card Top */}
                         <div>
+                          {imagesEnabled ? (
                           <div className="relative h-40 w-full overflow-hidden bg-[#e8eae6]">
                             <CardImageWithSkeleton
                               src={item.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
@@ -490,7 +494,60 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                               Rp {cost.toLocaleString('id-ID')}
                             </span>
                           </div>
-                        </div>
+                          </div>
+                          ) : (
+                          /* Varian tanpa gambar: header info ringkas */
+                          <div className="px-3.5 pt-3.5">
+                            <div className="flex items-center justify-between gap-2">
+                              <span
+                                className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs flex items-center gap-1 ${
+                                  item.rank === 1
+                                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
+                                    : item.rank === 2
+                                    ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white'
+                                    : item.rank === 3
+                                    ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-white'
+                                    : 'bg-[#163422]/90 text-[#fdc65c]'
+                                }`}
+                              >
+                                {item.rank === 1 ? '🏆 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `#${item.rank}`}
+                                <span className="font-bold">Favorit</span>
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleLike(item.recipe.id);
+                                }}
+                                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all active:scale-90 cursor-pointer ${
+                                  isLiked
+                                    ? 'bg-red-500 text-white shadow-xs'
+                                    : 'bg-[#f4f4f2] text-[#163422] hover:bg-[#e2e3e1]'
+                                }`}
+                                title="Sukai Resep Ini"
+                              >
+                                <Heart
+                                  className={`w-3.5 h-3.5 ${
+                                    isLiked ? 'fill-white text-white' : 'text-red-500 fill-red-500'
+                                  }`}
+                                />
+                                <span className="text-[11px] font-bold">
+                                  {currentLikes >= 1000
+                                    ? `${(currentLikes / 1000).toFixed(1)}k`
+                                    : currentLikes}
+                                </span>
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2 text-[11px] font-semibold text-[#424843]">
+                              <span className="flex items-center gap-1 bg-[#f4f4f2] px-2 py-0.5 rounded-lg">
+                                <Clock className="w-3 h-3 text-[#7c5800]" />
+                                {totalTime} Menit
+                              </span>
+                              <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-lg font-extrabold text-[11px]">
+                                Rp {cost.toLocaleString('id-ID')}
+                              </span>
+                            </div>
+                          </div>
+                          )}
 
                         {/* Content Info */}
                         <div className="p-3.5 space-y-2.5">
@@ -729,6 +786,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                 >
                   {/* Card Media Header */}
                   <div>
+                    {imagesEnabled ? (
                     <div className="relative h-32 xs:h-36 sm:h-48 md:h-52 w-full overflow-hidden bg-[#e8eae6]">
                       <CardImageWithSkeleton
                         src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
@@ -775,6 +833,42 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                         </span>
                       </div>
                     </div>
+                    ) : (
+                    /* Varian tanpa gambar: badge + info di atas konten */
+                    <div className="px-2.5 sm:px-4 pt-2.5 sm:pt-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="bg-[#163422]/90 text-[#fdc65c] text-[9px] sm:text-[10px] font-extrabold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full uppercase tracking-wider shadow-xs truncate max-w-[70%]">
+                          {recipe.dishCategory}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSaveRecipe(recipe);
+                          }}
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-transform active:scale-90 shrink-0 ${
+                            saved
+                              ? 'bg-[#163422] text-[#fdc65c]'
+                              : 'bg-[#f4f4f2] text-[#424843] hover:bg-[#e2e3e1]'
+                          }`}
+                          aria-label="Simpan Resep"
+                        >
+                          <Bookmark
+                            className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                            fill={saved ? '#fdc65c' : 'none'}
+                          />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-2 text-[10px] sm:text-[11px] font-semibold text-[#424843]">
+                        <span className="flex items-center gap-1 bg-[#f4f4f2] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg">
+                          <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#7c5800]" />
+                          {totalTime} Min
+                        </span>
+                        <span className="bg-[#fdc65c] text-[#745200] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg font-extrabold">
+                          Rp {cost >= 1000 ? `${(cost / 1000).toLocaleString('id-ID')}k` : cost.toLocaleString('id-ID')}
+                        </span>
+                      </div>
+                    </div>
+                    )}
 
                     {/* Card Content Body */}
                     <div className="p-2.5 sm:p-4 space-y-2 sm:space-y-3">
