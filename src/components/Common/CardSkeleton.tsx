@@ -235,13 +235,17 @@ export const HomeBannerSkeleton: React.FC = () => {
 /**
  * Placeholder Skeleton for an Individual Home Carousel Card (185px / 200px)
  */
-export const HomeCarouselCardSkeleton: React.FC = () => {
+export const HomeCarouselCardSkeleton: React.FC<{ withImage?: boolean }> = ({
+  withImage = true,
+}) => {
   return (
     <div className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden shrink-0 shadow-xs flex flex-col justify-between">
       {/* Thumbnail area (h-28) */}
+      {withImage && (
       <div className="relative h-28 bg-[#e8eae6] animate-shimmer">
         <div className="absolute bottom-1.5 right-1.5 w-10 h-3.5 bg-black/30 rounded" />
       </div>
+      )}
 
       {/* Content */}
       <div className="p-2.5 space-y-2 flex-grow flex flex-col justify-between">
@@ -266,10 +270,12 @@ export const HomeCarouselSectionSkeleton: React.FC<{
   titleWidth?: string;
   subtitleWidth?: string;
   cardCount?: number;
+  withImage?: boolean;
 }> = ({
   titleWidth = 'w-44',
   subtitleWidth = 'w-60',
   cardCount = 5,
+  withImage = true,
 }) => {
   return (
     <section className="space-y-3">
@@ -289,7 +295,7 @@ export const HomeCarouselSectionSkeleton: React.FC<{
       {/* Horizontal Carousel Row Skeleton */}
       <div className="flex overflow-x-hidden gap-3 pb-2 -mx-4 px-4 md:mx-0 md:px-0">
         {Array.from({ length: cardCount }).map((_, idx) => (
-          <HomeCarouselCardSkeleton key={idx} />
+          <HomeCarouselCardSkeleton key={idx} withImage={withImage} />
         ))}
       </div>
     </section>

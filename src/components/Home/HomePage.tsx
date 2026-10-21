@@ -23,8 +23,9 @@ import {
   CakeSlice
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { 
+import {
   CardImageWithSkeleton,
+  HomeCarouselSectionSkeleton,
 } from '../Common/CardSkeleton';
 
 interface HomePageProps {
@@ -212,7 +213,17 @@ export const HomePage: React.FC<HomePageProps> = ({
     carouselRef: React.RefObject<HTMLDivElement | null>;
     recipes: Recipe[];
     emptyMessage?: string;
-  }> = ({ title, subtitle, carouselRef, recipes: items, emptyMessage }) => (
+    skeletonTitleWidth?: string;
+  }> = ({ title, subtitle, carouselRef, recipes: items, emptyMessage, skeletonTitleWidth }) => {
+    if (isLoading) {
+      return (
+        <HomeCarouselSectionSkeleton
+          titleWidth={skeletonTitleWidth}
+          withImage={imagesEnabled}
+        />
+      );
+    }
+    return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
@@ -251,24 +262,11 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </div>
 
-      <div 
+      <div
         ref={carouselRef}
         className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth snap-x snap-mandatory"
       >
-        {isLoading ? (
-          // Skeleton placeholders while loading
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden shrink-0 snap-start">
-              {imagesEnabled && (
-              <div className="h-28 bg-[#e8eae6] animate-pulse" />
-              )}
-              <div className="p-2.5 space-y-2">
-                <div className="h-3 bg-[#e8eae6] rounded animate-pulse w-3/4" />
-                <div className="h-2.5 bg-[#e8eae6] rounded animate-pulse w-1/2" />
-              </div>
-            </div>
-          ))
-        ) : items.length > 0 ? (
+        {items.length > 0 ? (
           items.map((r, i) => renderRecipeCard(r, i))
         ) : (
           <div className="text-sm text-[#727972] py-6 px-4">
@@ -277,7 +275,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         )}
       </div>
     </section>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#F9F9F7] text-[#1A1C1B] font-['Manrope',sans-serif] pt-[72px] pb-[100px]">
