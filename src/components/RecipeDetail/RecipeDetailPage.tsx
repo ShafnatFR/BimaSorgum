@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Recipe } from '../../types';
+import { useData } from '../../lib/dataContext';
 import { FALLBACK_FOOD_IMAGE } from '../../data/homeData';
 import { getIngredientThumbnail, getRecipeImage, GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 import { getRecipeSlug } from '../../utils/slugify';
@@ -57,6 +58,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [recipeImageUrl, setRecipeImageUrl] = useState<string>(recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE);
   const [ingredientImages, setIngredientImages] = useState<Record<number, string>>({});
+  const { imagesEnabled } = useData();
 
   useEffect(() => {
     let cancelled = false;
@@ -211,6 +213,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
 
         {/* Recipe Hero Section */}
         <section className="space-y-4">
+          {imagesEnabled ? (
           <div className="relative w-full h-64 md:h-96 rounded-2xl overflow-hidden shadow-[0px_4px_12px_rgba(45,75,55,0.08)] border border-[rgba(45,75,55,0.1)]">
             <img
               data-food
@@ -239,6 +242,23 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
               </div>
             </div>
           </div>
+          ) : (
+          /* Varian tanpa gambar: badge nutrisi inline */
+          <div className="flex flex-wrap gap-2">
+            <div className="bg-[#2d4b37] text-[#99baa1] px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-xs">
+              <span className="material-symbols-outlined text-[14px]">eco</span>
+              <span>High Fiber</span>
+            </div>
+            <div className="bg-[#fdc65c] text-[#745200] px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-xs">
+              <span className="material-symbols-outlined text-[14px]">bolt</span>
+              <span>Sustained Energy</span>
+            </div>
+            <div className="bg-[#163422] text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#fdc65c]" />
+              <span>Bebas Gluten</span>
+            </div>
+          </div>
+          )}
 
           <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 pt-1">
             <div className="max-w-2xl">
@@ -499,6 +519,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3">
+                        {imagesEnabled && (
                         <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
                           <img
                             data-food
@@ -511,6 +532,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                             }}
                           />
                         </div>
+                        )}
 
                         <div>
                           <p className="text-sm font-semibold text-[#1a1c1b]">{ing.name}</p>
