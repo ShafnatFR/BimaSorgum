@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
+import { useData } from '../../lib/dataContext';
 
 interface RecipeCardViewProps {
   recipe: Recipe;
@@ -49,6 +50,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   isPublishing = false,
   inputIngredientNames = [],
 }) => {
+  const { imagesEnabled } = useData();
   const [portionMultiplier, setPortionMultiplier] = useState<number>(1);
   const [copied, setCopied] = useState<boolean>(false);
   const [showFullSteps, setShowFullSteps] = useState<boolean>(true);
@@ -133,6 +135,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
   return (
     <div className="text-[#1A1C1B] max-w-[95%] md:max-w-[90%] space-y-4 font-['Manrope',sans-serif]">
       {/* Recipe Preview Banner */}
+      {imagesEnabled ? (
       <div className="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden shadow-xs border border-[#e2e3e1] bg-[#e8eae6]">
         <CardImageWithSkeleton
           src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
@@ -146,6 +149,12 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
           <span>{recipe.dishCategory || 'Menu Sehat'}</span>
         </div>
       </div>
+      ) : (
+      <div className="inline-flex items-center gap-1 bg-[#163422] text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
+        <Sparkles className="w-3 h-3 text-[#fdc65c]" />
+        <span>{recipe.dishCategory || 'Menu Sehat'}</span>
+      </div>
+      )}
 
       {/* Main Title & Subtitle */}
       <div>

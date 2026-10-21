@@ -421,6 +421,7 @@ export const ProfilePageSkeleton: React.FC = () => {
 export const ChatRecipeCardSkeleton: React.FC<{ statusText?: string }> = ({
   statusText = 'AI Chef sedang meracik resep bernutrisi sorgum...',
 }) => {
+  const { imagesEnabled } = useData();
   return (
     <div className="max-w-[95%] md:max-w-[90%] bg-white rounded-3xl p-4 sm:p-5 border border-[#163422]/20 shadow-lg space-y-4 font-['Manrope',sans-serif]">
       {/* Pulsing Status Header */}
@@ -432,9 +433,11 @@ export const ChatRecipeCardSkeleton: React.FC<{ statusText?: string }> = ({
       </div>
 
       {/* Shimmer Hero */}
+      {imagesEnabled && (
       <div className="relative h-44 sm:h-52 w-full rounded-2xl bg-[#e8eae6] animate-shimmer flex items-center justify-center">
         <div className="text-2xl animate-bounce">🌾</div>
       </div>
+      )}
 
       {/* Title lines */}
       <div className="space-y-2">
