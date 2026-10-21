@@ -54,6 +54,7 @@ export const VideoTutorialModal: React.FC<VideoTutorialModalProps> = ({
         {/* Header & Video Player simulation */}
         <div className="relative h-56 bg-black flex items-center justify-center overflow-hidden">
           <img
+            data-food
             src={tutorial.imageUrl}
             alt={tutorial.title}
             referrerPolicy="no-referrer"

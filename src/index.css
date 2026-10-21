@@ -53,12 +53,15 @@
   background: #727972;
 }
 
-[data-images-disabled="true"] img {
+/* Mode tanpa gambar (toggle admin): hanya gambar MAKANAN yang disembunyikan
+   (ditandai data-food). Logo, avatar profil, dan avatar komentar tetap tampil.
+   Bar visual non-gambar (mis. infografis) diberi data-keep agar tidak ikut collapse. */
+[data-images-disabled="true"] img[data-food] {
   display: none !important;
 }
 /* Collapse wadah gambar kartu yang kosong (CardImageWithSkeleton return null
    saat gambar dimatikan) agar tidak menyisakan kotak blank. */
-[data-images-disabled="true"] div:empty {
+[data-images-disabled="true"] div:empty:not([data-keep]) {
   display: none !important;
 }
 input[type="range"] {

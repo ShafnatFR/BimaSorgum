@@ -213,6 +213,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
         <section className="space-y-4">
           <div className="relative w-full h-64 md:h-96 rounded-2xl overflow-hidden shadow-[0px_4px_12px_rgba(45,75,55,0.08)] border border-[rgba(45,75,55,0.1)]">
             <img
+              data-food
               alt={recipe.title}
               className="w-full h-full object-cover"
               src={recipeImageUrl}
@@ -500,6 +501,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 bg-[#e8e8e6] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#e2e3e1]">
                           <img
+                            data-food
                             alt={ing.name}
                             className="w-full h-full object-cover"
                             src={ingredientImages[idx] || GLOBAL_FALLBACK_FOOD_IMAGE}

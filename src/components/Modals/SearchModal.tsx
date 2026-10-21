@@ -108,6 +108,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                 >
                   <div className="w-12 h-12 rounded-lg bg-[#f4f4f2] overflow-hidden flex-shrink-0">
                     <img
+                      data-food
                       src={rec.imageUrl}
                       alt={rec.title}
                       referrerPolicy="no-referrer"

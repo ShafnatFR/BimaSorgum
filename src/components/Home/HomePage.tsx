@@ -574,7 +574,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div className="w-full bg-[#f4be55]/40 rounded-full h-3 overflow-hidden">
                   <div 
-                    className="bg-[#163422] h-full rounded-full transition-all duration-1000"
+                    data-keep className="bg-[#163422] h-full rounded-full transition-all duration-1000"
                     style={{ width: '88%' }}
                   />
                 </div>
@@ -588,7 +588,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div className="w-full bg-[#f4be55]/40 rounded-full h-3 overflow-hidden">
                   <div 
-                    className="bg-[#163422] h-full rounded-full transition-all duration-1000"
+                    data-keep className="bg-[#163422] h-full rounded-full transition-all duration-1000"
                     style={{ width: '78%' }}
                   />
                 </div>
@@ -602,7 +602,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div className="w-full bg-[#f4be55]/40 rounded-full h-3 overflow-hidden">
                   <div 
-                    className="bg-[#163422] h-full rounded-full transition-all duration-1000"
+                    data-keep className="bg-[#163422] h-full rounded-full transition-all duration-1000"
                     style={{ width: '92%' }}
                   />
                 </div>

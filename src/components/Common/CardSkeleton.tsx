@@ -43,6 +43,7 @@ export const CardImageWithSkeleton: React.FC<CardImageWithSkeletonProps> = ({
 
       {/* Actual Image with smooth fade-in */}
       <img
+        data-food
         src={hasError ? fallbackSrc : src || fallbackSrc}
         alt={alt}
         referrerPolicy="no-referrer"

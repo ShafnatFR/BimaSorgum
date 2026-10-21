@@ -189,6 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className="bg-[#e2e3e1] rounded-xl aspect-square overflow-hidden group cursor-pointer relative shadow-xs hover:shadow-md transition-all border border-[#e2e3e1]"
                 >
                   <img
+                    data-food
                     alt={saved.recipe.title}
                     src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
                     referrerPolicy="no-referrer"
