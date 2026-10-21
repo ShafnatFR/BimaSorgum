@@ -16,7 +16,11 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
-  Clock
+  Clock,
+  Coffee,
+  UtensilsCrossed,
+  Cookie,
+  CakeSlice
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { 
@@ -387,7 +391,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             Browse by Category
           </h3>
           <div className={`grid gap-2 ${imagesEnabled ? 'grid-cols-2 sm:grid-cols-4 gap-3' : 'grid-cols-4'}`}>
-            {HOME_CATEGORIES.map((cat) => (
+            {HOME_CATEGORIES.map((cat) => {
+              const Icon = cat.id === 'cat-breakfast' ? Coffee
+                : cat.id === 'cat-main' ? UtensilsCrossed
+                : cat.id === 'cat-snacks' ? Cookie
+                : CakeSlice;
+              const count = recipes.filter((r) => categoryLabelToKey(r.dishCategory) === cat.categoryKey).length;
+              return (
               <motion.div
                 key={cat.id}
                 whileTap={{ scale: 0.95 }}
@@ -407,26 +417,29 @@ export const HomePage: React.FC<HomePageProps> = ({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 group-hover:from-black/90 transition-colors pointer-events-none" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center pointer-events-none">
+                  <Icon className="w-6 h-6 text-white mb-1 drop-shadow-sm" />
                   <span className="text-base sm:text-lg text-white font-extrabold tracking-wide drop-shadow-sm">
-                    {cat.name}
+                    {cat.nameId}
                   </span>
                   <span className="text-[11px] text-white/80 font-medium mt-0.5">
-                    {cat.nameId}
+                    {count} resep
                   </span>
                 </div>
                 </>
                 ) : (
                 <div className="flex flex-col items-center justify-center text-center">
+                  <Icon className="w-6 h-6 text-[#fdc65c] mb-1" />
                   <span className="text-sm text-white font-extrabold tracking-wide leading-tight">
                     {cat.nameId}
                   </span>
                   <span className="text-[11px] text-white/80 font-medium mt-0.5">
-                    {recipes.filter((r) => categoryLabelToKey(r.dishCategory) === cat.categoryKey).length} resep
+                    {count} resep
                   </span>
                 </div>
                 )}
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
