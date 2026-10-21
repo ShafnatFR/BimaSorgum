@@ -56,6 +56,11 @@
 [data-images-disabled="true"] img {
   display: none !important;
 }
+/* Collapse wadah gambar kartu yang kosong (CardImageWithSkeleton return null
+   saat gambar dimatikan) agar tidak menyisakan kotak blank. */
+[data-images-disabled="true"] div:empty {
+  display: none !important;
+}
 input[type="range"] {
   accent-color: #f4be55;
 }

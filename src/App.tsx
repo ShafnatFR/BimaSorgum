@@ -86,6 +86,7 @@ export default function App() {
     getRecipeBySlug: dbGetRecipeBySlug,
     getRecipeById: dbGetRecipeById,
     recipesByCategory: dbRecipesByCategory,
+    setImagesEnabled: setImagesEnabledCtx,
   } = useData();
 
   // Google Auth state
@@ -127,6 +128,7 @@ export default function App() {
       };
       setMainFeatureEnabled(toBool(mainFeature, true));
       setImagesEnabled(toBool(images, true));
+      setImagesEnabledCtx(toBool(images, true));
     };
     loadAdminConfig();
   }, [ready, getAdminConfigValue]);

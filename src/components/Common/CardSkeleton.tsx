@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useData } from '../../lib/dataContext';
 
 interface CardImageWithSkeletonProps {
   src?: string;
@@ -21,6 +22,10 @@ export const CardImageWithSkeleton: React.FC<CardImageWithSkeletonProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  // Toggle admin global: saat gambar dimatikan, jangan render apa pun
+  // agar kartu tidak menyisakan kotak putih/blank.
+  const { imagesEnabled } = useData();
+  if (!imagesEnabled) return null;
 
   return (
     <div className={containerClassName}>

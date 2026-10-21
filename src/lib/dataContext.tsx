@@ -38,6 +38,9 @@ interface DataContextValue {
   removeGeneratedRecipe: (recipeId: string) => Promise<boolean>;
   refetchSaved: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Global image toggle from admin_configs (false = hide all food images). */
+  imagesEnabled: boolean;
+  setImagesEnabled: (v: boolean) => void;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -47,6 +50,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [imagesEnabled, setImagesEnabled] = useState(true);
 
   const loadCatalog = useCallback(async () => {
     const data = await fetchRecipes();
@@ -183,6 +187,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       removeGeneratedRecipe,
       refetchSaved,
       refresh,
+      imagesEnabled,
+      setImagesEnabled,
     }),
     [
       ready,
@@ -199,7 +205,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       removeGeneratedRecipe,
       refetchSaved,
       refresh,
-    ]
+      imagesEnabled,
+      setImagesEnabled,
+    ],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
