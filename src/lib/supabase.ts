@@ -709,6 +709,28 @@ export async function fetchUserRecipeCount(): Promise<number> {
   return count || 0;
 }
 
+/** Fetch full recipes created by current user (for profile "posted" list). */
+export async function fetchUserRecipes(): Promise<Recipe[]> {
+  const userId = await getUserIdAsync();
+  if (!userId) return [];
+  const { data: rows, error } = await supabase
+    .from('recipes')
+    .select('*')
+    .eq('created_by', userId)
+    .order('created_at', { ascending: false });
+  if (error || !rows) return [];
+  const recipes = rows as DbRecipeRow[];
+  const recipeIds = recipes.map((r) => r.id);
+  if (recipeIds.length === 0) return [];
+  const [ing, st] = await Promise.all([
+    supabase.from('recipe_ingredients').select('*').in('recipe_id', recipeIds),
+    supabase.from('recipe_steps').select('*').in('recipe_id', recipeIds),
+  ]);
+  const ingBy = groupBy((ing.data as DbIngredientRow[]) || [], 'recipe_id');
+  const stBy = groupBy((st.data as DbStepRow[]) || [], 'recipe_id');
+  return recipes.map((r) => mapRecipe(r, ingBy.get(r.id) || [], stBy.get(r.id) || []));
+}
+
 /* ================================================================== *
  *  PROFILES (anonymous user info)
  * ================================================================== */

@@ -70,9 +70,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [showAllSaved, setShowAllSaved] = useState(false);
   // Jumlah resep yang diposting user
   const [postedCount, setPostedCount] = useState(0);
+  const [postedRecipes, setPostedRecipes] = useState<Recipe[]>([]);
+  // Tab daftar: 'saved' | 'posted'
+  const [listTab, setListTab] = useState<'saved' | 'posted'>('saved');
   useEffect(() => {
     import('../../lib/supabase').then((m) => {
       m.fetchUserRecipeCount().then(setPostedCount);
+      m.fetchUserRecipes().then(setPostedRecipes);
     });
   }, []);
 
@@ -98,6 +102,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
   const handleRecipeClick = (recipe: Recipe) => {
     onViewRecipe(recipe);
+  };
+
+  const listSectionRef = React.useRef<HTMLElement>(null);
+  const scrollToList = () => {
+    listSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -217,38 +226,54 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
 
         {/* Stats Section */}
         <section className="grid grid-cols-3 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
-          <div className="flex flex-col items-center p-2 text-center">
+          <button
+            type="button"
+            onClick={() => { setListTab('saved'); scrollToList(); }}
+            className="flex flex-col items-center p-2 text-center cursor-pointer hover:bg-[#f4f4f2] rounded-xl transition-colors"
+            aria-label="Lihat resep tersimpan"
+          >
             <span className="text-2xl font-bold text-[#163422]">{savedRecipes.length}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Saved Recipes</span>
-          </div>
-          <div className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30">
+          </button>
+          <button
+            type="button"
+            onClick={() => { setListTab('posted'); scrollToList(); }}
+            className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30 cursor-pointer hover:bg-[#f4f4f2] rounded-xl transition-colors"
+            aria-label="Lihat resep yang diposting"
+          >
             <span className="text-2xl font-bold text-[#163422] flex items-center gap-1">
               <ChefHat className="w-5 h-5 text-[#7c5800]" />
               {postedCount}
             </span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Resep Diposting</span>
-          </div>
+          </button>
           <div className="flex flex-col items-center p-2 text-center">
             <span className="text-2xl font-bold text-[#163422]">{dayStreak}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Day Streak</span>
           </div>
         </section>
 
-        {/* Saved Recipes */}
-        <section className="space-y-3">
+        {/* Saved / Posted Recipes */}
+        <section ref={listSectionRef} className="space-y-3 scroll-mt-20">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">
-                {showAllSaved ? 'Galeri Resep Tersimpan' : 'Recent Saved Recipes'}
-              </h2>
-              {showAllSaved && (
-                <p className="text-[11px] text-[#727972] mt-0.5">
-                  Semua resep favoritmu dalam satu tampilan grid.
-                </p>
-              )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setListTab('saved')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer ${listTab === 'saved' ? 'bg-[#163422] text-white' : 'bg-[#163422]/10 text-[#163422] hover:bg-[#163422]/20'}`}
+              >
+                Tersimpan ({savedRecipes.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setListTab('posted')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer ${listTab === 'posted' ? 'bg-[#163422] text-white' : 'bg-[#163422]/10 text-[#163422] hover:bg-[#163422]/20'}`}
+              >
+                Diposting ({postedCount})
+              </button>
             </div>
             <div className="flex items-center gap-2">
-              {savedRecipes.length > 4 && (
+              {listTab === 'saved' && savedRecipes.length > 4 && (
                 <button
                   onClick={() => setShowAllSaved((v) => !v)}
                   className="text-xs font-bold text-[#163422] bg-[#163422]/10 hover:bg-[#163422]/20 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
@@ -256,54 +281,97 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                   {showAllSaved ? 'Ringkas' : `See All (${savedRecipes.length})`}
                 </button>
               )}
-              {!showAllSaved && savedRecipes.length > 0 && (
-                <span className="text-xs font-bold text-[#163422]">{savedRecipes.length} tersimpan</span>
-              )}
             </div>
           </div>
-          {savedRecipes.length === 0 ? (
+          <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">
+            {listTab === 'saved'
+              ? showAllSaved ? 'Galeri Resep Tersimpan' : 'Recent Saved Recipes'
+              : 'Resep yang Diposting'}
+          </h2>
+          {listTab === 'saved' ? (
+            savedRecipes.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
+                <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
+                <p className="text-xs text-[#727972]">
+                  Belum ada resep tersimpan. Ketuk "Simpan Resep" pada kartu resep untuk menyimpan favorit Anda.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 4)).map((saved) => (
+                  <div
+                    key={saved.id}
+                    onClick={() => handleRecipeClick(saved.recipe)}
+                    className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
+                  >
+                    <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
+                      <CardImageWithSkeleton
+                        alt={saved.recipe.title}
+                        imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        containerClassName="w-full h-full relative"
+                        src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+                        fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
+                      />
+                      {onRemoveSaved && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveSaved(saved.recipe);
+                          }}
+                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-[#ba1a1a] hover:bg-white"
+                          title="Hapus dari tersimpan"
+                          aria-label="Hapus dari tersimpan"
+                        >
+                          <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                        </button>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
+                        {saved.recipe.title}
+                      </h3>
+                      <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                        {(saved.recipe.tags || []).slice(0, 2).map((tag, i) => (
+                          <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : postedRecipes.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
-              <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
+              <ChefHat className="w-8 h-8 text-[#c2c8c0] mx-auto" />
               <p className="text-xs text-[#727972]">
-                Belum ada resep tersimpan. Ketuk "Simpan Resep" pada kartu resep untuk menyimpan favorit Anda.
+                Belum ada resep yang diposting. Buat resep lewat generator AI untuk mulai berbagi.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
-              {(showAllSaved ? savedRecipes : savedRecipes.slice(0, 4)).map((saved) => (
+              {postedRecipes.map((recipe) => (
                 <div
-                  key={saved.id}
-                  onClick={() => handleRecipeClick(saved.recipe)}
+                  key={recipe.id}
+                  onClick={() => handleRecipeClick(recipe)}
                   className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
                 >
                   <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
                     <CardImageWithSkeleton
-                      alt={saved.recipe.title}
+                      alt={recipe.title}
                       imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       containerClassName="w-full h-full relative"
-                      src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+                      src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
                       fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
                     />
-                    {onRemoveSaved && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveSaved(saved.recipe);
-                        }}
-                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-[#ba1a1a] hover:bg-white"
-                        title="Hapus dari tersimpan"
-                        aria-label="Hapus dari tersimpan"
-                      >
-                        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                      </button>
-                    )}
                   </div>
                   <div className="p-3">
                     <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                      {saved.recipe.title}
+                      {recipe.title}
                     </h3>
                     <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                      {(saved.recipe.tags || []).slice(0, 2).map((tag, i) => (
+                      {(recipe.tags || []).slice(0, 2).map((tag, i) => (
                         <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
                           {tag}
                         </span>
