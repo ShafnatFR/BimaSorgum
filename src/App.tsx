@@ -97,12 +97,12 @@ export default function App() {
     signOut: googleSignOut,
   } = useAuth();
 
-  // Dynamic user stats (Sorghum Impact & Day Streak)
-  const [userStats, setUserStats] = useState({ sorghumImpact: 0, dayStreak: 0 });
+  // Dynamic user stats (Day Streak)
+  const [userStats, setUserStats] = useState({ dayStreak: 0 });
   useEffect(() => {
     if (!ready) return;
     import('./lib/supabase').then((m) => {
-      m.fetchUserStats().then(setUserStats);
+      m.fetchUserStats().then((s) => setUserStats({ dayStreak: s.dayStreak }));
     });
   }, [isGoogleUser, ready]); // refetch when auth state or data ready changes
 
@@ -1143,7 +1143,6 @@ export default function App() {
               googleAvatarUrl={googleAvatarUrl}
               onSignInWithGoogle={signInWithGoogle}
               onGoogleSignOut={googleSignOut}
-              sorghumImpact={userStats.sorghumImpact}
               dayStreak={userStats.dayStreak}
             />
           )}

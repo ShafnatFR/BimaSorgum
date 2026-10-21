@@ -32,7 +32,6 @@ interface ProfilePageProps {
   onSignInWithGoogle?: () => Promise<void>;
   onGoogleSignOut?: () => Promise<void>;
   // Dynamic stats
-  sorghumImpact?: number;
   dayStreak?: number;
 }
 
@@ -50,17 +49,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   googleAvatarUrl,
   onSignInWithGoogle,
   onGoogleSignOut,
-  sorghumImpact = 0,
   dayStreak = 0,
 }) => {
   const [googleSigningIn, setGoogleSigningIn] = useState(false);
-
-  /** Format number: 1200 → 1.2k, 1500000 → 1.5M */
-  const formatImpact = (n: number): string => {
-    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-    if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'k';
-    return String(n);
-  };
 
   // State for interactive features
   const [userName, setUserName] = useState(userNameProp);
@@ -217,21 +208,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         </section>
 
         {/* Stats Section */}
-        <section className="grid grid-cols-3 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
+        <section className="grid grid-cols-2 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
           <div className="flex flex-col items-center p-2 text-center">
             <span className="text-2xl font-bold text-[#163422]">{savedRecipes.length}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Saved Recipes</span>
           </div>
-          <div className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30">
-            <span className="text-2xl font-bold text-[#7c5800] flex items-center gap-1">
-              <span className="material-symbols-outlined text-[22px] text-[#fdc65c]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                eco
-              </span>
-              {formatImpact(sorghumImpact)}
-            </span>
-            <span className="text-xs text-[#424843] mt-1 font-medium">Sorghum Impact</span>
-          </div>
-          <div className="flex flex-col items-center p-2 text-center">
+          <div className="flex flex-col items-center p-2 text-center border-l border-[#c2c8c0]/30">
             <span className="text-2xl font-bold text-[#163422]">{dayStreak}</span>
             <span className="text-xs text-[#424843] mt-1 font-medium">Day Streak</span>
           </div>
