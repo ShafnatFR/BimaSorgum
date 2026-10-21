@@ -386,11 +386,35 @@ export default function App() {
 
   // Recipe View Navigation
   const handleViewRecipe = (recipe: Recipe) => {
+    // Ingat tab asal agar tombol back kembali ke halaman yang benar,
+    // termasuk setelah hard refresh (sessionStorage bertahan saat reload).
+    try {
+      sessionStorage.setItem('recipeReturnTab', currentTab);
+    } catch {
+      /* abaikan */
+    }
     setSelectedRecipeDetail(recipe);
     setCookModeRecipe(null);
     setSelectedVideoTutorial(null);
     setIsSearchOpen(false);
     navigateToSlug(RouteSlugs.recipe(recipe));
+  };
+
+  /** Kembali dari detail resep ke tab asal (bukan selalu home). */
+  const handleBackFromRecipe = () => {
+    let tab: AppTab = currentTab;
+    try {
+      const saved = sessionStorage.getItem('recipeReturnTab');
+      if (saved === 'home' || saved === 'generate' || saved === 'explore' || saved === 'profile') {
+        tab = saved;
+      }
+    } catch {
+      /* abaikan */
+    }
+    setSelectedRecipeDetail(null);
+    // Jangan timpa tab jika user sudah pindah tab lain saat detail terbuka
+    if (tab !== currentTab) setCurrentTab(tab);
+    navigateToSlug(RouteSlugs[tab] ? RouteSlugs[tab]() : '/home');
   };
 
   // Cook Mode Navigation
@@ -1094,10 +1118,7 @@ export default function App() {
         <RecipeDetailPage
           recipe={selectedRecipeDetail}
           isSaved={isRecipeSaved(selectedRecipeDetail.id, selectedRecipeDetail.title)}
-          onBack={() => {
-            setSelectedRecipeDetail(null);
-            navigateToSlug(RouteSlugs[currentTab] ? RouteSlugs[currentTab]() : '/home');
-          }}
+          onBack={handleBackFromRecipe}
           onToggleSave={handleToggleSaveRecipe}
           onOpenCookMode={handleOpenCookMode}
           onOpenProfile={() => {

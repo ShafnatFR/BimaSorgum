@@ -7,7 +7,6 @@ import {
   Sparkles, 
   Clock, 
   DollarSign, 
-  Bookmark, 
   ChevronRight, 
   ChevronLeft,
   X, 
@@ -815,7 +814,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                           }`}
                           aria-label="Simpan Resep"
                         >
-                          <Bookmark
+                          <Heart
                             className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                             fill={saved ? '#fdc65c' : 'none'}
                           />
@@ -852,7 +851,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                           }`}
                           aria-label="Simpan Resep"
                         >
-                          <Bookmark
+                          <Heart
                             className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                             fill={saved ? '#fdc65c' : 'none'}
                           />
