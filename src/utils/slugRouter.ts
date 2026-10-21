@@ -123,10 +123,12 @@ export function parseRoute(path: string): ParsedRoute {
     };
   }
 
-  // 7. Profile (/profile)
+  // 7. Profile (/profile, /profile/saved, /profile/posted)
   if (first === 'profile') {
+    const list = second === 'saved' || second === 'posted' ? second : undefined;
     return {
       routeType: 'profile',
+      slug: list,
       tab: 'profile',
     };
   }
@@ -190,6 +192,7 @@ export const RouteSlugs = {
   generate: () => '/generate',
   wizard: (step = 1) => `/wizard/step-${step}`,
   profile: () => '/profile',
+  profileList: (list: 'saved' | 'posted') => `/profile/${list}`,
   recipe: (recipe: Recipe) => `/recipe/${getRecipeSlug(recipe)}`,
   recipeSlug: (slug: string) => `/recipe/${slug}`,
   cook: (recipe: Recipe) => `/cook/${getRecipeSlug(recipe)}`,

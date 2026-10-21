@@ -144,6 +144,7 @@ export default function App() {
   const [mainFeatureEnabled, setMainFeatureEnabled] = useState<boolean>(true);
   const [imagesEnabled, setImagesEnabled] = useState<boolean>(true);
   const [adminSection, setAdminSection] = useState<string>('dashboard');
+  const [profileList, setProfileList] = useState<'saved' | 'posted' | null>(null);
 
   const { role: authRole, isAdmin: isAdminUser } = useAuth();
 
@@ -322,6 +323,7 @@ export default function App() {
         }
       } else if (parsed.routeType === 'profile') {
         setCurrentTab('profile');
+        setProfileList(parsed.slug === 'saved' || parsed.slug === 'posted' ? parsed.slug : null);
       } else {
         setCurrentTab('home');
       }
@@ -1132,6 +1134,11 @@ export default function App() {
               onViewRecipe={handleViewRecipe}
               onExploreRecipes={() => handleSelectTab('explore')}
               onGenerateRecipe={() => handleSelectTab('generate')}
+              initialList={profileList}
+              onListChange={(list) => {
+                setProfileList(list);
+                navigateToSlug(list ? RouteSlugs.profileList(list) : RouteSlugs.profile());
+              }}
               savedRecipes={savedRecipes}
               onRemoveSaved={(recipe) => {
                 toggleSave(recipe).then(() => refetchSaved());

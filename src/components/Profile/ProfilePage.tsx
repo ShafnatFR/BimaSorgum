@@ -10,7 +10,8 @@ import {
   Sparkles,
   Edit3,
   User,
-  ChefHat
+  ChefHat,
+  Search
 } from 'lucide-react';
 import { Recipe, SavedRecipe } from '../../types';
 import { CardImageWithSkeleton } from '../Common/CardSkeleton';
@@ -22,6 +23,8 @@ interface ProfilePageProps {
   onNavigateToEducation?: () => void;
   onExploreRecipes?: () => void;
   onGenerateRecipe?: () => void;
+  initialList?: 'saved' | 'posted' | null;
+  onListChange?: (list: 'saved' | 'posted' | null) => void;
   savedRecipes?: SavedRecipe[]; // from Supabase (App data layer)
   userName?: string;
   userRole?: string;
@@ -43,6 +46,8 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   onViewRecipe,
   onExploreRecipes,
   onGenerateRecipe,
+  initialList = null,
+  onListChange,
   savedRecipes = [],
   userName: userNameProp = 'Guest',
   userRole: userRoleProp = '',
@@ -73,7 +78,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [postedCount, setPostedCount] = useState(0);
   const [postedRecipes, setPostedRecipes] = useState<Recipe[]>([]);
   // Halaman daftar penuh: null = profil, 'saved' | 'posted' = daftar
-  const [openList, setOpenList] = useState<'saved' | 'posted' | null>(null);
+  const [openList, setOpenList] = useState<'saved' | 'posted' | null>(initialList);
+  // Filter daftar: kata kunci + urutan
+  const [listSearch, setListSearch] = useState('');
+  const [listSort, setListSort] = useState<'newest' | 'az'>('newest');
+  useEffect(() => {
+    setOpenList(initialList);
+    setListSearch('');
+  }, [initialList]);
+  const goList = (list: 'saved' | 'posted' | null) => {
+    if (onListChange) onListChange(list);
+    else setOpenList(list);
+  };
   useEffect(() => {
     import('../../lib/supabase').then((m) => {
       m.fetchUserRecipeCount().then(setPostedCount);
@@ -112,12 +128,23 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     const emptyText = isSaved
       ? 'Belum ada resep tersimpan. Ketuk "Simpan Resep" pada kartu resep untuk menyimpan favorit Anda.'
       : 'Belum ada resep yang diposting. Buat resep lewat generator AI untuk mulai berbagi.';
+    const q = listSearch.trim().toLowerCase();
+    const matchQ = (t: string, tags: string[] = []) =>
+      !q || t.toLowerCase().includes(q) || tags.some((tg) => tg.toLowerCase().includes(q));
+    const sortFn = (a: string, b: string) =>
+      listSort === 'az' ? a.localeCompare(b, 'id') : 0;
+    const shownSaved = savedRecipes
+      .filter((s) => matchQ(s.recipe.title, s.recipe.tags))
+      .sort((a, b) => sortFn(a.recipe.title, b.recipe.title));
+    const shownPosted = postedRecipes
+      .filter((r) => matchQ(r.title, r.tags))
+      .sort((a, b) => sortFn(a.title, b.title));
     return (
       <div className="bg-[#f9f9f7] text-[#1a1c1b] font-['Manrope',sans-serif] antialiased min-h-screen pb-28 pt-16">
         <header className="fixed top-0 w-full z-40 bg-[#f9f9f7]/95 backdrop-blur-md shadow-xs flex items-center gap-3 px-5 py-3 border-b border-[#e2e3e1]/70">
           <button
             type="button"
-            onClick={() => setOpenList(null)}
+            onClick={() => goList(null)}
             className="w-9 h-9 rounded-xl bg-white border border-[#c2c8c0] text-[#424843] hover:border-[#163422]/40 hover:text-[#163422] flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Kembali ke profil"
           >
@@ -125,9 +152,31 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </button>
           <h1 className="text-base font-bold text-[#163422] tracking-tight">{title}</h1>
         </header>
-        <main className="px-5 md:px-10 max-w-4xl mx-auto pt-5">
+        <main className="px-5 md:px-10 max-w-4xl mx-auto pt-5 space-y-4">
+          {/* Filter: cari + urutan */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-[#727972] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={listSearch}
+                onChange={(e) => setListSearch(e.target.value)}
+                placeholder="Cari judul atau tag..."
+                className="w-full pl-9 pr-3 py-2 border border-[#c2c8c0] rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#163422] placeholder:text-[#a8a8a3]"
+              />
+            </div>
+            <select
+              value={listSort}
+              onChange={(e) => setListSort(e.target.value as 'newest' | 'az')}
+              className="px-3 py-2 border border-[#c2c8c0] rounded-xl text-xs font-bold bg-white text-[#424843] focus:outline-none focus:border-[#163422] cursor-pointer"
+              aria-label="Urutkan"
+            >
+              <option value="newest">Terbaru</option>
+              <option value="az">A–Z</option>
+            </select>
+          </div>
           {isSaved ? (
-            savedRecipes.length === 0 ? (
+            shownSaved.length === 0 ? (
               <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-3">
                 <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
                 <p className="text-xs text-[#727972]">{emptyText}</p>
@@ -143,7 +192,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                {savedRecipes.map((saved) => (
+                {shownSaved.map((saved) => (
                   <div
                     key={saved.id}
                     onClick={() => handleRecipeClick(saved.recipe)}
@@ -174,7 +223,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 ))}
               </div>
             )
-          ) : postedRecipes.length === 0 ? (
+          ) : shownPosted.length === 0 ? (
             <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-3">
               <ChefHat className="w-8 h-8 text-[#c2c8c0] mx-auto" />
               <p className="text-xs text-[#727972]">{emptyText}</p>
@@ -190,7 +239,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
-              {postedRecipes.map((recipe) => (
+              {shownPosted.map((recipe) => (
                 <div
                   key={recipe.id}
                   onClick={() => handleRecipeClick(recipe)}
@@ -345,7 +394,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <section className="grid grid-cols-3 gap-2 bg-white rounded-2xl p-4 shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10">
           <button
             type="button"
-            onClick={() => setOpenList('saved')}
+            onClick={() => goList('saved')}
             className="flex flex-col items-center p-2 text-center cursor-pointer hover:bg-[#f4f4f2] rounded-xl transition-colors"
             aria-label="Lihat resep tersimpan"
           >
@@ -354,7 +403,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setOpenList('posted')}
+            onClick={() => goList('posted')}
             className="flex flex-col items-center p-2 text-center border-l border-r border-[#c2c8c0]/30 cursor-pointer hover:bg-[#f4f4f2] rounded-xl transition-colors"
             aria-label="Lihat resep yang diposting"
           >
@@ -433,7 +482,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               {savedRecipes.length > 3 && (
                 <button
                   type="button"
-                  onClick={() => setOpenList('saved')}
+                  onClick={() => goList('saved')}
                   className="w-full py-2.5 rounded-xl border border-[#c2c8c0] text-xs font-bold text-[#163422] hover:bg-[#f4f4f2] transition-colors cursor-pointer"
                 >
                   Show More ({savedRecipes.length - 3} lainnya)
