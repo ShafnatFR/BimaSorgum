@@ -386,7 +386,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <h3 className="text-lg sm:text-xl font-bold text-[#163422] tracking-tight">
             Browse by Category
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className={`grid gap-2 ${imagesEnabled ? 'grid-cols-2 sm:grid-cols-4 gap-3' : 'grid-cols-4'}`}>
             {HOME_CATEGORIES.map((cat) => (
               <motion.div
                 key={cat.id}
@@ -394,7 +394,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 450, damping: 25 }}
                 onClick={() => onSelectCategory(cat.categoryKey)}
-                className="aspect-square rounded-2xl overflow-hidden relative shrink-0 group cursor-pointer shadow-xs hover:shadow-lg transition-all bg-[#e8eae6] select-none"
+                className={`rounded-2xl overflow-hidden relative shrink-0 group cursor-pointer shadow-xs hover:shadow-lg transition-all select-none ${imagesEnabled ? 'aspect-square bg-[#e8eae6]' : 'bg-gradient-to-br from-[#163422] to-[#2d4b37] p-2.5 text-center'}`}
               >
                 {imagesEnabled ? (
                 <>
@@ -416,8 +416,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 </>
                 ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-gradient-to-br from-[#163422] to-[#2d4b37]">
-                  <span className="text-base sm:text-lg text-white font-extrabold tracking-wide">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <span className="text-sm text-white font-extrabold tracking-wide leading-tight">
                     {cat.nameId}
                   </span>
                   <span className="text-[11px] text-white/80 font-medium mt-0.5">
