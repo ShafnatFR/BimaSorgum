@@ -8,7 +8,7 @@ import {
   VideoTutorialItem,
 } from '../../data/homeData';
 import { Recipe } from '../../types';
-import { useData } from '../../lib/dataContext';
+import { useData, categoryLabelToKey } from '../../lib/dataContext';
 import {
   Sparkles,
   ArrowRight,
@@ -418,10 +418,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-gradient-to-br from-[#163422] to-[#2d4b37]">
                   <span className="text-base sm:text-lg text-white font-extrabold tracking-wide">
-                    {cat.name}
+                    {cat.nameId}
                   </span>
                   <span className="text-[11px] text-white/80 font-medium mt-0.5">
-                    {cat.nameId}
+                    {recipes.filter((r) => categoryLabelToKey(r.dishCategory) === cat.categoryKey).length} resep
                   </span>
                 </div>
                 )}
