@@ -9,13 +9,14 @@ import {
 } from '../../data/homeData';
 import { Recipe } from '../../types';
 import { useData } from '../../lib/dataContext';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Play, 
-  RefreshCw, 
-  ChevronLeft, 
-  ChevronRight
+import {
+  Sparkles,
+  ArrowRight,
+  Play,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Clock
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { 
@@ -81,7 +82,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   googleDisplayName,
   googleAvatarUrl,
 }) => {
-  const { recipes, ready } = useData();
+  const { recipes, ready, imagesEnabled } = useData();
   const [tipIndex, setTipIndex] = useState(0);
   const [hasLoadedMore, setHasLoadedMore] = useState(false);
   const videoCarouselRef = useRef<HTMLDivElement>(null);
@@ -155,6 +156,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       onClick={() => onViewRecipe(recipe)}
       className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
     >
+      {imagesEnabled && (
       <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
         <CardImageWithSkeleton
           src={recipe.imageUrl || FALLBACK_FOOD_IMAGE}
@@ -169,6 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         )}
       </div>
+      )}
 
       <div className="p-2.5 flex-grow flex flex-col justify-between">
         <div>
@@ -178,6 +181,12 @@ export const HomePage: React.FC<HomePageProps> = ({
           <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
             {recipe.subtitle || costTag(recipe)}
           </p>
+          {!imagesEnabled && timeTag(recipe) && (
+            <span className="inline-flex items-center gap-1 mt-1.5 bg-[#f4f4f2] text-[#424843] text-[10px] font-bold px-2 py-0.5 rounded-lg">
+              <Clock className="w-3 h-3 text-[#7c5800]" />
+              {timeTag(recipe)}
+            </span>
+          )}
         </div>
 
         <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
@@ -246,7 +255,9 @@ export const HomePage: React.FC<HomePageProps> = ({
           // Skeleton placeholders while loading
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden shrink-0 snap-start">
+              {imagesEnabled && (
               <div className="h-28 bg-[#e8eae6] animate-pulse" />
+              )}
               <div className="p-2.5 space-y-2">
                 <div className="h-3 bg-[#e8eae6] rounded animate-pulse w-3/4" />
                 <div className="h-2.5 bg-[#e8eae6] rounded animate-pulse w-1/2" />
@@ -385,6 +396,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onClick={() => onSelectCategory(cat.categoryKey)}
                 className="aspect-square rounded-2xl overflow-hidden relative shrink-0 group cursor-pointer shadow-xs hover:shadow-lg transition-all bg-[#e8eae6] select-none"
               >
+                {imagesEnabled ? (
+                <>
                 <CardImageWithSkeleton
                   src={cat.imageUrl}
                   alt={cat.name}
@@ -401,6 +414,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {cat.nameId}
                   </span>
                 </div>
+                </>
+                ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center bg-gradient-to-br from-[#163422] to-[#2d4b37]">
+                  <span className="text-base sm:text-lg text-white font-extrabold tracking-wide">
+                    {cat.name}
+                  </span>
+                  <span className="text-[11px] text-white/80 font-medium mt-0.5">
+                    {cat.nameId}
+                  </span>
+                </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -460,6 +484,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onClick={() => onOpenVideoTutorial(tut)}
                 className="w-[185px] sm:w-[200px] bg-white rounded-2xl border border-[#c2c8c0]/60 overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all shrink-0 snap-start flex flex-col justify-between select-none"
               >
+                {imagesEnabled && (
                 <div className="relative h-28 bg-[#e8eae6] overflow-hidden">
                   <CardImageWithSkeleton
                     src={tut.imageUrl}
@@ -478,6 +503,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {tut.duration}
                   </div>
                 </div>
+                )}
 
                 <div className="p-2.5 flex-grow flex flex-col justify-between">
                   <div>
@@ -487,6 +513,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
                       {tut.subtitle}
                     </p>
+                    {!imagesEnabled && (
+                      <span className="inline-flex items-center gap-1 mt-1.5 bg-[#f4f4f2] text-[#424843] text-[10px] font-bold px-2 py-0.5 rounded-lg font-mono">
+                        {tut.duration}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-2 pt-1.5 border-t border-[#f4f4f2] flex items-center justify-between text-[10px] text-[#163422] font-semibold">
                     <span className="flex items-center gap-0.5 group-hover:translate-x-0.5 group-active:scale-90 group-active:text-[#7c5800] transition-all">
