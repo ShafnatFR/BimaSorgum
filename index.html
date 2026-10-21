@@ -9,6 +9,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      // Cegah gambar tampil sepersekian detik saat hard refresh dalam mode no-image:
+      // terapkan atribut sebelum JS/bundle dimuat, berdasarkan nilai terakhir tersimpan.
+      try {
+        if (localStorage.getItem('bima_images_enabled') === '0') {
+          document.documentElement.setAttribute('data-images-disabled', 'true');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body class="bg-[#F9F9F7] text-[#1A1C1B] font-['Manrope',sans-serif] antialiased">
     <div id="root"></div>

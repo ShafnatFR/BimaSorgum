@@ -127,8 +127,18 @@ export default function App() {
         return fallback;
       };
       setMainFeatureEnabled(toBool(mainFeature, true));
-      setImagesEnabled(toBool(images, true));
-      setImagesEnabledCtx(toBool(images, true));
+      const imgOn = toBool(images, true);
+      setImagesEnabled(imgOn);
+      setImagesEnabledCtx(imgOn);
+      // Simpan untuk hard refresh berikutnya + sinkron atribut di <html>
+      // (dipasang inline di index.html sebelum bundle dimuat).
+      try {
+        localStorage.setItem('bima_images_enabled', imgOn ? '1' : '0');
+        if (imgOn) document.documentElement.removeAttribute('data-images-disabled');
+        else document.documentElement.setAttribute('data-images-disabled', 'true');
+      } catch {
+        /* abaikan */
+      }
     };
     loadAdminConfig();
   }, [ready, getAdminConfigValue]);
@@ -144,7 +154,15 @@ export default function App() {
 
   // Admin feature flags (from admin_configs payload)
   const [mainFeatureEnabled, setMainFeatureEnabled] = useState<boolean>(true);
-  const [imagesEnabled, setImagesEnabled] = useState<boolean>(true);
+  // Initial dari localStorage agar hard refresh dalam mode no-image
+  // langsung sembunyi (nilai final disinkron dari DB di bawah).
+  const [imagesEnabled, setImagesEnabled] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('bima_images_enabled') !== '0';
+    } catch {
+      return true;
+    }
+  });
   const [adminSection, setAdminSection] = useState<string>('dashboard');
   const [profileList, setProfileList] = useState<'saved' | 'posted' | null>(null);
 

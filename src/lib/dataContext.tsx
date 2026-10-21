@@ -50,7 +50,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
-  const [imagesEnabled, setImagesEnabled] = useState(true);
+  // Samakan dengan App: dari localStorage agar varian tanpa gambar langsung dipakai.
+  const [imagesEnabled, setImagesEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('bima_images_enabled') !== '0';
+    } catch {
+      return true;
+    }
+  });
 
   const loadCatalog = useCallback(async () => {
     const data = await fetchRecipes();
