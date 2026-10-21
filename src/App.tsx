@@ -1130,6 +1130,8 @@ export default function App() {
             <ProfilePage
               onOpenSearch={handleOpenSearch}
               onViewRecipe={handleViewRecipe}
+              onExploreRecipes={() => handleSelectTab('explore')}
+              onGenerateRecipe={() => handleSelectTab('generate')}
               savedRecipes={savedRecipes}
               onRemoveSaved={(recipe) => {
                 toggleSave(recipe).then(() => refetchSaved());

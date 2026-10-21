@@ -20,6 +20,8 @@ interface ProfilePageProps {
   onOpenSearch: () => void;
   onViewRecipe: (recipe: Recipe) => void;
   onNavigateToEducation?: () => void;
+  onExploreRecipes?: () => void;
+  onGenerateRecipe?: () => void;
   savedRecipes?: SavedRecipe[]; // from Supabase (App data layer)
   userName?: string;
   userRole?: string;
@@ -39,6 +41,8 @@ interface ProfilePageProps {
 export const ProfilePage: React.FC<ProfilePageProps> = ({
   onOpenSearch,
   onViewRecipe,
+  onExploreRecipes,
+  onGenerateRecipe,
   savedRecipes = [],
   userName: userNameProp = 'Guest',
   userRole: userRoleProp = '',
@@ -126,9 +130,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <main className="px-5 md:px-10 max-w-4xl mx-auto pt-5">
           {isSaved ? (
             savedRecipes.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
+              <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-3">
                 <span className="material-symbols-outlined text-3xl text-[#c2c8c0]">bookmark</span>
                 <p className="text-xs text-[#727972]">{emptyText}</p>
+                {onExploreRecipes && (
+                  <button
+                    type="button"
+                    onClick={onExploreRecipes}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#163422] text-white text-xs font-bold hover:bg-[#2d4b37] transition-colors cursor-pointer"
+                  >
+                    Jelajahi Resep
+                  </button>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
@@ -164,9 +177,18 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               </div>
             )
           ) : postedRecipes.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-2">
+            <div className="bg-white rounded-2xl border border-dashed border-[#c2c8c0] p-8 text-center space-y-3">
               <ChefHat className="w-8 h-8 text-[#c2c8c0] mx-auto" />
               <p className="text-xs text-[#727972]">{emptyText}</p>
+              {onGenerateRecipe && (
+                <button
+                  type="button"
+                  onClick={onGenerateRecipe}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#163422] text-white text-xs font-bold hover:bg-[#2d4b37] transition-colors cursor-pointer"
+                >
+                  Buat Resep
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4">
