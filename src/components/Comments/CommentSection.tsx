@@ -16,6 +16,8 @@ interface CommentSectionProps {
   isGoogleUser?: boolean;
   displayName?: string;
   avatarUrl?: string | null;
+  /** Dipanggil setiap jumlah komentar berubah (load/tambah/hapus). */
+  onCountChange?: (count: number) => void;
 }
 
 // Build a tree from flat list
@@ -164,6 +166,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   isGoogleUser = false,
   displayName = 'Guest',
   avatarUrl,
+  onCountChange,
 }) => {
   const [comments, setComments] = useState<RecipeComment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -229,6 +232,11 @@ export const CommentSection: React.FC<CommentSectionProps> = ({
   useEffect(() => {
     loadComments();
   }, [loadComments]);
+
+  // Laporkan jumlah ke parent (badge di halaman detail) setiap berubah
+  useEffect(() => {
+    onCountChange?.(comments.length);
+  }, [comments.length, onCountChange]);
 
   const handleToggleLike = async (commentId: string) => {
     if (!currentUserId) return;

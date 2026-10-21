@@ -663,6 +663,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
           isGoogleUser={isGoogleUser}
           displayName={googleDisplayName || 'Guest'}
           avatarUrl={googleAvatarUrl || null}
+          onCountChange={setCommentCount}
         />
         </div>
 
