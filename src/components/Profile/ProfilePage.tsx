@@ -61,7 +61,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
   const [editNameInput, setEditNameInput] = useState(userName);
   const [editRoleInput, setEditRoleInput] = useState(userRole);
   
-  const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
   const [appLanguage, setAppLanguage] = useState<'English' | 'Bahasa Indonesia'>('English');
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -427,40 +426,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-[#1a1c1b] tracking-tight">Account</h2>
           <div className="bg-white rounded-2xl border border-[#2d4b37]/10 shadow-[0_4px_12px_rgba(45,75,55,0.06)] divide-y divide-[#c2c8c0]/20 overflow-hidden">
-            {/* Notifications */}
-            <button
-              onClick={() => {
-                setIsNotificationsEnabled(!isNotificationsEnabled);
-                triggerToast(
-                  !isNotificationsEnabled
-                    ? 'Notifikasi resep harian diaktifkan'
-                    : 'Notifikasi dinonaktifkan'
-                );
-              }}
-              className="w-full flex items-center justify-between p-4 hover:bg-[#f4f4f2] transition-colors text-left group"
-            >
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#424843] group-hover:text-[#163422] transition-colors">
-                  notifications
-                </span>
-                <div>
-                  <span className="text-sm font-medium text-[#1a1c1b] block">Notifications</span>
-                  <span className="text-[11px] text-[#727972]">
-                    {isNotificationsEnabled ? 'Tips harian & reminder aktif' : 'Dinonaktifkan'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-10 h-6 rounded-full transition-colors p-1 flex items-center ${
-                    isNotificationsEnabled ? 'bg-[#163422] justify-end' : 'bg-[#c2c8c0] justify-start'
-                  }`}
-                >
-                  <div className="w-4 h-4 rounded-full bg-white shadow-xs" />
-                </div>
-              </div>
-            </button>
-
             {/* App Language */}
             <button
               onClick={() => setShowLanguageModal(true)}
