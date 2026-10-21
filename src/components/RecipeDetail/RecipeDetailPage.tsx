@@ -305,29 +305,26 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 <span className="material-symbols-outlined text-base text-[#163422]">restaurant</span>
                 <span>{currentServings} Servings</span>
               </div>
+              {/* Tombol favorit + count simpan (like) dalam satu pill */}
               <button
                 id="btn-favorite-recipe"
                 onClick={handleFavoriteClick}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-[0px_4px_12px_rgba(45,75,55,0.08)] cursor-pointer active:scale-95 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all shadow-[0px_4px_12px_rgba(45,75,55,0.08)] cursor-pointer active:scale-95 ${
                   favoriteState
-                    ? 'bg-rose-50 text-rose-600 border border-rose-200'
-                    : 'bg-[#e8e8e6] text-[#424843] hover:bg-[#2d4b37] hover:text-[#99baa1]'
+                    ? 'bg-rose-50 text-rose-600 border-rose-200'
+                    : 'bg-[#f4f4f2] text-[#424843] border-[#e2e3e1] hover:border-[#163422]/40'
                 }`}
                 title={favoriteState ? 'Tersimpan di Favorit' : 'Simpan Resep'}
                 aria-label="Favoritkan Resep"
               >
                 <span
-                  className="material-symbols-outlined text-[20px]"
+                  className="material-symbols-outlined text-[20px] leading-none"
                   style={{ fontVariationSettings: favoriteState ? "'FILL' 1" : "'FILL' 0" }}
                 >
                   favorite
                 </span>
-              </button>
-              {/* Badge jumlah simpan (like) */}
-              <span className="flex items-center gap-1 bg-[#f4f4f2] px-3 py-1.5 rounded-xl border border-[#e2e3e1] text-sm font-semibold text-[#424843]" title={`${saveCount} menyimpan resep ini`}>
-                <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
                 <span>{saveCount}</span>
-              </span>
+              </button>
               {/* Badge jumlah komentar -> scroll ke seksi komentar */}
               <button
                 type="button"
