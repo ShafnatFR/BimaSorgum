@@ -736,7 +736,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
         {/* Recipe Cards Grid with Skeletons */}
         {isLoading ? (
-          <div className="grid grid-cols-3 gap-2 sm:gap-5 md:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:gap-6">
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <GridRecipeCardSkeleton key={n} />
             ))}
@@ -772,7 +772,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2 sm:gap-5 md:gap-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:gap-6">
             {filteredRecipes.map((recipe) => {
               const saved = isRecipeSaved(recipe.id, recipe.title);
               const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
