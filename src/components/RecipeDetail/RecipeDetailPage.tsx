@@ -5,12 +5,13 @@ import { FALLBACK_FOOD_IMAGE } from '../../data/homeData';
 import { getIngredientThumbnail, getRecipeImage, GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
 import { getRecipeSlug } from '../../utils/slugify';
 import { getShareableUrl, RouteSlugs } from '../../utils/slugRouter';
-import { 
-  ArrowLeft, 
-  Clock, 
-  Users, 
-  Heart, 
-  Play, 
+import {
+  ArrowLeft,
+  Clock,
+  Users,
+  Heart,
+  MessageCircle,
+  Play,
   Sparkles, 
   Info, 
   Volume2, 
@@ -59,6 +60,22 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [recipeImageUrl, setRecipeImageUrl] = useState<string>(recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE);
   const [ingredientImages, setIngredientImages] = useState<Record<number, string>>({});
   const { imagesEnabled } = useData();
+  // Count simpan (like) & komentar untuk badge di halaman detail
+  const [saveCount, setSaveCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
+  const commentsRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    import('../../lib/supabase').then((m) => {
+      m.fetchRecipeEngagement([recipe.id]).then((c) => {
+        if (cancelled) return;
+        setSaveCount(c.saves[recipe.id] ?? 0);
+        setCommentCount(c.comments[recipe.id] ?? 0);
+      });
+    });
+    return () => { cancelled = true; };
+  }, [recipe.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -296,6 +313,22 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 >
                   favorite
                 </span>
+              </button>
+              {/* Badge jumlah simpan (like) */}
+              <span className="flex items-center gap-1 bg-[#f4f4f2] px-3 py-1.5 rounded-xl border border-[#e2e3e1] text-sm font-semibold text-[#424843]" title={`${saveCount} menyimpan resep ini`}>
+                <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+                <span>{saveCount}</span>
+              </span>
+              {/* Badge jumlah komentar -> scroll ke seksi komentar */}
+              <button
+                type="button"
+                onClick={() => commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                className="flex items-center gap-1 bg-[#f4f4f2] px-3 py-1.5 rounded-xl border border-[#e2e3e1] text-sm font-semibold text-[#424843] hover:border-[#163422]/40 transition-colors cursor-pointer"
+                title={`${commentCount} komentar`}
+                aria-label="Lihat komentar"
+              >
+                <MessageCircle className="w-4 h-4 text-[#163422]" />
+                <span>{commentCount}</span>
               </button>
 
               <button
@@ -617,6 +650,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                   </section>
 
         {/* Comments Section */}
+        <div ref={commentsRef} className="scroll-mt-20">
         <CommentSection
           recipeId={recipe.id}
           recipeSlug={recipe.slug}
@@ -624,6 +658,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
           displayName={googleDisplayName || 'Guest'}
           avatarUrl={googleAvatarUrl || null}
         />
+        </div>
 
                 </main>
               </div>
