@@ -63,6 +63,10 @@ Migrasi di `supabase/migrations/`.
 - Target Modal (langkah 4) DIHAPUS atas permintaan user: langkah 4 kini hanya "Periksa pilihan Anda" (Tipe Hidangan +
   Waktu Persiapan). `budgetPerPortion` wizard = 0 = tidak dibatasi; prompt menulis "TIDAK DIBATASI", validateRecipe
   melewati cek budget, dan putaran perbaikan tanpa aritmetika budget. Jalur chat ("budget 10 ribu" di teks) tetap memakai budget.
+- Aturan prompt dipecah (recipeGenerator.ts): `BASE_RULES` (referensi/toksik, kelayakan, porsi, estimatedCost = total)
+  selalu dikirim; `PRICE_BUDGET_RULES` (harga warung, harga minimum, kelayakan & batas budget) hanya bila ada budget.
+  Wizard: tidak pernah (budget 0). Chat: bila teks memuat kata budget/anggaran/modal/Rp/ribu/rb + angka
+  (`extractBudget` dari preflight.ts). Rules lama 2.715 karakter → wizard kini 922.
 - Backend (Bima-Backend-RAG `0bfe914`) dulu memaksa format Markdown untuk request stream → resep sering prosa,
   website retry s/d 4x. Kini prompt yang menyebut JSON mendapat instruksi JSON.
 

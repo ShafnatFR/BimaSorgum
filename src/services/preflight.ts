@@ -49,7 +49,7 @@ function extractIngredients(prompt: string): string[] {
   return Array.from(found);
 }
 
-function extractBudget(prompt: string): number | null {
+export function extractBudget(prompt: string): number | null {
   // Match "budget 20000", "20 ribu", "Rp 20.000", "20000"
   const m = prompt.match(/budget\s*(?:rp\s*)?([0-9][0-9.,]*)\s*(ribu)?/i) ||
             prompt.match(/rp\s*([0-9][0-9.,]*)\s*(ribu)?/i) ||

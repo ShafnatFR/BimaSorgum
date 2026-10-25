@@ -4,6 +4,9 @@ import { FOOD_IMAGES, getRecipeImageSync } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
 import { validateRecipe, GLOBAL_MINIMUM_PRICE, getWarungFloor } from './recipeGuard';
+import { extractBudget } from './preflight';
+
+const BUDGET_WORD_RE = /\b(budget|anggaran|modal|rp\.?|ribu|rb)\b/i;
 
 /** Parse gramasi from ingredient name string.
  *  "Tepung Sorgum (150g)" → { cleanName: "Tepung Sorgum", amount: "150g" }
@@ -271,25 +274,38 @@ const UNPAYLOAD_JSON_SCHEMA = `{
   ]
 }`;
 
-const PROMPT_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
-1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, harga bahan, konversi satuan, dan perhitungan gram dari dokumen tersebut. Gunakan harga dari dokumen (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
+/** Rules every recipe prompt carries. Price and budget rules are separate: the wizard
+ *  no longer asks for a budget, and in chat they only apply when the user names one. */
+const BASE_RULES = `### ATURAN VALIDASI (WAJIB DIIKUTI)
+1. DATA WAJIB DARI REFERENSI: Anda WAJIB membaca [DOKUMEN REFERENSI]. Patuhi secara mutlak data kombinasi beracun, konversi satuan, dan perhitungan gram dari dokumen tersebut.
 2. KELAYAKAN RESEP: Jika kombinasi bahan dilarang di dokumen (karena toxic) atau tidak lazim / tidak enak (mis. durian dicampur petis), JANGAN paksa membuat resep. TOLAK permintaan dengan format UNPAYLOAD.
-3. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp15.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
-4. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
-5. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 1.500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50, Rp 500 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 8.000, bukan "Garam halus (5 gram)" = Rp 2.
-6. KALKULASI: \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
-7. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
-8. BATAS ANGGARAN (WAJIB): Biaya bahan per porsi (total seluruh \`estimatedPrice\` dibagi \`servings\`) TIDAK BOLEH melebihi Target Budget per porsi yang diminta. Ingat: harga bahan adalah HARGA SATUAN BELI di warung, jadi memperkecil gramasi TIDAK menurunkan harga bahan (mis. "Bawang merah (20 gram)" tetap ± Rp 3.000 untuk satu bungkus/ikat kecil). Cara memenuhi anggaran: (a) pakai JUMLAH bahan sesedikit mungkin — jangan menambah bahan opsional yang tidak diminta, dan (b) tetapkan \`servings\` secukupnya sesuai aturan 7. HITUNG DULU sebelum menjawab: jumlahkan seluruh \`estimatedPrice\`, bagi dengan \`servings\`, dan pastikan hasilnya ≤ Target Budget per porsi. Contoh: total bahan Rp 31.000 dengan budget Rp 15.000 per porsi → butuh minimal 3 porsi (Rp 10.333 per porsi). TOLAK dengan format UNPAYLOAD hanya bila budget benar-benar mustahil (total minimum bahan jauh di atas budget × jumlah porsi yang wajar).
+3. JUMLAH PORSI: Tentukan servings secara realistis berdasarkan total bahan. Jika total adonan/minuman jelas untuk lebih dari 1 porsi, JANGAN set servings=1. Contoh: adonan 1kg camilan → servings 10-15, minuman 1 liter → servings 4, bubur 500ml → servings 2. servings=1 HANYA untuk resep yang benar-benar1 porsi individu (mis.1 mangkuk nasi).
+4. KALKULASI: Isi \`estimatedPrice\` dengan perkiraan harga wajar; \`estimatedCost\` HARUS SAMA dengan total seluruh \`estimatedPrice\`.
+`;
 
-### FORMAT OUTPUT
+const PRICE_BUDGET_RULES = `
+### ATURAN HARGA & BUDGET (pengguna menyebut budget)
+5. HARGA DARI REFERENSI: Gunakan harga dari [DOKUMEN REFERENSI] (seperti harga_bahan_pokok, harga_gabungan) tanpa mengarang angka lain.
+6. KELAYAKAN BUDGET: Jika budget terlalu rendah untuk bahan yang diminta (mis. budget Rp15.000 tapi minta salmon), TOLAK permintaan dengan format UNPAYLOAD.
+7. HARGA REALISTIS & SPESIFIK: Harga bahan (\`estimatedPrice\`) HARUS wajar dan diambil dari [DOKUMEN REFERENSI]. Anda WAJIB mencantumkan jumlah spesifik (gram, ml, dst) secara eksplisit di nama bahan agar perhitungan harga per gramnya masuk akal. Contoh: Jangan tulis "Bawang merah", tapi tulis "Bawang merah (80 gram)".
+8. HARGA MINIMUM PER BAHAN: Setiap bahan memiliki harga minimum Rp 1.500 (harga satuan beli warung minimum). Jangan tulis harga recehan seperti Rp 2, Rp 38, Rp 50, Rp 500 — itu harga per-gram yang tidak masuk akal di warung. Contoh benar: "Garam halus (1 bungkus kecil)" = Rp 8.000, bukan "Garam halus (5 gram)" = Rp 2.
+9. BATAS ANGGARAN (WAJIB): Biaya bahan per porsi (total seluruh \`estimatedPrice\` dibagi \`servings\`) TIDAK BOLEH melebihi Target Budget per porsi yang diminta. Ingat: harga bahan adalah HARGA SATUAN BELI di warung, jadi memperkecil gramasi TIDAK menurunkan harga bahan (mis. "Bawang merah (20 gram)" tetap ± Rp 3.000 untuk satu bungkus/ikat kecil). Cara memenuhi anggaran: (a) pakai JUMLAH bahan sesedikit mungkin — jangan menambah bahan opsional yang tidak diminta, dan (b) tetapkan \`servings\` secukupnya sesuai aturan 3. HITUNG DULU sebelum menjawab: jumlahkan seluruh \`estimatedPrice\`, bagi dengan \`servings\`, dan pastikan hasilnya ≤ Target Budget per porsi. Contoh: total bahan Rp 31.000 dengan budget Rp 15.000 per porsi → butuh minimal 3 porsi (Rp 10.333 per porsi). TOLAK dengan format UNPAYLOAD hanya bila budget benar-benar mustahil (total minimum bahan jauh di atas budget × jumlah porsi yang wajar).
+`;
+
+const FORMAT_RULES = `### FORMAT OUTPUT
 Anda WAJIB memberikan satu buah JSON murni (tanpa markdown code block).
 Pilih SALAH SATU struktur JSON berikut:
 
 JIKA RESEP DITERIMA (Valid):
 ${RECIPE_JSON_SCHEMA}
 
-JIKA RESEP DITOLAK (Melanggar aturan 1 atau 2):
+JIKA RESEP DITOLAK (melanggar aturan di atas):
 ${UNPAYLOAD_JSON_SCHEMA}`;
+
+function promptRules(withBudget: boolean): string {
+  return `${BASE_RULES}${withBudget ? PRICE_BUDGET_RULES : ''}
+${FORMAT_RULES}`;
+}
 
 /** Appended on the retry that follows a non-JSON answer — the schema is often
  *  ignored when the model decides to answer with prose/analysis instead. */
@@ -641,8 +657,7 @@ Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 - Target Konsumen: ${describeConsumers(formData.targetConsumers)}
 - Kategori Hidangan: ${CATEGORY_BRIEF[formData.dishCategory] || formData.dishCategory}
 - Bahan Pokok: ${ingredientNames(formData)}
-- Target Budget per porsi: ${formData.budgetPerPortion > 0 ? `Rp ${formData.budgetPerPortion}` : 'TIDAK DIBATASI — abaikan aturan KELAYAKAN BUDGET dan BATAS ANGGARAN, tetapi tetap isi estimatedPrice dan estimatedCost dengan harga wajar'}
-- Batas Waktu Persiapan: ${formData.prepTimeLimit}
+${formData.budgetPerPortion > 0 ? `- Target Budget per porsi: Rp ${formData.budgetPerPortion}\n` : ''}- Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
 ### ATURAN BAHAN
 - Rasa, tekstur, porsi, dan kandungan gizi WAJIB cocok untuk Target Konsumen. Bila lebih dari satu target, buat satu resep yang aman dan cocok untuk SEMUA target (pakai batasan yang paling ketat).
@@ -651,7 +666,7 @@ Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 - DIIZINKAN menambahkan bahan dapur umum (air, garam, merica, minyak goreng, bawang).
 - DILARANG menambahkan bahan khusus lainnya (mis. keju, saus tiram, madu) kecuali sudah ada di Bahan Pokok.
 
-${PROMPT_RULES}`;
+${promptRules(formData.budgetPerPortion > 0)}`;
 
   const result = await generateWithRetry(prompt);
 
@@ -1085,6 +1100,10 @@ export function generateRecipeFromWizard(formData: WizardFormData): Recipe {
  * Falls back to the offline smart query matcher if the call fails.
  */
 export async function generateCustomRecipeQueryAsync(userPrompt: string, budgetOverride?: number): Promise<Recipe> {
+  // Price/budget rules only when the user names a budget ("budget 10 ribu", "Rp 15.000").
+  // The word gate keeps "1000 ml susu" from being read as a budget.
+  const requestedBudget = budgetOverride
+    ?? (BUDGET_WORD_RE.test(userPrompt) ? extractBudget(userPrompt) ?? 0 : 0);
   // 🔧 FALLBACK OFF: throw error instead of returning offline recipe.
   // User wants raw AI output, not "Nasi Goreng Sorgum Ceria".
   const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
@@ -1103,7 +1122,7 @@ Permintaan: "${userPrompt}"
 Balas LANGSUNG dengan SATU objek JSON — karakter pertama jawaban HARUS '{' dan terakhir '}'.
 DILARANG menulis prosa, heading markdown, tabel naratif, bagian "Konsep Produk"/"Analisis"/"Bahan" dalam bentuk teks, kalimat pembuka, atau penjelasan apa pun di luar objek JSON.
 Field "subtitle" berisi deskripsi singkat tentang masakan itu sendiri — rasa, tekstur, kenikmatan, dan cara disajikan. JANGAN tulis kandungan gizi, komposisi nutrisi, atau perhitungan harga di subtitle. Data gizi dan komposisi hanya masuk ke field "nutritionHighlight".
-${PROMPT_RULES}`;
+${promptRules(requestedBudget > 0)}`;
 
   const result = await generateWithRetry(prompt);
   if (result && !('__refusal' in result) && result.title) {
