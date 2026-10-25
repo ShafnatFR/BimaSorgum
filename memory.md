@@ -48,6 +48,21 @@ Migrasi di `supabase/migrations/`.
 - Waktu sampai token pertama: median 96 s (68–128 s); guard lama 60 s membuat semua gagal → guard dinaikkan ke 150 s.
 - Minuman nutrisi 2/2 menghasilkan prosa, bukan JSON. Konfigurasi bahan terbanyak (budget 100k) sempat timeout tanpa token.
 
+**Kategori wizard (2026-10-25):**
+- Minuman Nutrisi dengan Bahan Pokok ayam/telur/tempe pernah keluar sebagai "Golden Velvet Soup". Penyebab:
+  prompt hanya mengirim id mentah `minuman_nutrisi`. Kini `CATEGORY_BRIEF` (recipeGenerator.ts) mengirim
+  nama + definisi kategori, aturan "bentuk hidangan wajib sesuai kategori; Bahan Pokok yang tak cocok boleh
+  tidak dipakai", dan `validateRecipe(..., dishCategory)` (recipeGuard.ts) menjadikan judul minuman berisi
+  sup/bubur/nasi/kue dsb. sebagai error → satu putaran perbaikan.
+- Diperluas ke keempat kategori (`CATEGORY_MISMATCH` di recipeGuard.ts): Makanan Berat ≠ minuman/kue/camilan,
+  Camilan ≠ hidangan utama/minuman, Dessert ≠ masakan gurih (sup/nasi/ayam/daging/ikan). Cek berdasar judul.
+- Target Konsumen (langkah 1) dulu TIDAK dikirim ke AI sama sekali. Kini prompt memuat `Target Konsumen`
+  (`CONSUMER_BRIEF`: anak SD tidak pedas, lansia rendah gula/GI & lembut, dst.) + aturan "cocok untuk SEMUA target".
+- Bahan Pokok dikirim sebagai nama ("Protein Ayam/Telur"), bukan id (`protein_ayam_telur`).
+- Default wizard `targetConsumers` dulu `anak_sekolah` (id lama, kartunya tak tampil terpilih tapi ikut terkirim) → `anak_sd`.
+- Backend (Bima-Backend-RAG `0bfe914`) dulu memaksa format Markdown untuk request stream → resep sering prosa,
+  website retry s/d 4x. Kini prompt yang menyebut JSON mendapat instruksi JSON.
+
 ## Catatan teknis
 
 - `src/services/bimaClient.ts` juga membaca `VITE_BIMA_API_KEY` / `VITE_BIMA_MODEL`. Jangan isi

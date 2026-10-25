@@ -1,5 +1,5 @@
 import { WizardFormData, Recipe, RecipeIngredient, RecipeStep, AiRefusalResponse, RecipeSuggestion } from '../types';
-import { INITIAL_FEATURED_RECIPE } from '../data/mockData';
+import { INITIAL_FEATURED_RECIPE, TARGET_CONSUMERS, DEFAULT_INGREDIENTS } from '../data/mockData';
 import { FOOD_IMAGES, getRecipeImageSync } from '../data/imageAssets';
 import { slugify } from '../utils/slugify';
 import { bimaChat, extractJsonFromLlm } from './bimaClient';
@@ -605,17 +605,48 @@ export function inferDishCategoryFromText(text: string): string {
  * Returns either a valid Recipe or an AiRefusalResponse when ingredients are nonsensical.
  * NO MORE offline fallback — if AI fails entirely, throws an error.
  */
+/** What each wizard category means. The raw id alone ("minuman_nutrisi") left the
+ *  model free to turn a drink request with chicken in the pantry into a cream soup. */
+const CATEGORY_BRIEF: Record<string, string> = {
+  makanan_berat: 'Makanan Berat — hidangan utama yang mengenyangkan (nasi, bubur, mi, lauk, sup).',
+  camilan_sehat: 'Camilan Sehat — kudapan ringan porsi kecil (kue, keripik, bola-bola, biskuit).',
+  minuman_nutrisi: 'Minuman Nutrisi — WAJIB berupa minuman yang diminum (smoothie, jus, susu/sari sorgum, wedang, minuman fermentasi). BUKAN sup, bubur, atau makanan berkuah.',
+  dessert_rendah_gi: 'Dessert Rendah GI — hidangan penutup manis yang ramah gula darah (puding, kue, es).',
+};
+
+/** What each target group needs. The wizard asks for it in step 1, so the prompt has to carry it. */
+const CONSUMER_BRIEF: Record<string, string> = {
+  anak_sd: 'Anak SD (6–12 tahun) — rasa manis/gurih ringan yang disukai anak, TIDAK pedas dan tidak pahit, tekstur mudah dikunyah, porsi anak, tanpa kafein.',
+  siswa_smp: 'Siswa SMP (12–15 tahun) — masa pertumbuhan dan aktivitas tinggi: cukup energi dan protein, sumber kalsium dan zat besi.',
+  siswa_sma: 'Siswa SMA (15–18 tahun) — fokus belajar dan daya tahan tubuh: energi stabil dari karbohidrat kompleks, protein, sayur/buah.',
+  dewasa_lansia: 'Dewasa & Lansia — rendah gula dan rendah indeks glikemik, serat tinggi, rendah garam dan lemak jenuh, tekstur lembut dan mudah dicerna.',
+};
+
+function describeConsumers(ids: string[]): string {
+  const briefs = ids.map(id => CONSUMER_BRIEF[id] || TARGET_CONSUMERS.find(c => c.id === id)?.label || id);
+  return briefs.length > 0 ? briefs.join(' | ') : 'Umum';
+}
+
+/** Ingredient ids ("protein_ayam_telur") read as names; custom ones are already names. */
+function ingredientNames(formData: WizardFormData): string {
+  const picked = formData.selectedIngredientIds.map(id => DEFAULT_INGREDIENTS.find(i => i.id === id)?.name || id);
+  return picked.concat(formData.customIngredients).join(', ');
+}
+
 export async function generateRecipeFromWizardAsync(formData: WizardFormData): Promise<Recipe | AiRefusalResponse> {
   const prompt = `Anda adalah SorghumCare AI, ahli gizi dan koki spesialis sorgum Indonesia.
 Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 
 ### INPUT USER
-- Kategori Hidangan: ${formData.dishCategory}
-- Bahan Pokok: ${formData.selectedIngredientIds.concat(formData.customIngredients).join(', ')}
+- Target Konsumen: ${describeConsumers(formData.targetConsumers)}
+- Kategori Hidangan: ${CATEGORY_BRIEF[formData.dishCategory] || formData.dishCategory}
+- Bahan Pokok: ${ingredientNames(formData)}
 - Target Budget per porsi: Rp ${formData.budgetPerPortion}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
 ### ATURAN BAHAN
+- Rasa, tekstur, porsi, dan kandungan gizi WAJIB cocok untuk Target Konsumen. Bila lebih dari satu target, buat satu resep yang aman dan cocok untuk SEMUA target (pakai batasan yang paling ketat).
+- Bentuk hidangan WAJIB sesuai Kategori Hidangan. Bahan Pokok yang tidak cocok untuk kategori itu (mis. ayam atau bawang untuk minuman) JANGAN dipakai — tidak semua Bahan Pokok harus masuk resep.
 - HANYA gunakan Bahan Pokok di atas.
 - DIIZINKAN menambahkan bahan dapur umum (air, garam, merica, minyak goreng, bawang).
 - DILARANG menambahkan bahan khusus lainnya (mis. keju, saus tiram, madu) kecuali sudah ada di Bahan Pokok.
@@ -640,7 +671,7 @@ ${PROMPT_RULES}`;
         flaggedIngredients: [],
       }, formData);
     }
-    const { issues } = validateRecipe(parsed, formData.budgetPerPortion);
+    const { issues } = validateRecipe(parsed, formData.budgetPerPortion, formData.dishCategory);
     const errorIssues = issues.filter(i => i.level === 'error');
 
     // If guard found critical errors (price fraud, budget overrun), give the model ONE
@@ -675,7 +706,7 @@ ${PROMPT_RULES}`;
 Resep sebelumnya DITOLAK karena:
 ${feedback}${arithmetic}
 
-Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya PER PORSI (total estimatedPrice ÷ servings ≤ Target Budget per porsi). Cara yang benar: pakai JUMLAH bahan sesedikit mungkin (hapus bahan opsional), ganti bahan mahal dengan bahan murah dari Bahan Pokok, atau tetapkan \`servings\` ≥ ${neededServings} secara wajar lalu pastikan \`estimatedCost\` = jumlah seluruh \`estimatedPrice\`. Memperkecil gramasi TIDAK menurunkan harga bahan di sistem ini. Jangan mengulangi pelanggaran yang sama.`;
+Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya PER PORSI (total estimatedPrice ÷ servings ≤ Target Budget per porsi). Cara yang benar: pakai JUMLAH bahan sesedikit mungkin (hapus bahan opsional), ganti bahan mahal dengan bahan murah dari Bahan Pokok, atau tetapkan \`servings\` ≥ ${neededServings} secara wajar lalu pastikan \`estimatedCost\` = jumlah seluruh \`estimatedPrice\`. Memperkecil gramasi TIDAK menurunkan harga bahan di sistem ini. Bentuk hidangan WAJIB sesuai Kategori Hidangan dan cocok untuk Target Konsumen. Jangan mengulangi pelanggaran yang sama.`;
 
       const repairedAttempt = await generateWithRetry(repairPrompt);
       if (repairedAttempt && '__refusal' in repairedAttempt) {
@@ -684,7 +715,7 @@ Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya
       }
       const repairedParsed = repairedAttempt as Record<string, any> | null;
       if (repairedParsed && repairedParsed.title && Array.isArray(repairedParsed.ingredients) && repairedParsed.ingredients.length > 0) {
-        const second = validateRecipe(repairedParsed, formData.budgetPerPortion);
+        const second = validateRecipe(repairedParsed, formData.budgetPerPortion, formData.dishCategory);
         if (!second.issues.some(i => i.level === 'error')) {
           return recipeFromLlmJson(second.repaired, formData.budgetPerPortion, formData.dishCategory);
         }

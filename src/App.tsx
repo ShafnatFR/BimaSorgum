@@ -224,7 +224,7 @@ export default function App() {
 
   // Wizard Form State
   const [wizardData, setWizardData] = useState<WizardFormData>({
-    targetConsumers: ['anak_sekolah'],
+    targetConsumers: ['anak_sd'],
     dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
     customIngredients: [],

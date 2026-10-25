@@ -228,9 +228,37 @@ export function realisticCost(ingredients: Array<{ name?: string; estimatedPrice
  *  - estimatedCost is forced to equal the (floor-corrected) sum of ingredients
  *    when the LLM faked a lower number to fit the budget.
  */
+/** Title words that put a dish outside the wizard category the user picked. */
+const DRINK_WORDS = 'smoothie|jus|juice|wedang|latte|milkshake|minuman';
+const SAVORY_MAIN_WORDS = 'nasi|gulai|kari|curry|semur|rendang|soto|sup|soup|sop|tumis|bakso|pepes';
+const wordsRe = (words: string) => new RegExp(`\\b(${words})\\b`, 'i');
+const CATEGORY_MISMATCH: Record<string, { re: RegExp; label: string; hint: string }> = {
+  makanan_berat: {
+    re: wordsRe(`${DRINK_WORDS}|puding|pudding|kue|cookies|biskuit|brownies|keripik`),
+    label: 'Makanan Berat',
+    hint: 'hidangan utama yang mengenyangkan, bukan minuman, kue, atau camilan',
+  },
+  camilan_sehat: {
+    re: wordsRe(`${DRINK_WORDS}|${SAVORY_MAIN_WORDS}`),
+    label: 'Camilan Sehat',
+    hint: 'kudapan ringan porsi kecil, bukan lauk/hidangan utama atau minuman',
+  },
+  minuman_nutrisi: {
+    re: wordsRe(`${SAVORY_MAIN_WORDS}|bubur|porridge|goreng|mie|mi|kue|bolu|cake`),
+    label: 'Minuman Nutrisi',
+    hint: 'minuman yang diminum (smoothie, jus, susu/sari sorgum, wedang)',
+  },
+  dessert_rendah_gi: {
+    re: wordsRe(`${SAVORY_MAIN_WORDS}|ayam|daging|ikan`),
+    label: 'Dessert Rendah GI',
+    hint: 'hidangan penutup manis yang ramah gula darah, bukan masakan gurih',
+  },
+};
+
 export function validateRecipe(
   parsed: Record<string, any>,
-  requestedBudget?: number
+  requestedBudget?: number,
+  dishCategory?: string
 ): { issues: RecipeIssue[]; repaired: Record<string, any> } {
   const issues: RecipeIssue[] = [];
   const repaired: Record<string, any> = { ...parsed };
@@ -294,6 +322,17 @@ export function validateRecipe(
     issues.push({
       level: 'error',
       message: `Biaya bahan per porsi Rp ${Math.round(costPerPortion).toLocaleString('id-ID')} (${servings} porsi, total Rp ${honestSum.toLocaleString('id-ID')}) melebihi budget Rp ${requestedBudget.toLocaleString('id-ID')} per porsi.`,
+    });
+  }
+
+  // 4) Category — a "Minuman Nutrisi" request once came back as a cream soup with
+  // chicken: the dish shape is what the user picked, so a mismatch is an error.
+  const category = dishCategory ? CATEGORY_MISMATCH[dishCategory] : undefined;
+  const mismatch = category ? String(parsed.title || '').match(category.re) : null;
+  if (category && mismatch) {
+    issues.push({
+      level: 'error',
+      message: `Kategori ${category.label} tetapi resepnya "${parsed.title}" (${mismatch[0]}) tidak sesuai — buat ${category.hint}.`,
     });
   }
 
