@@ -60,6 +60,9 @@ Migrasi di `supabase/migrations/`.
   (`CONSUMER_BRIEF`: anak SD tidak pedas, lansia rendah gula/GI & lembut, dst.) + aturan "cocok untuk SEMUA target".
 - Bahan Pokok dikirim sebagai nama ("Protein Ayam/Telur"), bukan id (`protein_ayam_telur`).
 - Default wizard `targetConsumers` dulu `anak_sekolah` (id lama, kartunya tak tampil terpilih tapi ikut terkirim) → `anak_sd`.
+- Target Modal (langkah 4) DIHAPUS atas permintaan user: langkah 4 kini hanya "Periksa pilihan Anda" (Tipe Hidangan +
+  Waktu Persiapan). `budgetPerPortion` wizard = 0 = tidak dibatasi; prompt menulis "TIDAK DIBATASI", validateRecipe
+  melewati cek budget, dan putaran perbaikan tanpa aritmetika budget. Jalur chat ("budget 10 ribu" di teks) tetap memakai budget.
 - Backend (Bima-Backend-RAG `0bfe914`) dulu memaksa format Markdown untuk request stream → resep sering prosa,
   website retry s/d 4x. Kini prompt yang menyebut JSON mendapat instruksi JSON.
 

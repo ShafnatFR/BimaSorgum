@@ -228,7 +228,7 @@ export default function App() {
     dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
     customIngredients: [],
-    budgetPerPortion: 25000,
+    budgetPerPortion: 0, // tidak dibatasi — langkah modal dihapus dari wizard
     prepTimeLimit: 'Maks 30 Menit',
   });
   
@@ -1309,7 +1309,6 @@ export default function App() {
                     {wizardStep === 4 && (
                       <WizardStep4
                         formData={wizardData}
-                        onUpdateBudget={(budget) => setWizardData((prev) => ({ ...prev, budgetPerPortion: budget }))}
                         onUpdatePrepTime={(time) => setWizardData((prev) => ({ ...prev, prepTimeLimit: time }))}
                         onPrevious={() => handleSetWizardStep(3)}
                         onGenerateRecipe={handleGenerateFromWizard}
@@ -1424,7 +1423,7 @@ export default function App() {
                                     </span>
                                   </span>
                                   <span className="text-[11px] text-white/80 block truncate">
-                                    Kustomisasi target konsumen &amp; budget
+                                    Kustomisasi target konsumen &amp; bahan
                                   </span>
                                 </div>
                               </button>

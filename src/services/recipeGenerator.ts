@@ -641,7 +641,7 @@ Tugas Anda adalah merancang resep masakan sorgum yang sehat dan lezat.
 - Target Konsumen: ${describeConsumers(formData.targetConsumers)}
 - Kategori Hidangan: ${CATEGORY_BRIEF[formData.dishCategory] || formData.dishCategory}
 - Bahan Pokok: ${ingredientNames(formData)}
-- Target Budget per porsi: Rp ${formData.budgetPerPortion}
+- Target Budget per porsi: ${formData.budgetPerPortion > 0 ? `Rp ${formData.budgetPerPortion}` : 'TIDAK DIBATASI — abaikan aturan KELAYAKAN BUDGET dan BATAS ANGGARAN, tetapi tetap isi estimatedPrice dan estimatedCost dengan harga wajar'}
 - Batas Waktu Persiapan: ${formData.prepTimeLimit}
 
 ### ATURAN BAHAN
@@ -700,7 +700,16 @@ ${PROMPT_RULES}`;
       const arithmetic = floorRows
         ? `\n\nHarga minimum tiap bahan menurut validator sistem (harga satuan beli di warung — TIDAK bisa turun dengan memperkecil gramasi):\n${floorRows}\n- TOTAL minimum bahan: Rp ${floorTotal.toLocaleString('id-ID')}\n- Budget per porsi: Rp ${budget.toLocaleString('id-ID')}\n- Agar LOLOS: (total estimatedPrice ÷ servings) ≤ Rp ${budget.toLocaleString('id-ID')} → dengan bahan sebanyak ini minimal ${neededServings} porsi. Bila ${neededServings} porsi dinilai tidak wajar untuk hidangan ini, TOLAK permintaan dengan format UNPAYLOAD.`
         : '';
-      const repairPrompt = `${prompt}
+      // The wizard no longer asks for a budget (0 = unlimited), so only category and
+      // price-consistency errors reach here and the per-portion arithmetic does not apply.
+      const noBudgetRepair = `${prompt}
+
+### KOREKSI WAJIB DARI VALIDATOR SISTEM
+Resep sebelumnya DITOLAK karena:
+${feedback}
+
+Susun ULANG satu resep JSON yang IDENTIK strukturnya dan perbaiki pelanggaran di atas. Pastikan \`estimatedCost\` = jumlah seluruh \`estimatedPrice\`. Bentuk hidangan WAJIB sesuai Kategori Hidangan dan cocok untuk Target Konsumen. Jangan mengulangi pelanggaran yang sama.`;
+      const repairPrompt = budget <= 0 ? noBudgetRepair : `${prompt}
 
 ### KOREKSI WAJIB DARI VALIDATOR SISTEM
 Resep sebelumnya DITOLAK karena:
@@ -743,11 +752,11 @@ Susun ULANG satu resep JSON yang IDENTIK strukturnya tetapi mematuhi batas biaya
         return s + (warungPrice !== null ? Math.max(rawPrice, warungPrice) : Math.max(rawPrice, GLOBAL_MINIMUM_PRICE));
       }, 0);
       const priceSection = priceTable
-        ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${correctedTotal.toLocaleString('id-ID')}** |\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |`
+        ? `\n\n**Rincian harga bahan yang diajukan:**\n\n| Bahan | Harga |\n|---|---|\n${priceTable}\n| **Total** | **Rp ${correctedTotal.toLocaleString('id-ID')}** |${formData.budgetPerPortion > 0 ? `\n| Budget Anda | Rp ${formData.budgetPerPortion.toLocaleString('id-ID')} |` : ''}`
         : '';
 
       return buildRefusalResponse({
-        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan:`,
+        message: `**Resep tidak dapat dibuat**\n\n${errorDetail}${priceSection}\n\nSilakan pilih salah satu alternatif di bawah${formData.budgetPerPortion > 0 ? '. Perhatikan bahwa harga alternatif mungkin lebih tinggi dari budget Anda — naikkan budget jika diperlukan' : ''}:`,
         flaggedIngredients: ingredientNames.slice(0, 5),
       }, formData);
     }
