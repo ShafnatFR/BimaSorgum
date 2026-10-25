@@ -5,8 +5,6 @@ coverage/
 .DS_Store
 *.log
 .env*
-!.env.example
-.vercel
 
 # Supabase CLI local state
 supabase/.temp/

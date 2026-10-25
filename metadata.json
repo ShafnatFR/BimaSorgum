@@ -1,6 +1,0 @@
-{
-  "name": "SorghumCare AI Recipe Generator",
-  "description": "Aplikasi panduan resep pintar berbasis sorgum dengan rekomendasi target usia, jenis hidangan, bahan dapur, dan anggaran modal per porsi.",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

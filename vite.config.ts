@@ -18,9 +18,9 @@ export default defineConfig(({mode}) => {
     },
     server: {
       // Proxy: same-origin calls from the browser hit this prefix and are
-      // forwarded server-side to the AI backend (mirrors the Vercel rewrite
-      // `/bima-api/*` -> `/api/bima-chat`). `vite preview` (the Dokploy
-      // container) reuses it, since preview.proxy defaults to server.proxy.
+      // forwarded server-side to the AI backend (`/bima-api/*` -> `/api/*`).
+      // `vite preview` (the Dokploy container) reuses it, since preview.proxy
+      // defaults to server.proxy.
       // Origin is pinned to an allowed dev origin so a CORS allowlist on the
       // backend doesn't reject the hop. The consumer key is added here, not in
       // the browser; lowercase so it replaces any key the client sent instead
@@ -36,11 +36,6 @@ export default defineConfig(({mode}) => {
           },
         },
       },
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
     preview: {
       allowedHosts: true as any,

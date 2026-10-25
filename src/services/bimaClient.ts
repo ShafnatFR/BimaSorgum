@@ -2,8 +2,8 @@
  * BIMA AI client — talks to the SorghumCare LLM backend.
  *
  * Routes: browser → `/bima-api/chat` (same-origin proxy) → backend.
- * Streaming: enabled by default. The Vercel proxy relays SSE chunks so the
- * function stays alive beyond the 60s Hobby timeout.
+ * Streaming: enabled by default; the proxy (vite.config.ts) relays SSE chunks
+ * as they arrive.
  */
 const BIMA_CHAT_PATH = '/bima-api/chat';
 const BIMA_MODEL = import.meta.env.VITE_BIMA_MODEL || '';

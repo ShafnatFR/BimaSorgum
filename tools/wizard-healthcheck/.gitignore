@@ -1,6 +1,0 @@
-# Healthcheck harness artifacts (regenerated on every run)
-dist/
-reports/
-STATUS.md
-last-report.json
-last-report.md

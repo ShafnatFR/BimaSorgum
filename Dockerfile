@@ -13,7 +13,7 @@ RUN npm config set fetch-timeout 600000 && \
     npm config set fetch-retries 5
 
 # Install dependencies first (cache-friendly layer)
-COPY package.json package-lock.json* bun.lock* ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy the rest of the source code
