@@ -147,6 +147,8 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('home');
   const [generatorMode, setGeneratorMode] = useState<'wizard' | 'chat'>('wizard');
   const [wizardStep, setWizardStep] = useState<number>(1);
+  // Tab asal saat wizard dibuka — tombol kembali di step 1 pulang ke sini
+  const [wizardOriginTab, setWizardOriginTab] = useState<AppTab>('generate');
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 768 : true
   );
@@ -460,6 +462,10 @@ export default function App() {
 
   // Wizard Step Navigation
   const handleSetWizardStep = (step: number) => {
+    // Baru masuk wizard (bukan pindah step): catat asal halaman
+    if (!(currentTab === 'generate' && generatorMode === 'wizard')) {
+      setWizardOriginTab(currentTab);
+    }
     setWizardStep(step);
     setGeneratorMode('wizard');
     setCurrentTab('generate');
@@ -1263,8 +1269,9 @@ export default function App() {
                           if (wizardStep > 1) {
                             handleSetWizardStep(wizardStep - 1);
                           } else {
-                            // Step 1: kembali ke halaman generate (chat), bukan home.
-                            handleSelectTab('generate');
+                            // Step 1: kembali ke halaman asal (mis. home),
+                            // atau ke generate (chat) bila wizard dibuka dari sana.
+                            handleSelectTab(wizardOriginTab);
                           }
                         }}
                       />
@@ -1556,48 +1563,48 @@ export default function App() {
             />
           )}
 
-          {/* 3. MODALS & POPUPS */}
-          <>
-            {/* Video Tutorial Modal */}
-            {selectedVideoTutorial && (
-              <VideoTutorialModal
-                tutorial={selectedVideoTutorial}
-                onClose={handleCloseTutorial}
-              />
-            )}
-
-            {/* Search Modal */}
-            <SearchModal
-              isOpen={isSearchOpen}
-              onClose={handleCloseSearch}
-              onSelectRecipe={handleViewRecipe}
-              recipes={dbRecipes}
-              onSearchQuery={(query) => {
-                handleSendMessage(query);
-              }}
-            />
-
-            {/* Cook Mode Modal */}
-            {cookModeRecipe && (
-              <CookModeModal
-                recipe={cookModeRecipe}
-                onClose={handleCloseCookMode}
-              />
-            )}
-
-            {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
-            {preflight && (
-              <PreflightWarningModal
-                isOpen={true}
-                result={preflight.result}
-                originalPrompt={preflight.prompt}
-                onClose={() => setPreflight(null)}
-                onProceed={handlePreflightProceed}
-              />
-            )}
-          </>
         </>
       )}
+      {/* 3. MODALS & POPUPS — di luar ternary agar tetap tampil saat detail resep terbuka */}
+      <>
+        {/* Video Tutorial Modal */}
+        {selectedVideoTutorial && (
+          <VideoTutorialModal
+            tutorial={selectedVideoTutorial}
+            onClose={handleCloseTutorial}
+          />
+        )}
+
+        {/* Search Modal */}
+        <SearchModal
+          isOpen={isSearchOpen}
+          onClose={handleCloseSearch}
+          onSelectRecipe={handleViewRecipe}
+          recipes={dbRecipes}
+          onSearchQuery={(query) => {
+            handleSendMessage(query);
+          }}
+        />
+
+        {/* Cook Mode Modal */}
+        {cookModeRecipe && (
+          <CookModeModal
+            recipe={cookModeRecipe}
+            onClose={handleCloseCookMode}
+          />
+        )}
+
+        {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
+        {preflight && (
+          <PreflightWarningModal
+            isOpen={true}
+            result={preflight.result}
+            originalPrompt={preflight.prompt}
+            onClose={() => setPreflight(null)}
+            onProceed={handlePreflightProceed}
+          />
+        )}
+      </>
     </div>
   );
 }

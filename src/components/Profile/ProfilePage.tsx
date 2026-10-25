@@ -11,13 +11,10 @@ import {
   Edit3,
   User,
   ChefHat,
-  Search,
-  Heart,
-  MessageCircle
+  Search
 } from 'lucide-react';
 import { Recipe, SavedRecipe } from '../../types';
-import { CardImageWithSkeleton } from '../Common/CardSkeleton';
-import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
+import { RecipeInfoCard } from './RecipeInfoCard';
 
 interface ProfilePageProps {
   onOpenSearch: () => void;
@@ -113,6 +110,21 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
     });
   }, []);
 
+  // Count komentar & save untuk resep tersimpan
+  const savedIds = savedRecipes.map((s) => s.recipe.id).filter(Boolean).join(',');
+  useEffect(() => {
+    if (!savedIds) return;
+    import('../../lib/supabase').then(async (m) => {
+      try {
+        const counts = await m.fetchRecipeEngagement(savedIds.split(','));
+        setCommentCountMap((prev) => ({ ...prev, ...counts.comments }));
+        setSaveCountMap((prev) => ({ ...prev, ...counts.saves }));
+      } catch {
+        // abaikan — kartu tetap tampil tanpa angka
+      }
+    });
+  }, [savedIds]);
+
   useEffect(() => {
     setUserName(userNameProp);
     setUserRole(userRoleProp);
@@ -207,35 +219,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {shownSaved.map((saved) => (
-                  <div
+                  <RecipeInfoCard
                     key={saved.id}
+                    recipe={saved.recipe}
+                    saveCount={saveCountMap[saved.recipe.id] ?? 1}
+                    commentCount={commentCountMap[saved.recipe.id]}
                     onClick={() => handleRecipeClick(saved.recipe)}
-                    className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
-                  >
-                    <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
-                      <CardImageWithSkeleton
-                        alt={saved.recipe.title}
-                        imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        containerClassName="w-full h-full relative"
-                        src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-                        fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
-                      />
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                        {saved.recipe.title}
-                      </h3>
-                      <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                        {(saved.recipe.tags || []).slice(0, 2).map((tag, i) => (
-                          <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                    onRemoveSaved={onRemoveSaved ? () => onRemoveSaved(saved.recipe) : undefined}
+                  />
                 ))}
               </div>
             )
@@ -254,49 +247,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {shownPosted.map((recipe) => (
-                <div
+                <RecipeInfoCard
                   key={recipe.id}
+                  recipe={recipe}
+                  saveCount={saveCountMap[recipe.id]}
+                  commentCount={commentCountMap[recipe.id]}
                   onClick={() => handleRecipeClick(recipe)}
-                  className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
-                >
-                  <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
-                    <CardImageWithSkeleton
-                      alt={recipe.title}
-                      imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      containerClassName="w-full h-full relative"
-                      src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-                      fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
-                    />
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                      {recipe.title}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-1.5">
-                      <span className="inline-flex flex-col items-center leading-none">
-                        <Heart className="w-4 h-4 fill-red-600 text-red-600" />
-                        <span className="text-[10px] font-bold text-[#424843] mt-0.5">
-                          {saveCountMap[recipe.id] ?? 0}
-                        </span>
-                      </span>
-                      <span className="inline-flex flex-col items-center leading-none">
-                        <MessageCircle className="w-4 h-4 text-[#163422]" />
-                        <span className="text-[10px] font-bold text-[#424843] mt-0.5">
-                          {commentCountMap[recipe.id] ?? 0}
-                        </span>
-                      </span>
-                    </div>
-                    <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                      {(recipe.tags || []).slice(0, 2).map((tag, i) => (
-                        <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           )}
@@ -465,49 +424,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {savedRecipes.slice(0, 3).map((saved) => (
-                <div
-                  key={saved.id}
-                  onClick={() => handleRecipeClick(saved.recipe)}
-                  className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(45,75,55,0.06)] border border-[#2d4b37]/10 group cursor-pointer hover:shadow-md transition-all"
-                >
-                  <div className="h-32 w-full relative overflow-hidden bg-[#e8eae6]">
-                    <CardImageWithSkeleton
-                      alt={saved.recipe.title}
-                      imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      containerClassName="w-full h-full relative"
-                      src={saved.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-                      fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
-                    />
-                    {onRemoveSaved && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveSaved(saved.recipe);
-                        }}
-                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow flex items-center justify-center text-[#ba1a1a] hover:bg-white"
-                        title="Hapus dari tersimpan"
-                        aria-label="Hapus dari tersimpan"
-                      >
-                        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                      </button>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-xs sm:text-sm font-bold text-[#1a1c1b] truncate group-hover:text-[#163422]">
-                      {saved.recipe.title}
-                    </h3>
-                    <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                      {(saved.recipe.tags || []).slice(0, 2).map((tag, i) => (
-                        <span key={i} className="bg-[#cbebc3] text-[#324d30] px-2 py-0.5 rounded-full text-[10px] font-bold">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  <RecipeInfoCard
+                    key={saved.id}
+                    recipe={saved.recipe}
+                    saveCount={saveCountMap[saved.recipe.id] ?? 1}
+                    commentCount={commentCountMap[saved.recipe.id]}
+                    onClick={() => handleRecipeClick(saved.recipe)}
+                    onRemoveSaved={onRemoveSaved ? () => onRemoveSaved(saved.recipe) : undefined}
+                  />
+                ))}
               </div>
               {savedRecipes.length > 3 && (
                 <button
