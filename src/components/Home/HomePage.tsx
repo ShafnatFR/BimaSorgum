@@ -70,11 +70,7 @@ function timeTag(recipe: Recipe): string {
   return total > 0 ? `${total} Min` : '';
 }
 
-/** Get cost display. */
-function costTag(recipe: Recipe): string {
-  const cost = recipe.estimatedCost || recipe.targetBudget || 0;
-  return cost > 0 ? `Rp ${cost.toLocaleString('id-ID')}` : '';
-}
+/** Get time tag for a recipe card. */
 
 export const HomePage: React.FC<HomePageProps> = ({
   onOpenProfile,
@@ -184,7 +180,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {recipe.title}
           </h4>
           <p className="text-[11px] text-[#424843] mt-0.5 line-clamp-1">
-            {recipe.subtitle || costTag(recipe)}
+            {recipe.subtitle}
           </p>
           {!imagesEnabled && timeTag(recipe) && (
             <span className="inline-flex items-center gap-1 mt-1.5 bg-[#f4f4f2] text-[#424843] text-[10px] font-bold px-2 py-0.5 rounded-lg">
@@ -342,10 +338,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold leading-tight">
-              Ingin Resep Sorgum Sesuai Anggaran &amp; Bahan Dapur Anda?
+              Ingin Resep Sorgum Sesuai Bahan Dapur Anda?
             </h2>
             <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
-              Pilih target usia, jenis hidangan, bahan yang ada, dan atur budget per porsi mulai Rp 5.000.
+              Pilih target usia, jenis hidangan, dan bahan yang ada.
             </p>
           </div>
 

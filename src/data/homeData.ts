@@ -79,7 +79,7 @@ export const HOME_STUDENT_FAVORITES: HomeFavoriteItem[] = [
   {
     id: 'fav-3',
     title: 'Nasi Goreng Sorgum Ceria (SD Edition)',
-    categoryTag: 'Budget Friendly',
+    categoryTag: 'Tinggi Serat',
     timeTag: '15 Min',
     imageUrl: FOOD_IMAGES.nasiGoreng,
     isFavorite: true,

@@ -10,7 +10,6 @@ import {
   Loader2,
   Image as ImageIcon,
   ImageOff,
-  Wallet,
   Bot,
   ShieldAlert,
   Settings,
@@ -25,18 +24,15 @@ import {
 import { useAuth } from '../../lib/AuthProvider'
 import type { AdminConfig } from '../../types'
 
-const DEFAULT_BUDGET = '25000'
 const DEFAULT_AI_MODEL = import.meta.env.VITE_BIMA_MODEL || 'default'
 
 const MAIN_FEATURE_KEY = 'main_feature_enabled'
 const IMAGES_KEY = 'images_enabled'
-const BUDGET_KEY = 'max_budget_per_portion'
 const MODEL_KEY = 'ai_model'
 
 const DEDICATED_LABELS: Record<string, string> = {
   [MAIN_FEATURE_KEY]: 'Fitur Utama',
   [IMAGES_KEY]: 'Tampilan Gambar',
-  [BUDGET_KEY]: 'Anggaran',
   [MODEL_KEY]: 'Model AI',
 }
 
@@ -209,7 +205,6 @@ export const AdminSettings: React.FC = () => {
   const [notice, setNotice] = useState<string | null>(null)
   const [mainFeatureEnabled, setMainFeatureEnabled] = useState(true)
   const [imagesEnabled, setImagesEnabled] = useState(true)
-  const [budgetValue, setBudgetValue] = useState(DEFAULT_BUDGET)
   const [modelValue, setModelValue] = useState(DEFAULT_AI_MODEL)
   const [newKey, setNewKey] = useState('')
   const [newValue, setNewValue] = useState('')
@@ -220,11 +215,10 @@ export const AdminSettings: React.FC = () => {
     else setLoading(true)
     setError(null)
 
-    const [rows, mainFeature, images, budget, model] = await Promise.all([
+    const [rows, mainFeature, images, model] = await Promise.all([
       fetchAdminConfigs(),
       getAdminConfigValue(MAIN_FEATURE_KEY),
       getAdminConfigValue(IMAGES_KEY),
-      getAdminConfigValue(BUDGET_KEY),
       getAdminConfigValue(MODEL_KEY),
     ])
 
@@ -232,9 +226,6 @@ export const AdminSettings: React.FC = () => {
     setDrafts(buildDrafts(rows))
     setMainFeatureEnabled(toBool(mainFeature, true))
     setImagesEnabled(toBool(images, true))
-    setBudgetValue(
-      budget === null || budget === undefined ? DEFAULT_BUDGET : String(budget)
-    )
     setModelValue(typeof model === 'string' && model.trim() ? model : DEFAULT_AI_MODEL)
 
     setLoading(false)
@@ -348,31 +339,6 @@ export const AdminSettings: React.FC = () => {
       setNotice(
         `Tampilan gambar ${next ? 'diaktifkan' : 'dinonaktifkan'} untuk seluruh pengguna.`
       )
-    }
-  }
-
-  const handleSaveBudget = async () => {
-    const parsed = Number(budgetValue)
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      setError('Anggaran per porsi harus berupa angka positif.')
-      return
-    }
-
-    const existing = configs.find((row) => row.config_key === BUDGET_KEY)
-    setSavingExtra(BUDGET_KEY)
-    setError(null)
-    const success = await updateAdminConfig(
-      BUDGET_KEY,
-      parsed,
-      existing?.description ?? 'Batas maksimal anggaran per porsi (Rupiah)'
-    )
-    setSavingExtra(null)
-
-    if (success) {
-      setNotice('Batas anggaran per porsi berhasil disimpan.')
-      loadConfigs(true)
-    } else {
-      setError('Gagal menyimpan batas anggaran per porsi.')
     }
   }
 
@@ -647,38 +613,10 @@ export const AdminSettings: React.FC = () => {
 
             {/* BAGIAN D — Konfigurasi Lainnya */}
             <SectionCard
-              icon={<Wallet className="w-4 h-4" />}
+              icon={<Bot className="w-4 h-4" />}
               title="D. Konfigurasi Lainnya"
               description="Parameter pendukung yang dipakai saat generate resep."
             >
-              <div className="space-y-2">
-                <label className="block text-xs font-bold text-[#424843]">
-                  Batas Anggaran per Porsi (Rupiah)
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    value={budgetValue}
-                    onChange={(e) => setBudgetValue(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-[#c2c8c0] rounded-xl text-sm bg-white focus:outline-none focus:border-[#163422]"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSaveBudget}
-                    disabled={savingExtra === BUDGET_KEY}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#163422] text-white text-xs font-bold hover:bg-[#2d4b37] transition-colors cursor-pointer disabled:opacity-60 shrink-0"
-                  >
-                    {savingExtra === BUDGET_KEY ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Save className="w-3.5 h-3.5" />
-                    )}
-                    Simpan
-                  </button>
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="block text-xs font-bold text-[#424843] flex items-center gap-1.5">
                   <Bot className="w-3.5 h-3.5" />

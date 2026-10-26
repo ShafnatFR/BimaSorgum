@@ -37,7 +37,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
     'Low GI',
     'Pancake',
     'Roti Sorgum',
-    'Budget 10 Ribu',
+    'Resep Hemat',
     'Anak SD',
   ];
 
@@ -120,7 +120,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                       {rec.title}
                     </h4>
                     <span className="text-[11px] text-[#727972]">
-                      {rec.dishCategory} • Rp {rec.estimatedCost.toLocaleString('id-ID')}
+                      {rec.dishCategory}
                     </span>
                   </div>
                   <span className="text-xs font-bold text-[#163422] flex items-center gap-1">

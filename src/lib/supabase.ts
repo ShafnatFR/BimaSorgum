@@ -71,8 +71,6 @@ export interface DbRecipeRow {
   prep_time_minutes: number | null;
   cook_time_minutes: number | null;
   servings: number | null;
-  estimated_cost: number | null;
-  target_budget: number | null;
   calories_estimate: number | null;
   fiber_grams: number | null;
   protein_grams: number | null;
@@ -94,7 +92,6 @@ export interface DbIngredientRow {
   name: string;
   amount: string;
   notes: string | null;
-  estimated_price: number | null;
   sort_order: number;
 }
 
@@ -175,7 +172,6 @@ export function mapRecipe(
     .map((i) => ({
       name: i.name,
       amount: i.amount,
-      estimatedPrice: i.estimated_price ?? 0,
       notes: i.notes ?? undefined,
     }));
 
@@ -200,8 +196,6 @@ export function mapRecipe(
     subtitle: r.subtitle || '',
     targetAge: r.target_age_label || 'Semua Usia',
     dishCategory: categoryLabel,
-    targetBudget: r.target_budget ?? r.estimated_cost ?? 0,
-    estimatedCost: r.estimated_cost ?? 0,
     prepTimeMinutes: r.prep_time_minutes ?? 0,
     cookTimeMinutes: r.cook_time_minutes ?? 0,
     servings: r.servings ?? 1,
@@ -366,8 +360,6 @@ export async function upsertRecipe(
     prep_time_minutes: recipe.prepTimeMinutes,
     cook_time_minutes: recipe.cookTimeMinutes,
     servings: recipe.servings,
-    estimated_cost: recipe.estimatedCost,
-    target_budget: recipe.targetBudget,
     calories_estimate: nh.caloriesEstimate,
     fiber_grams: nh.fiberGrams,
     protein_grams: nh.proteinGrams,
@@ -400,7 +392,6 @@ export async function upsertRecipe(
       name: ing.name,
       amount: ing.amount,
       notes: ing.notes || null,
-      estimated_price: ing.estimatedPrice,
       sort_order: idx,
     }));
     await supabase.from('recipe_ingredients').insert(ingRows);

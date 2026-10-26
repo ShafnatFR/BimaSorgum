@@ -76,3 +76,7 @@ Migrasi di `supabase/migrations/`.
   `VITE_BIMA_API_KEY` — prefix `VITE_` ikut ter-bundle ke browser; pakai `BIMA_API_KEY` (proxy).
 - File raksasa yang layak dipecah: `src/App.tsx`, `ExploreRecipesPage.tsx`, `supabase.ts`, `recipeGenerator.ts`.
 - Belum ada unit test.
+
+## Hapus harga total (2026-10-26)
+- Semua kolom/variabel harga dihapus: DB `recipes.estimated_cost/target_budget`, `recipe_ingredients.estimated_price`, `ingredients.default_price` (migrasi 012, backup di `Documents/Key/backup_harga_bimasorgum_2026.json`); tipe TS, mapper supabase, preflight (konflik saja), recipeGuard (kategori saja), prompt AI tanpa skema/aturan harga; UI tanpa badge/filter/sort/Biaya Terendah/budget admin.
+- Prompt wizard kini tanpa PRICE_BUDGET_RULES; `promptRules()` tanpa argumen; `buildLocalSuggestions(dishCategory)`; `handlePreflightProceed(correctedPrompt)`.

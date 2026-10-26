@@ -66,10 +66,6 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
     });
   }).map(id => getIngredientDisplayName(id));
 
-  const formatRupiah = (amount: number) => {
-    return `Rp ${amount.toLocaleString('id-ID')}`;
-  };
-
   const scaleAmount = (amount: string, multiplier: number) => {
     return amount.replace(/(\d+)\/(\d+)|(\b\d+(?:[.,]\d+)?\b)/g, (match, fracNum, fracDen, standalone) => {
       if (fracNum !== undefined) {
@@ -104,7 +100,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
 
   const handleCopyRecipe = () => {
     const text = `${recipe.title}\n\n${recipe.subtitle}\n\nBahan-bahan:\n${recipe.ingredients
-      .map((i) => `- ${i.name} (${formatRupiah(i.estimatedPrice)})`)
+      .map((i) => `- ${i.name} (${i.amount})`)
       .join('\n')}\n\nNutrisi: ${recipe.nutritionHighlight.description}\n\nLangkah Memasak:\n${recipe.steps
       .map((s) => `${s.stepNumber}. ${s.title}: ${s.instruction}`)
       .join('\n')}`;
@@ -166,7 +162,7 @@ export const RecipeCardView: React.FC<RecipeCardViewProps> = ({
         </p>
       </div>
 
-      {/* AI robustness warnings (illogical combos, price/budget issues, fallback) */}
+      {/* AI robustness warnings (illogical combos, fallback) */}
       {recipe.aiWarnings && recipe.aiWarnings.length > 0 && (
         <div className="space-y-1.5">
           {recipe.aiWarnings.map((w, i) => (

@@ -5,9 +5,8 @@ import {
   Filter, 
   SlidersHorizontal, 
   Sparkles, 
-  Clock, 
-  DollarSign, 
-  ChevronRight, 
+  Clock,
+  ChevronRight,
   ChevronLeft,
   X, 
   Check, 
@@ -46,7 +45,7 @@ interface ExploreRecipesPageProps {
   recipesOverride?: Recipe[]; // when provided, the main grid uses DB catalog
 }
 
-type SortOption = 'popular' | 'price-asc' | 'time-asc' | 'fiber-desc';
+type SortOption = 'popular' | 'time-asc' | 'fiber-desc';
 
 export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   onViewRecipe,
@@ -61,7 +60,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [selectedConsumer, setSelectedConsumer] = useState<string>('all');
-  const [maxBudget, setMaxBudget] = useState<number | 'all'>('all');
   const [maxTime, setMaxTime] = useState<number | 'all'>('all');
   const [sortBy, setSortBy] = useState<SortOption>('popular');
   const [showFilterDrawer, setShowFilterDrawer] = useState(false);
@@ -183,18 +181,16 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     if (selectedCategory !== 'all') count++;
     if (selectedTag !== 'all') count++;
     if (selectedConsumer !== 'all') count++;
-    if (maxBudget !== 'all') count++;
     if (maxTime !== 'all') count++;
     if (activeCollectionId !== null) count++;
     return count;
-  }, [selectedCategory, selectedTag, selectedConsumer, maxBudget, maxTime, activeCollectionId]);
+  }, [selectedCategory, selectedTag, selectedConsumer, maxTime, activeCollectionId]);
 
   const clearAllFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
     setSelectedTag('all');
     setSelectedConsumer('all');
-    setMaxBudget('all');
     setMaxTime('all');
     setSortBy('popular');
     setActiveCollectionId(null);
@@ -244,11 +240,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
       );
     }
 
-    // Budget limit filter
-    if (maxBudget !== 'all') {
-      list = list.filter((r) => (r.estimatedCost || r.targetBudget) <= maxBudget);
-    }
-
     // Prep/Cook time limit filter
     if (maxTime !== 'all') {
       list = list.filter((r) => (r.prepTimeMinutes + r.cookTimeMinutes) <= maxTime);
@@ -256,9 +247,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
     // Sorting
     list.sort((a, b) => {
-      if (sortBy === 'price-asc') {
-        return (a.estimatedCost || a.targetBudget) - (b.estimatedCost || b.targetBudget);
-      }
       if (sortBy === 'time-asc') {
         return (
           a.prepTimeMinutes + a.cookTimeMinutes - (b.prepTimeMinutes + b.cookTimeMinutes)
@@ -276,7 +264,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
     selectedCategory,
     selectedTag,
     selectedConsumer,
-    maxBudget,
     maxTime,
     sortBy,
     activeCollectionId,
@@ -410,7 +397,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                     const isLiked = !!likedRecipeMap[item.recipe.id];
                     const currentLikes = likeCountMap[item.recipe.id] ?? item.likesCount;
                     const totalTime = item.recipe.prepTimeMinutes + item.recipe.cookTimeMinutes;
-                    const cost = item.recipe.estimatedCost || item.recipe.targetBudget;
                     const isFocused = idx === carouselIndex;
 
                     return (
@@ -484,13 +470,10 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                           </div>
 
                           {/* Bottom Overlay Info */}
-                          <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-white text-[11px] font-semibold pointer-events-none">
+                          <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center text-white text-[11px] font-semibold pointer-events-none">
                             <span className="flex items-center gap-1 bg-black/50 backdrop-blur-xs px-2 py-0.5 rounded-lg">
                               <Clock className="w-3 h-3 text-[#fdc65c]" />
                               {totalTime} Menit
-                            </span>
-                            <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-lg font-extrabold text-[11px]">
-                              Rp {cost.toLocaleString('id-ID')}
                             </span>
                           </div>
                           </div>
@@ -540,9 +523,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                               <span className="flex items-center gap-1 bg-[#f4f4f2] px-2 py-0.5 rounded-lg">
                                 <Clock className="w-3 h-3 text-[#7c5800]" />
                                 {totalTime} Menit
-                              </span>
-                              <span className="bg-[#fdc65c] text-[#745200] px-2 py-0.5 rounded-lg font-extrabold text-[11px]">
-                                Rp {cost.toLocaleString('id-ID')}
                               </span>
                             </div>
                           </div>
@@ -656,7 +636,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                 className="w-full py-2.5 pl-3 pr-8 bg-white rounded-xl border border-[#c2c8c0]/80 text-xs sm:text-sm font-semibold text-[#1a1c1b] focus:outline-none focus:border-[#163422] shadow-xs appearance-none cursor-pointer"
               >
                 <option value="popular">🔥 Terpopuler</option>
-                <option value="price-asc">💰 Biaya Terendah</option>
                 <option value="time-asc">⏱️ Waktu Cepat</option>
                 <option value="fiber-desc">🥗 Serat Tinggi</option>
               </select>
@@ -705,15 +684,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                 </span>
               )}
 
-              {maxBudget !== 'all' && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#fdc65c]/40 text-[#745200] text-[11px] font-semibold">
-                  <span>Budget ≤ Rp {maxBudget.toLocaleString('id-ID')}</span>
-                  <button onClick={() => setMaxBudget('all')} className="hover:opacity-75">
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-
               {maxTime !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#f4f4f2] text-[#424843] border border-[#c2c8c0] text-[11px] font-semibold">
                   <span>Waktu ≤ {maxTime}m</span>
@@ -751,7 +721,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                 Tidak ada resep yang sesuai kriteria
               </h3>
               <p className="text-xs text-[#727972] leading-relaxed">
-                Coba ubah kata kunci pencarian, sesuaikan filter budget, atau minta AI Chef kami meracik resep khusus untuk Anda.
+                Coba ubah kata kunci pencarian, sesuaikan filter, atau minta AI Chef kami meracik resep khusus untuk Anda.
               </p>
             </div>
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
@@ -775,7 +745,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
             {filteredRecipes.map((recipe) => {
               const saved = isRecipeSaved(recipe.id, recipe.title);
               const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
-              const cost = recipe.estimatedCost || recipe.targetBudget;
 
               return (
                 <div
@@ -827,9 +796,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                           <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#fdc65c]" />
                           {totalTime} Min
                         </span>
-                        <span className="bg-[#fdc65c] text-[#745200] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg text-[10px] sm:text-[11px] font-extrabold">
-                          Rp {cost >= 1000 ? `${(cost / 1000).toLocaleString('id-ID')}k` : cost.toLocaleString('id-ID')}
-                        </span>
                       </div>
                     </div>
                     ) : (
@@ -861,9 +827,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                         <span className="flex items-center gap-1 bg-[#f4f4f2] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg">
                           <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#7c5800]" />
                           {totalTime} Min
-                        </span>
-                        <span className="bg-[#fdc65c] text-[#745200] px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg font-extrabold">
-                          Rp {cost >= 1000 ? `${(cost / 1000).toLocaleString('id-ID')}k` : cost.toLocaleString('id-ID')}
                         </span>
                       </div>
                     </div>
@@ -1104,37 +1067,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                     </div>
                   </div>
 
-                  {/* 4. Maksimal Budget Per Porsi */}
-                  <div className="space-y-2.5 pt-4">
-                    <span className="text-xs font-extrabold text-[#163422] uppercase tracking-wider block">
-                      4. Maksimal Biaya per Porsi
-                    </span>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { value: 'all', label: 'Bebas Budget' },
-                        { value: 10000, label: '≤ Rp 10.000 (Hemat)' },
-                        { value: 15000, label: '≤ Rp 15.000' },
-                        { value: 20000, label: '≤ Rp 20.000' },
-                      ].map((item) => (
-                        <button
-                          key={String(item.value)}
-                          onClick={() => setMaxBudget(item.value as any)}
-                          className={`py-2 px-2.5 rounded-xl text-xs font-semibold text-left transition-all border flex items-center justify-between ${
-                            maxBudget === item.value
-                              ? 'bg-[#163422] text-white border-[#163422]'
-                              : 'bg-[#f4f4f2] text-[#424843] border-[#e2e3e1] hover:bg-[#e8eae7]'
-                          }`}
-                        >
-                          <span className="truncate">{item.label}</span>
-                          {maxBudget === item.value && (
-                            <Check className="w-3 h-3 text-[#fdc65c] shrink-0" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 5. Waktu Memasak & Urutan */}
+                  {/* 4. Waktu Memasak & Urutan */}
                   <div className="space-y-3 pt-4">
                     <div className="space-y-2">
                       <span className="text-xs font-extrabold text-[#163422] uppercase tracking-wider block">
@@ -1164,7 +1097,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                     <div className="space-y-2.5 pt-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold text-[#163422] uppercase tracking-wider">
-                          6. Urutkan Hasil Berdasarkan
+                          5. Urutkan Hasil Berdasarkan
                         </span>
                         {sortBy !== 'popular' && (
                           <span className="text-[10px] font-bold text-[#163422] bg-[#cbebc3] px-2 py-0.5 rounded-md">
@@ -1175,7 +1108,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                       <div className="flex flex-wrap gap-2">
                         {[
                           { id: 'popular', label: '🔥 Terpopuler' },
-                          { id: 'price-asc', label: '💰 Biaya Terendah' },
                           { id: 'time-asc', label: '⏱️ Waktu Tercepat' },
                           { id: 'fiber-desc', label: '🥗 Serat Tertinggi' },
                         ].map((item) => {

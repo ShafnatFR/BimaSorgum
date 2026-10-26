@@ -29,14 +29,12 @@ export interface IngredientItem {
   name: string;
   category: 'utama' | 'sayur' | 'protein' | 'bumbu' | 'pelengkap';
   iconName: string;
-  defaultPrice: number;
   unit: string;
 }
 
 export interface RecipeIngredient {
   name: string;
   amount: string;
-  estimatedPrice: number;
   notes?: string;
 }
 
@@ -64,8 +62,6 @@ export interface Recipe {
   subtitle: string;
   targetAge: string;
   dishCategory: string;
-  targetBudget: number;
-  estimatedCost: number;
   prepTimeMinutes: number;
   cookTimeMinutes: number;
   servings: number;
@@ -81,7 +77,7 @@ export interface Recipe {
   canPublish?: boolean;
   /** validation/robustness issues surfaced to the UI (see recipeGuard.ts) */
   aiWarnings?: { level: 'warning' | 'error'; message: string }[];
-  /** full explanation text when the AI declined the request (illogical/price) */
+  /** full explanation text when the AI declined the request (illogical) */
   aiRefusalText?: string;
 }
 
@@ -89,10 +85,7 @@ export interface Recipe {
 export interface RecipeSuggestion {
   title: string;
   ingredients: string[];
-  estimatedCost: number;
   description: string;
-  /** Individual ingredient prices, e.g. ["Tepung sorgum: Rp2.500", "Susu: Rp3.000"] */
-  ingredientPrices?: string[];
   /** Estimated total cooking time in minutes */
   estimatedTimeMinutes?: number;
   /** Which ingredients from the original request were removed/changed */
@@ -134,7 +127,6 @@ export interface WizardFormData {
   dishCategory: DishCategoryId;
   selectedIngredientIds: string[];
   customIngredients: string[];
-  budgetPerPortion: number;
   prepTimeLimit: string;
   notes?: string;
 }

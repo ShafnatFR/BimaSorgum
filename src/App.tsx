@@ -228,7 +228,6 @@ export default function App() {
     dishCategory: 'makanan_berat',
     selectedIngredientIds: ['biji_sorgum'],
     customIngredients: [],
-    budgetPerPortion: 0, // tidak dibatasi — langkah modal dihapus dari wizard
     prepTimeLimit: 'Maks 30 Menit',
   });
   
@@ -610,7 +609,7 @@ export default function App() {
       // AI tidak tersedia (timeout / kuota upstream / backend error). Pesan error asli
       // dipertahankan apa adanya, lalu user tetap diberi jalan keluar: saran resep lokal
       // (tanpa panggilan AI) agar wizard tidak pernah berakhir di jalan buntu.
-      const fallbackSuggestions = buildLocalSuggestions(wizardData.dishCategory, wizardData.budgetPerPortion || 0);
+      const fallbackSuggestions = buildLocalSuggestions(wizardData.dishCategory);
       const aiErrorMsg: ChatMessage = {
         id: `msg-ai-${Date.now()}`,
         sender: 'ai',
@@ -722,7 +721,7 @@ export default function App() {
         // Recipe flow: generate a structured recipe (with DB persistence).
         const newRecipe = await generateCustomRecipeQueryAsync(trimmed);
 
-        // AI may refuse an illogical/over-budget request. Render the full
+        // AI may refuse an illogical request. Render the full
         // explanation as a text answer instead of a broken recipe card.
         const refusal = !newRecipe.ingredients || newRecipe.ingredients.length === 0;
         if (refusal) {
@@ -849,7 +848,7 @@ export default function App() {
       // pesan error asli tetap ditampilkan, lalu user diberi jalan keluar berupa saran resep
       // lokal (tanpa panggilan AI) supaya jalur chat tidak berakhir di jalan buntu.
       const chatFallbackSuggestions = explicitRecipeOrder && isAiUnavailableError(e)
-        ? buildLocalSuggestions(inferDishCategoryFromText(trimmed), wizardData.budgetPerPortion || 0)
+        ? buildLocalSuggestions(inferDishCategoryFromText(trimmed))
         : [];
       setChatMessages((prev) =>
         prev.map((m) => {
@@ -871,18 +870,10 @@ export default function App() {
   };
 
   // Called when the user fixes the preflight warnings and proceeds.
-  const handlePreflightProceed = (correctedPrompt: string, raisedBudget: number | null) => {
+  const handlePreflightProceed = (correctedPrompt: string) => {
     setPreflight(null);
-    let finalPrompt = correctedPrompt;
-    if (raisedBudget != null) {
-      // Replace any existing "budget X" mention with the raised figure.
-      finalPrompt = finalPrompt.replace(/budget\s*(?:rp\s*)?[0-9][0-9.,]*(?:\s*ribu)?/gi, `budget ${raisedBudget}`);
-      if (!/budget/i.test(finalPrompt)) {
-        finalPrompt = `${finalPrompt} (budget ${raisedBudget})`;
-      }
-    }
-    if (finalPrompt.trim()) {
-      handleSendMessage(finalPrompt.trim());
+    if (correctedPrompt.trim()) {
+      handleSendMessage(correctedPrompt.trim());
     }
   };
 
@@ -1082,7 +1073,7 @@ export default function App() {
           {
             id: 'msg-user-1',
             sender: 'user',
-            text: 'Berikan saya resep nasi goreng sorgum untuk anak SD dengan budget 10 ribu.',
+            text: 'Berikan saya resep nasi goreng sorgum untuk anak SD.',
             timestamp: '10:42 AM',
           },
           {
@@ -1593,7 +1584,7 @@ export default function App() {
           />
         )}
 
-        {/* Preflight warning modal (illogical ingredients / unrealistic price) */}
+        {/* Preflight warning modal (illogical ingredients) */}
         {preflight && (
           <PreflightWarningModal
             isOpen={true}

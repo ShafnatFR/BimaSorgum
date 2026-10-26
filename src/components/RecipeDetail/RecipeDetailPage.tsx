@@ -545,7 +545,7 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 </div>
               </div>
 
-              {/* Takaran view: name + amount, no price */}
+              {/* Takaran view: name + amount */}
               <ul className="space-y-1">
                 {recipe.ingredients.map((ing, idx) => {
                   const isChecked = checkedIngredients.includes(idx);

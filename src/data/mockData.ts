@@ -67,7 +67,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Biji Sorgum',
     category: 'utama',
     iconName: 'grain',
-    defaultPrice: 3000,
     unit: '1 porsi (100g)',
   },
   {
@@ -75,7 +74,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Tepung Sorgum',
     category: 'utama',
     iconName: 'blur_on',
-    defaultPrice: 3500,
     unit: '100g',
   },
   {
@@ -83,7 +81,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Sayuran Hijau',
     category: 'sayur',
     iconName: 'eco',
-    defaultPrice: 1500,
     unit: '1 ikat kecil',
   },
   {
@@ -91,7 +88,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Protein Ayam/Telur',
     category: 'protein',
     iconName: 'egg',
-    defaultPrice: 2500,
     unit: '1 butir / 50g ayam',
   },
   {
@@ -99,7 +95,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Bawang Merah',
     category: 'bumbu',
     iconName: 'spa',
-    defaultPrice: 1000,
     unit: '3 siung',
   },
   {
@@ -107,7 +102,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Bawang Putih',
     category: 'bumbu',
     iconName: 'spa',
-    defaultPrice: 1000,
     unit: '2 siung',
   },
   {
@@ -115,7 +109,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Santan',
     category: 'pelengkap',
     iconName: 'water_drop',
-    defaultPrice: 1500,
     unit: '50ml',
   },
   {
@@ -123,7 +116,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Wortel Segar',
     category: 'sayur',
     iconName: 'nutrition',
-    defaultPrice: 1000,
     unit: '1 buah kecil',
   },
   {
@@ -131,7 +123,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Kecap Manis & Garam',
     category: 'bumbu',
     iconName: 'soup_kitchen',
-    defaultPrice: 1000,
     unit: 'Secukupnya',
   },
   {
@@ -139,7 +130,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Minyak Kelapa / Goreng',
     category: 'pelengkap',
     iconName: 'oil_barrel',
-    defaultPrice: 1000,
     unit: '1 sdm',
   },
   {
@@ -147,7 +137,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Madu Alami',
     category: 'pelengkap',
     iconName: 'hive',
-    defaultPrice: 2000,
     unit: '1 sdm',
   },
   {
@@ -155,7 +144,6 @@ export const DEFAULT_INGREDIENTS: IngredientItem[] = [
     name: 'Pisang / Buah Segar',
     category: 'pelengkap',
     iconName: 'temp_preferences_custom',
-    defaultPrice: 1500,
     unit: '1 buah',
   },
 ];
@@ -185,18 +173,16 @@ export const INITIAL_FEATURED_RECIPE: Recipe = {
   subtitle: 'Tentu! Ini resep bergizi, lezat, dan sangat terjangkau untuk bekal sekolah:',
   targetAge: 'Anak Sekolah (6-12 thn)',
   dishCategory: 'Makanan Berat',
-  targetBudget: 10000,
-  estimatedCost: 9500,
   prepTimeMinutes: 10,
   cookTimeMinutes: 15,
   servings: 1,
   ingredients: [
-    { name: '1 piring nasi sorgum dingin', amount: '1 piring (150g)', estimatedPrice: 3000 },
-    { name: '1 butir telur, kocok lepas', amount: '1 butir', estimatedPrice: 2000 },
-    { name: 'Wortel kecil, potong dadu', amount: '1/2 buah', estimatedPrice: 1000 },
-    { name: 'Bawang merah & putih', amount: '2 siung', estimatedPrice: 1500 },
-    { name: 'Kecap manis & garam', amount: 'Secukupnya', estimatedPrice: 1000 },
-    { name: 'Sedikit minyak goreng', amount: '1 sdm', estimatedPrice: 1000 },
+    { name: '1 piring nasi sorgum dingin', amount: '1 piring (150g)' },
+    { name: '1 butir telur, kocok lepas', amount: '1 butir' },
+    { name: 'Wortel kecil, potong dadu', amount: '1/2 buah' },
+    { name: 'Bawang merah & putih', amount: '2 siung' },
+    { name: 'Kecap manis & garam', amount: 'Secukupnya' },
+    { name: 'Sedikit minyak goreng', amount: '1 sdm' },
   ],
   nutritionHighlight: {
     title: 'Nutrisi Unggulan',
@@ -235,7 +221,7 @@ export const INITIAL_FEATURED_RECIPE: Recipe = {
     },
   ],
   imageUrl: FOOD_IMAGES.nasiGoreng,
-  tags: ['Bekal Sekolah', 'Bebas Gluten', 'Budget Friendly', 'Tinggi Serat'],
+  tags: ['Bekal Sekolah', 'Bebas Gluten', 'Tinggi Serat'],
   createdAt: '2026-08-26T10:42:00Z',
 };
 
@@ -252,17 +238,15 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
       subtitle: 'Pancake lembut mengenyangkan dari tepung sorgum dengan madu kelapa murni.',
       targetAge: 'Balita & Anak Sekolah',
       dishCategory: 'Camilan Sehat',
-      targetBudget: 12000,
-      estimatedCost: 11000,
-      prepTimeMinutes: 10,
+          prepTimeMinutes: 10,
       cookTimeMinutes: 10,
       servings: 2,
       ingredients: [
-        { name: 'Tepung sorgum halus', amount: '100g', estimatedPrice: 4000 },
-        { name: '1 butir telur ayam', amount: '1 butir', estimatedPrice: 2000 },
-        { name: 'Susu / santan cair', amount: '80ml', estimatedPrice: 2000 },
-        { name: 'Madu atau gula kelapa', amount: '1 sdm', estimatedPrice: 2000 },
-        { name: 'Baking powder & sejumput garam', amount: '1/2 sdt', estimatedPrice: 1000 },
+        { name: 'Tepung sorgum halus', amount: '100g' },
+        { name: '1 butir telur ayam', amount: '1 butir' },
+        { name: 'Susu / santan cair', amount: '80ml' },
+        { name: 'Madu atau gula kelapa', amount: '1 sdm' },
+        { name: 'Baking powder & sejumput garam', amount: '1/2 sdt' },
       ],
       nutritionHighlight: {
         title: 'Nutrisi Unggulan',
@@ -308,17 +292,15 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
       subtitle: 'Roti tawar artisanal kaya serat bertekstur padat lembut tanpa terigu gandum.',
       targetAge: 'Remaja & Dewasa',
       dishCategory: 'Makanan Berat',
-      targetBudget: 15000,
-      estimatedCost: 14500,
-      prepTimeMinutes: 20,
+          prepTimeMinutes: 20,
       cookTimeMinutes: 40,
       servings: 6,
       ingredients: [
-        { name: 'Tepung sorgum premium', amount: '250g', estimatedPrice: 7500 },
-        { name: 'Tepung tapioka / pati garut', amount: '50g', estimatedPrice: 1500 },
-        { name: 'Ragi instan', amount: '1 sdt', estimatedPrice: 1500 },
-        { name: 'Minyak kelapa & air hangat', amount: '200ml', estimatedPrice: 2000 },
-        { name: 'Biji chia / biji sorgum sangrai', amount: '1 sdm', estimatedPrice: 2000 },
+        { name: 'Tepung sorgum premium', amount: '250g' },
+        { name: 'Tepung tapioka / pati garut', amount: '50g' },
+        { name: 'Ragi instan', amount: '1 sdt' },
+        { name: 'Minyak kelapa & air hangat', amount: '200ml' },
+        { name: 'Biji chia / biji sorgum sangrai', amount: '1 sdm' },
       ],
       nutritionHighlight: {
         title: 'Nutrisi Unggulan',
@@ -364,17 +346,15 @@ export const INITIAL_SAVED_RECIPES: SavedRecipe[] = [
       subtitle: 'Mangkok nutrisi lengkap dengan paduan biji sorgum pulen, selada, dan saus wijen.',
       targetAge: 'Remaja, Dewasa & Lansia',
       dishCategory: 'Makanan Berat',
-      targetBudget: 12000,
-      estimatedCost: 10500,
-      prepTimeMinutes: 15,
+          prepTimeMinutes: 15,
       cookTimeMinutes: 15,
       servings: 1,
       ingredients: [
-        { name: 'Biji sorgum rebus empuk', amount: '1 mangkok (120g)', estimatedPrice: 3500 },
-        { name: 'Sayuran hijau (bayam & selada)', amount: '1 genggam', estimatedPrice: 2000 },
-        { name: 'Tempe / Tahu panggang', amount: '3 potong dadu', estimatedPrice: 2000 },
-        { name: 'Irisan tomat & mentimun', amount: '1 buah', estimatedPrice: 1500 },
-        { name: 'Dressing wijen sangrai', amount: '2 sdm', estimatedPrice: 1500 },
+        { name: 'Biji sorgum rebus empuk', amount: '1 mangkok (120g)' },
+        { name: 'Sayuran hijau (bayam & selada)', amount: '1 genggam' },
+        { name: 'Tempe / Tahu panggang', amount: '3 potong dadu' },
+        { name: 'Irisan tomat & mentimun', amount: '1 buah' },
+        { name: 'Dressing wijen sangrai', amount: '2 sdm' },
       ],
       nutritionHighlight: {
         title: 'Nutrisi Unggulan',
@@ -415,5 +395,5 @@ export const RECENT_CHAT_TOPICS = [
   { id: 'chat-1', title: 'Gluten-free pancakes', time: '10:42 AM', preview: 'Resep pancake sorgum lembut untuk sarapan balita' },
   { id: 'chat-2', title: 'Sorghum bread recipe', time: 'Kemarin', preview: 'Roti tawar sorgum tanpa ragi terigu' },
   { id: 'chat-3', title: 'Low GI dinner ideas', time: '2 hari lalu', preview: 'Menu makan malam ramah gula darah' },
-  { id: 'chat-4', title: 'Nasi Goreng Sorgum SD', time: 'Hari ini', preview: 'Resep bekal anak SD budget 10 ribu' },
+  { id: 'chat-4', title: 'Nasi Goreng Sorgum SD', time: 'Hari ini', preview: 'Resep bekal anak SD' },
 ];
