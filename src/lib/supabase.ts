@@ -1036,6 +1036,109 @@ export async function fetchRecipeEngagement(
 }
 
 /* ================================================================== *
+ *  RECIPE LIKES (publik) — apresiasi semua user, bukan koleksi pribadi
+ * ================================================================== */
+
+export interface RecipeStats {
+  likes: number;
+  reviewsCount: number;
+  ratingAvg: number | null;
+}
+
+/** Agregat like/review per resep dari view publik (tanpa login bisa baca). */
+export async function fetchRecipeStats(
+  recipeIds: string[],
+): Promise<Record<string, RecipeStats>> {
+  const out: Record<string, RecipeStats> = {};
+  const ids = [...new Set(recipeIds.filter(Boolean))];
+  if (ids.length === 0) return out;
+  const { data } = await supabase.from('v_recipe_stats').select('*').in('recipe_id', ids);
+  for (const row of (data as any[]) || []) {
+    out[row.recipe_id] = {
+      likes: Number(row.likes) || 0,
+      reviewsCount: Number(row.reviews_count) || 0,
+      ratingAvg: row.rating_avg != null ? Number(row.rating_avg) : null,
+    };
+  }
+  return out;
+}
+
+/** Resep yang di-like user saat ini (untuk state hati). */
+export async function fetchLikedRecipeIds(): Promise<Set<string>> {
+  const userId = await getUserIdAsync();
+  if (!userId) return new Set();
+  const { data } = await supabase.from('recipe_likes').select('recipe_id').eq('user_id', userId);
+  return new Set(((data as { recipe_id: string }[]) || []).map((d) => d.recipe_id));
+}
+
+/** Toggle like publik. Return state baru + count, null bila belum login. */
+export async function toggleRecipeLike(
+  recipeId: string,
+): Promise<{ liked: boolean; count: number } | null> {
+  const userId = await getUserIdAsync();
+  if (!userId) return null;
+  const { data: existing } = await supabase
+    .from('recipe_likes')
+    .select('id')
+    .eq('recipe_id', recipeId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (existing) {
+    await supabase.from('recipe_likes').delete().eq('id', (existing as { id: string }).id);
+  } else {
+    await supabase.from('recipe_likes').insert({ recipe_id: recipeId, user_id: userId });
+  }
+  const { count } = await supabase
+    .from('recipe_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('recipe_id', recipeId);
+  return { liked: !existing, count: count || 0 };
+}
+
+/* ================================================================== *
+ *  RECIPE REVIEWS (publik) — rating 1-5 + ulasan
+ * ================================================================== */
+
+export interface RecipeReview {
+  id: string;
+  user_id: string;
+  recipe_id: string;
+  rating: number;
+  review_text: string | null;
+  created_at: string;
+}
+
+/** Ambil review publik per resep (terbaru dulu). */
+export async function fetchRecipeReviews(recipeId: string): Promise<RecipeReview[]> {
+  const { data } = await supabase
+    .from('recipe_reviews')
+    .select('*')
+    .eq('recipe_id', recipeId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  return (data as RecipeReview[]) || [];
+}
+
+/** Simpan/update rating user (satu per user per resep). */
+export async function upsertRecipeReview(
+  recipeId: string,
+  rating: number,
+  reviewText?: string,
+): Promise<boolean> {
+  const userId = await getUserIdAsync();
+  if (!userId || rating < 1 || rating > 5) return false;
+  const { error } = await supabase.from('recipe_reviews').upsert(
+    { user_id: userId, recipe_id: recipeId, rating, review_text: reviewText || null },
+    { onConflict: 'user_id,recipe_id' },
+  );
+  if (error) {
+    console.error('upsertRecipeReview:', error.message);
+    return false;
+  }
+  return true;
+}
+
+/* ================================================================== *
  *  ADMIN — konfigurasi payload (admin_configs)
  * ================================================================== */
 

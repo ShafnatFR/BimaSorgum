@@ -1,33 +1,31 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Search, 
-  Filter, 
-  SlidersHorizontal, 
-  Sparkles, 
+import {
+  Search,
+  SlidersHorizontal,
+  Sparkles,
   Clock,
   ChevronRight,
   ChevronLeft,
-  X, 
-  Check, 
-  Flame, 
+  X,
+  Check,
   Heart,
-  TrendingUp,
-  Layers,
+  Bookmark,
   ArrowUpDown,
-  Utensils,
   Star,
-  ThumbsUp,
-  Award
 } from 'lucide-react';
 import { Recipe } from '../../types';
 import { GLOBAL_FALLBACK_FOOD_IMAGE } from '../../data/imageAssets';
-import { 
-  EXPLORE_RECIPES_DATABASE, 
-  RECIPE_COLLECTIONS, 
-  MOST_LIKED_RECIPES,
-  MostLikedRecipeItem 
+import {
+  EXPLORE_RECIPES_DATABASE,
+  RECIPE_COLLECTIONS,
 } from '../../data/exploreRecipesData';
+import {
+  fetchRecipeStats,
+  fetchLikedRecipeIds,
+  toggleRecipeLike,
+  type RecipeStats,
+} from '../../lib/supabase';
 import {
   CardImageWithSkeleton,
   CarouselCardSkeleton,
@@ -104,10 +102,78 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
   const cardGap = 16;
   const itemFullWidth = cardWidth + cardGap;
 
-  const visibleCards = containerWidth > 0 
-    ? Math.max(1, Math.floor((containerWidth + cardGap) / itemFullWidth)) 
+  const visibleCards = containerWidth > 0
+    ? Math.max(1, Math.floor((containerWidth + cardGap) / itemFullWidth))
     : 1;
-  const maxCarouselIndex = Math.max(0, MOST_LIKED_RECIPES.length - visibleCards);
+
+  // Like publik (agregat real) + resep yang di-like user — pisah dari Save/koleksi.
+  const [statsMap, setStatsMap] = useState<Record<string, RecipeStats>>({});
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+
+  // Kandidat carousel: katalog DB bila ada, fallback data statis.
+  const topCandidates: Recipe[] = useMemo(() => {
+    const base = recipesOverride && recipesOverride.length > 0 ? recipesOverride : EXPLORE_RECIPES_DATABASE;
+    return [...base].sort((a, b) => (statsMap[b.id]?.likes || 0) - (statsMap[a.id]?.likes || 0)).slice(0, 8);
+  }, [recipesOverride, statsMap]);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const base = recipesOverride && recipesOverride.length > 0 ? recipesOverride : EXPLORE_RECIPES_DATABASE;
+      const [stats, liked] = await Promise.all([
+        fetchRecipeStats(base.map((r) => r.id)),
+        fetchLikedRecipeIds(),
+      ]);
+      if (!alive) return;
+      setStatsMap(stats);
+      setLikedIds(liked);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [recipesOverride]);
+
+  const handleToggleLike = async (recipeId: string) => {
+    const prevLiked = likedIds.has(recipeId);
+    const prevCount = statsMap[recipeId]?.likes || 0;
+    // Optimistic update
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (prevLiked) next.delete(recipeId);
+      else next.add(recipeId);
+      return next;
+    });
+    setStatsMap((prev) => ({
+      ...prev,
+      [recipeId]: { ...prev[recipeId], likes: Math.max(0, prevCount + (prevLiked ? -1 : 1)), reviewsCount: prev[recipeId]?.reviewsCount || 0, ratingAvg: prev[recipeId]?.ratingAvg ?? null },
+    }));
+    const res = await toggleRecipeLike(recipeId);
+    if (!res) {
+      // Belum login — kembalikan.
+      setLikedIds((prev) => {
+        const next = new Set(prev);
+        if (prevLiked) next.add(recipeId);
+        else next.delete(recipeId);
+        return next;
+      });
+      setStatsMap((prev) => ({
+        ...prev,
+        [recipeId]: { ...prev[recipeId], likes: prevCount, reviewsCount: prev[recipeId]?.reviewsCount || 0, ratingAvg: prev[recipeId]?.ratingAvg ?? null },
+      }));
+      return;
+    }
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (res.liked) next.add(recipeId);
+      else next.delete(recipeId);
+      return next;
+    });
+    setStatsMap((prev) => ({
+      ...prev,
+      [recipeId]: { ...prev[recipeId], likes: res.count, reviewsCount: prev[recipeId]?.reviewsCount || 0, ratingAvg: prev[recipeId]?.ratingAvg ?? null },
+    }));
+  };
+  const maxCarouselIndex = Math.max(0, topCandidates.length - visibleCards);
 
   const canScrollLeft = carouselIndex > 0;
   const canScrollRight = carouselIndex < maxCarouselIndex;
@@ -122,38 +188,6 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
   const scrollCarouselToIndex = (index: number) => {
     setCarouselIndex(Math.min(maxCarouselIndex, Math.max(0, index)));
-  };
-
-  const [likedRecipeMap, setLikedRecipeMap] = useState<Record<string, boolean>>({
-    'nasi-goreng-sorgum-sd': true,
-    'pancakes-sorghum': true,
-  });
-  const [likeCountMap, setLikeCountMap] = useState<Record<string, number>>(() => {
-    const initialMap: Record<string, number> = {};
-    MOST_LIKED_RECIPES.forEach((item) => {
-      initialMap[item.recipe.id] = item.likesCount;
-    });
-    return initialMap;
-  });
-
-  const handleToggleLike = (recipeId: string) => {
-    setLikedRecipeMap((prev) => {
-      const isCurrentlyLiked = !!prev[recipeId];
-      const nextState = !isCurrentlyLiked;
-      
-      setLikeCountMap((countPrev) => {
-        const currentCount = countPrev[recipeId] || 100;
-        return {
-          ...countPrev,
-          [recipeId]: isCurrentlyLiked ? currentCount - 1 : currentCount + 1,
-        };
-      });
-
-      return {
-        ...prev,
-        [recipeId]: nextState,
-      };
-    });
   };
 
   // Filter Categories
@@ -307,7 +341,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                   Paling Banyak Disukai
                 </h2>
                 <p className="text-xs text-[#5e635f]">
-                  Resep sorgum terfavorit dengan rating tertinggi dan ribuan apresiasi keluarga
+                  Resep pilihan komunitas berdasarkan jumlah suka
                 </p>
               </div>
 
@@ -315,7 +349,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
               <div className="flex items-center gap-2 self-end">
                 {/* Visual Slide Dots Indicator */}
                 <div className="hidden sm:flex items-center gap-1 bg-[#f0f2ef] px-2 py-1 rounded-full border border-[#e2e3e1]">
-                  {MOST_LIKED_RECIPES.map((_, idx) => (
+                  {topCandidates.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => scrollCarouselToIndex(idx)}
@@ -393,16 +427,18 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                   }}
                   className="flex items-stretch gap-4 cursor-grab active:cursor-grabbing"
                 >
-                  {MOST_LIKED_RECIPES.map((item, idx) => {
-                    const isLiked = !!likedRecipeMap[item.recipe.id];
-                    const currentLikes = likeCountMap[item.recipe.id] ?? item.likesCount;
-                    const totalTime = item.recipe.prepTimeMinutes + item.recipe.cookTimeMinutes;
+                  {topCandidates.map((recipe, idx) => {
+                    const isLiked = likedIds.has(recipe.id);
+                    const st = statsMap[recipe.id];
+                    const currentLikes = st?.likes || 0;
+                    const totalTime = recipe.prepTimeMinutes + recipe.cookTimeMinutes;
                     const isFocused = idx === carouselIndex;
+                    const rank = idx + 1;
 
                     return (
                       <motion.div
-                        key={item.recipe.id}
-                        onClick={() => onViewRecipe(item.recipe)}
+                        key={recipe.id}
+                        onClick={() => onViewRecipe(recipe)}
                         animate={{
                           scale: isFocused ? 1 : 0.985,
                           opacity: 1,
@@ -417,8 +453,8 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                           {imagesEnabled ? (
                           <div className="relative h-40 w-full overflow-hidden bg-[#e8eae6]">
                             <CardImageWithSkeleton
-                              src={item.recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
-                              alt={item.recipe.title}
+                              src={recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE}
+                              alt={recipe.title}
                               fallbackSrc={GLOBAL_FALLBACK_FOOD_IMAGE}
                               containerClassName="w-full h-full relative"
                               imageClassName="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
@@ -430,16 +466,16 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                             {/* Rank Badge */}
                             <span
                               className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs flex items-center gap-1 backdrop-blur-xs ${
-                                item.rank === 1
+                                rank === 1
                                   ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                                  : item.rank === 2
+                                  : rank === 2
                                   ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white'
-                                  : item.rank === 3
+                                  : rank === 3
                                   ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-white'
                                   : 'bg-[#163422]/90 text-[#fdc65c]'
                               }`}
                             >
-                              {item.rank === 1 ? '🏆 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `#${item.rank}`}
+                              {rank === 1 ? '🏆 #1' : rank === 2 ? '🥈 #2' : rank === 3 ? '🥉 #3' : `#${rank}`}
                               <span className="font-bold">Favorit</span>
                             </span>
 
@@ -447,7 +483,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleToggleLike(item.recipe.id);
+                                handleToggleLike(recipe.id);
                               }}
                               className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all backdrop-blur-md active:scale-90 cursor-pointer ${
                                 isLiked
@@ -483,22 +519,22 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                             <div className="flex items-center justify-between gap-2">
                               <span
                                 className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide shadow-xs flex items-center gap-1 ${
-                                  item.rank === 1
+                                  rank === 1
                                     ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
-                                    : item.rank === 2
+                                    : rank === 2
                                     ? 'bg-gradient-to-r from-slate-600 to-slate-700 text-white'
-                                    : item.rank === 3
+                                    : rank === 3
                                     ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-white'
                                     : 'bg-[#163422]/90 text-[#fdc65c]'
                                 }`}
                               >
-                                {item.rank === 1 ? '🏆 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `#${item.rank}`}
+                                {rank === 1 ? '🏆 #1' : rank === 2 ? '🥈 #2' : rank === 3 ? '🥉 #3' : `#${rank}`}
                                 <span className="font-bold">Favorit</span>
                               </span>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleToggleLike(item.recipe.id);
+                                  handleToggleLike(recipe.id);
                                 }}
                                 className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all active:scale-90 cursor-pointer ${
                                   isLiked
@@ -532,33 +568,39 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                         <div className="p-3.5 space-y-2.5">
                           {/* Rating & Category */}
                           <div className="flex items-center justify-between text-[11px]">
-                            <div className="flex items-center gap-1 text-amber-600 font-bold">
-                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                              <span>{item.rating}</span>
-                              <span className="text-[#727972] font-normal">
-                                ({item.reviewsCount})
+                            {st?.ratingAvg != null ? (
+                              <div className="flex items-center gap-1 text-amber-600 font-bold">
+                                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                                <span>{st.ratingAvg.toFixed(1)}</span>
+                                <span className="text-[#727972] font-normal">
+                                  ({st.reviewsCount})
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] font-bold text-[#2d4b37] bg-[#cbebc3]/40 px-2 py-0.5 rounded-md">
+                                Pilihan Editor
                               </span>
-                            </div>
+                            )}
                             <span className="text-[10px] font-bold bg-[#f4f4f2] text-[#424843] px-2 py-0.5 rounded-md">
-                              {item.recipe.dishCategory}
+                              {recipe.dishCategory}
                             </span>
                           </div>
 
                           <div>
                             <h3 className="font-bold text-sm text-[#163422] line-clamp-1 group-hover:text-[#2d4b37] transition-colors">
-                              {item.recipe.title}
+                              {recipe.title}
                             </h3>
                             <p className="text-xs text-[#424843] line-clamp-2 mt-0.5 leading-relaxed">
-                              {item.recipe.subtitle}
+                              {recipe.subtitle}
                             </p>
                           </div>
 
                           {/* Nutrition Highlight Chip */}
-                          {item.recipe.nutritionHighlight && (
+                          {recipe.nutritionHighlight && (
                             <div className="flex items-center gap-1.5 text-[10px] text-[#2d4b37] font-semibold bg-[#cbebc3]/30 px-2 py-1 rounded-lg">
-                              <span>🌾 Serat {item.recipe.nutritionHighlight.fiberGrams}g</span>
+                              <span>🌾 Serat {recipe.nutritionHighlight.fiberGrams}g</span>
                               <span>•</span>
-                              <span>{item.recipe.nutritionHighlight.glycemicIndex}</span>
+                              <span>{recipe.nutritionHighlight.glycemicIndex}</span>
                             </div>
                           )}
                         </div>
@@ -567,7 +609,7 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                       {/* Action Card Bottom */}
                       <div className="p-3.5 pt-0">
                         <button
-                          onClick={() => onViewRecipe(item.recipe)}
+                          onClick={() => onViewRecipe(recipe)}
                           className="w-full py-2 rounded-xl bg-[#163422] hover:bg-[#2d4b37] text-white text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs active:scale-95 cursor-pointer"
                         >
                           <span>Lihat Resep</span>
@@ -781,9 +823,10 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                               ? 'bg-[#163422] text-[#fdc65c]'
                               : 'bg-black/40 text-white hover:bg-black/60'
                           }`}
-                          aria-label="Simpan Resep"
+                          aria-label={saved ? 'Hapus dari koleksi' : 'Simpan ke koleksi'}
+                          title={saved ? 'Hapus dari koleksi' : 'Simpan ke koleksi'}
                         >
-                          <Heart
+                          <Bookmark
                             className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                             fill={saved ? '#fdc65c' : 'none'}
                           />
@@ -815,9 +858,10 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
                               ? 'bg-[#163422] text-[#fdc65c]'
                               : 'bg-[#f4f4f2] text-[#424843] hover:bg-[#e2e3e1]'
                           }`}
-                          aria-label="Simpan Resep"
+                          aria-label={saved ? 'Hapus dari koleksi' : 'Simpan ke koleksi'}
+                          title={saved ? 'Hapus dari koleksi' : 'Simpan ke koleksi'}
                         >
-                          <Heart
+                          <Bookmark
                             className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                             fill={saved ? '#fdc65c' : 'none'}
                           />
@@ -879,13 +923,33 @@ export const ExploreRecipesPage: React.FC<ExploreRecipesPageProps> = ({
 
                   {/* Card Action Footer */}
                   <div className="p-2.5 sm:p-4 pt-0">
-                    <button
-                      onClick={() => onViewRecipe(recipe)}
-                      className="w-full py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#163422]/10 hover:bg-[#163422] text-[#163422] hover:text-white text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95"
-                    >
-                      <span>Lihat Resep</span>
-                      <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleLike(recipe.id);
+                        }}
+                        title={likedIds.has(recipe.id) ? 'Batalkan suka' : 'Suka resep ini'}
+                        className={`flex items-center gap-1 px-2.5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all active:scale-95 cursor-pointer ${
+                          likedIds.has(recipe.id)
+                            ? 'bg-red-500 text-white'
+                            : 'bg-[#f4f4f2] text-[#424843] hover:bg-[#e2e3e1]'
+                        }`}
+                      >
+                        <Heart
+                          className="w-3.5 h-3.5"
+                          fill={likedIds.has(recipe.id) ? '#fff' : 'none'}
+                        />
+                        <span>{statsMap[recipe.id]?.likes || 0}</span>
+                      </button>
+                      <button
+                        onClick={() => onViewRecipe(recipe)}
+                        className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-[#163422]/10 hover:bg-[#163422] text-[#163422] hover:text-white text-[11px] sm:text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95"
+                      >
+                        <span>Lihat Resep</span>
+                        <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

@@ -10,6 +10,8 @@ import {
   Clock,
   Users,
   Heart,
+  Bookmark,
+  Star,
   MessageCircle,
   Play,
   Sparkles, 
@@ -64,19 +66,29 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   const [recipeImageUrl, setRecipeImageUrl] = useState<string>(recipe.imageUrl || GLOBAL_FALLBACK_FOOD_IMAGE);
   const [ingredientImages, setIngredientImages] = useState<Record<number, string>>({});
   const { imagesEnabled } = useData();
-  // Count simpan (like) & komentar untuk badge di halaman detail
-  const [saveCount, setSaveCount] = useState(0);
+  // Save = koleksi pribadi; Like + rating = apresiasi publik agregat.
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [ratingAvg, setRatingAvg] = useState<number | null>(null);
+  const [reviewsCount, setReviewsCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const commentsRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    import('../../lib/supabase').then((m) => {
-      m.fetchRecipeEngagement([recipe.id]).then((c) => {
-        if (cancelled) return;
-        setSaveCount(c.saves[recipe.id] ?? 0);
-        setCommentCount(c.comments[recipe.id] ?? 0);
-      });
+    import('../../lib/supabase').then(async (m) => {
+      const [stats, likedIds, eng] = await Promise.all([
+        m.fetchRecipeStats([recipe.id]),
+        m.fetchLikedRecipeIds(),
+        m.fetchRecipeEngagement([recipe.id]),
+      ]);
+      if (cancelled) return;
+      const st = stats[recipe.id];
+      setLikeCount(st?.likes || 0);
+      setRatingAvg(st?.ratingAvg ?? null);
+      setReviewsCount(st?.reviewsCount || 0);
+      setLiked(likedIds.has(recipe.id));
+      setCommentCount(eng.comments[recipe.id] ?? 0);
     });
     return () => { cancelled = true; };
   }, [recipe.id]);
@@ -143,13 +155,36 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
   };
 
   const handleFavoriteClick = () => {
-    // Optimistis dulu, lalu selaraskan ulang dari DB (prop isSaved)
+    // Save = koleksi pribadi. Optimistis, selaraskan via prop isSaved dari DB.
     const next = !favoriteState;
     setFavoriteState(next);
     onToggleSave(recipe);
-    // Jika DB menolak, kembalikan saat refetch selesai via sync isSaved di atas.
-    // Naikkan/turunkan badge count sementara agar terasa responsif.
-    setSaveCount((c) => Math.max(0, c + (next ? 1 : -1)));
+  };
+
+  const handleLikeClick = async () => {
+    const prevLiked = liked;
+    const prevCount = likeCount;
+    setLiked(!prevLiked);
+    setLikeCount(Math.max(0, prevCount + (prevLiked ? -1 : 1)));
+    const m = await import('../../lib/supabase');
+    const res = await m.toggleRecipeLike(recipe.id);
+    if (!res) {
+      setLiked(prevLiked);
+      setLikeCount(prevCount);
+      return;
+    }
+    setLiked(res.liked);
+    setLikeCount(res.count);
+  };
+
+  const handleRate = async (stars: number) => {
+    const m = await import('../../lib/supabase');
+    const ok = await m.upsertRecipeReview(recipe.id, stars);
+    if (!ok) return;
+    const stats = await m.fetchRecipeStats([recipe.id]);
+    const st = stats[recipe.id];
+    setRatingAvg(st?.ratingAvg ?? null);
+    setReviewsCount(st?.reviewsCount || 0);
   };
 
   const handleSpeakInstructions = () => {
@@ -305,26 +340,72 @@ export const RecipeDetailPage: React.FC<RecipeDetailPageProps> = ({
                 <span className="material-symbols-outlined text-base text-[#163422]">restaurant</span>
                 <span>{currentServings} Servings</span>
               </div>
-              {/* Tombol favorit + count simpan (like) dalam satu pill */}
+              {/* Tombol simpan (koleksi pribadi) */}
               <button
                 id="btn-favorite-recipe"
                 onClick={handleFavoriteClick}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all shadow-[0px_4px_12px_rgba(45,75,55,0.08)] cursor-pointer active:scale-95 ${
                   favoriteState
-                    ? 'bg-rose-50 text-rose-600 border-rose-200'
+                    ? 'bg-[#163422] text-[#fdc65c] border-[#163422]'
                     : 'bg-[#f4f4f2] text-[#424843] border-[#e2e3e1] hover:border-[#163422]/40'
                 }`}
-                title={favoriteState ? 'Tersimpan di Favorit' : 'Simpan Resep'}
-                aria-label="Favoritkan Resep"
+                title={favoriteState ? 'Hapus dari koleksi' : 'Simpan ke koleksi'}
+                aria-label="Simpan ke koleksi"
               >
-                <span
-                  className="material-symbols-outlined text-[20px] leading-none"
-                  style={{ fontVariationSettings: favoriteState ? "'FILL' 1" : "'FILL' 0" }}
-                >
-                  favorite
-                </span>
-                <span>{saveCount}</span>
+                <Bookmark
+                  className="w-4 h-4"
+                  fill={favoriteState ? '#fdc65c' : 'none'}
+                />
+                <span>{favoriteState ? 'Tersimpan' : 'Simpan'}</span>
               </button>
+              {/* Tombol suka (apresiasi publik) */}
+              <button
+                onClick={handleLikeClick}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-semibold transition-all shadow-[0px_4px_12px_rgba(45,75,55,0.08)] cursor-pointer active:scale-95 ${
+                  liked
+                    ? 'bg-rose-50 text-rose-600 border-rose-200'
+                    : 'bg-[#f4f4f2] text-[#424843] border-[#e2e3e1] hover:border-rose-300'
+                }`}
+                title={liked ? 'Batalkan suka' : 'Suka resep ini'}
+                aria-label="Suka resep ini"
+              >
+                <Heart
+                  className="w-4 h-4"
+                  fill={liked ? 'currentColor' : 'none'}
+                />
+                <span>{likeCount}</span>
+              </button>
+              {/* Rating publik: tampil agregat + beri bintang */}
+              <div
+                className="flex items-center gap-1 bg-[#f4f4f2] px-3 py-1.5 rounded-xl border border-[#e2e3e1]"
+                title={reviewsCount > 0 ? `${reviewsCount} ulasan` : 'Belum ada ulasan'}
+              >
+                <span className="text-sm font-bold text-amber-600">
+                  {ratingAvg != null ? ratingAvg.toFixed(1) : '–'}
+                </span>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleRate(s)}
+                      title={`Beri ${s} bintang`}
+                      aria-label={`Beri ${s} bintang`}
+                      className="cursor-pointer active:scale-90 transition-transform"
+                    >
+                      <Star
+                        className={`w-3.5 h-3.5 ${
+                          ratingAvg != null && s <= Math.round(ratingAvg)
+                            ? 'fill-amber-500 text-amber-500'
+                            : 'text-[#c2c8c0] hover:text-amber-400'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                {reviewsCount > 0 && (
+                  <span className="text-[11px] text-[#727972]">({reviewsCount})</span>
+                )}
+              </div>
               {/* Badge jumlah komentar -> scroll ke seksi komentar */}
               <button
                 type="button"
